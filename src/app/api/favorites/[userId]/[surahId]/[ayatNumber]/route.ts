@@ -12,7 +12,9 @@ interface RouteParams {
 // GET /api/favorites/[userId]/[surahId]/[ayatNumber] - Check if verse is favorited
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const { userId, surahId, ayatNumber } = params;
+    // Await the params object before destructuring
+    const paramsObj = await params;
+    const { userId, surahId, ayatNumber } = paramsObj;
     
     if (!userId || !surahId || !ayatNumber) {
       return NextResponse.json({
@@ -31,10 +33,11 @@ export async function GET(request: Request, { params }: RouteParams) {
       success: true,
       data: { isFavorite }
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to check favorite status';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to check favorite status'
+      message: errorMessage
     }, { status: 500 });
   }
 }
@@ -42,7 +45,9 @@ export async function GET(request: Request, { params }: RouteParams) {
 // DELETE /api/favorites/[userId]/[surahId]/[ayatNumber] - Remove from favorites
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
-    const { userId, surahId, ayatNumber } = params;
+    // Await the params object before destructuring
+    const paramsObj = await params;
+    const { userId, surahId, ayatNumber } = paramsObj;
     
     if (!userId || !surahId || !ayatNumber) {
       return NextResponse.json({
@@ -68,10 +73,11 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       success: true,
       message: 'Verse removed from favorites successfully'
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to remove verse from favorites';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to remove verse from favorites'
+      message: errorMessage
     }, { status: 500 });
   }
 }

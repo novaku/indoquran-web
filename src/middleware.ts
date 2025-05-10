@@ -1,42 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from './app/api/auth/[...nextauth]/route';
+import { getToken } from 'next-auth/jwt';
 
-export async function middleware(request: NextRequest) {
-  try {
-    const session = await auth();
+export default async function middleware(request: NextRequest) {
+  // Get the token using getToken from next-auth/jwt
+  const token = await getToken({ 
+    req: request, 
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  
+  const isAuthenticated = !!token;
+  const isAuthPage = 
+    request.nextUrl.pathname.startsWith('/login') ||
+    request.nextUrl.pathname.startsWith('/register');
 
-    // Protected routes that require authentication
-    const isProtectedRoute = 
-      request.nextUrl.pathname.startsWith('/profile') ||
-      request.nextUrl.pathname.startsWith('/dashboard');
-
-    if (isProtectedRoute) {
-      // Not authenticated - redirect to login
-      if (!session) {
-        console.log('User not authenticated, redirecting to login');
-        
-        // Preserve the original URL as a callback after login
-        const loginUrl = new URL('/login', request.url);
-        loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname + request.nextUrl.search);
-        
-        return NextResponse.redirect(loginUrl);
-      }
-    }
-
-    return NextResponse.next();
-  } catch (error) {
-    console.error('Middleware error:', error);
-    
-    // In case of error, redirect to login as a safety measure
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+  // Redirect unauthenticated users to login when accessing protected routes
+  if (request.nextUrl.pathname.startsWith('/profile') && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
+  
+  // Redirect authenticated users away from login/register pages
+  if (isAuthPage && isAuthenticated) {
+    return NextResponse.redirect(new URL('/profile', request.url));
+  }
+  
+  // Allow the request to proceed
+  return NextResponse.next();
 }
 
-// Configure matcher to only run middleware on specific paths
+// Define which routes this middleware applies to
 export const config = {
-  matcher: [
-    '/profile/:path*',
-    '/dashboard/:path*'
-  ]
+  matcher: ['/profile/:path*', '/login', '/register'],
 };

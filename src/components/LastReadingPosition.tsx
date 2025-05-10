@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { useReadingHistory } from '@/hooks/useReadingHistory';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
-import { quranService } from '@/services/quranService';
+import * as quranService from '@/services/quranService';
 import { LoadingSpinner } from './LoadingSpinner';
+import ReadingHistorySkeleton from './ReadingHistorySkeleton';
 
 const formatDate = (dateString: string) => {
   try {
@@ -23,12 +24,17 @@ const formatDate = (dateString: string) => {
   }
 };
 
-export default function LastReadingPosition() {
+interface LastReadingPositionProps {
+  isActive?: boolean;
+}
+
+export default function LastReadingPosition({ isActive = false }: LastReadingPositionProps) {
   const { user, isAuthenticated } = useAuthContext();
   const { readingPosition, fetchReadingPosition, loading, error } = useReadingHistory({
     userId: user?.user_id || ''
   });
   const [refreshing, setRefreshing] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Fetch surah data if we have a reading position
   const { data: surahData, isLoading: isSurahLoading } = useQuery({
@@ -44,20 +50,16 @@ export default function LastReadingPosition() {
     setRefreshing(false);
   };
 
+  // Load history when the component becomes active
   useEffect(() => {
-    if (isAuthenticated && user?.user_id) {
+    if (isAuthenticated && user?.user_id && isActive && !isInitialized) {
       fetchReadingPosition();
+      setIsInitialized(true);
     }
-  }, [isAuthenticated, user, fetchReadingPosition]);
+  }, [isAuthenticated, user, fetchReadingPosition, isActive, isInitialized]);
 
   if (loading || isSurahLoading) {
-    return (
-      <div className="bg-white border border-amber-200 rounded-lg p-6 shadow-sm w-full mb-6 animate-pulse">
-        <div className="flex items-center justify-center py-10">
-          <LoadingSpinner />
-        </div>
-      </div>
-    );
+    return <ReadingHistorySkeleton />;
   }
 
   if (error) {

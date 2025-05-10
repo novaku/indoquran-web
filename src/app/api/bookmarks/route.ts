@@ -20,10 +20,11 @@ export async function GET(request: Request) {
       success: true,
       data: bookmarks
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Gagal mengambil data bookmark';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Gagal mengambil data bookmark'
+      message: errorMessage
     }, { status: 500 });
   }
 }
@@ -56,10 +57,11 @@ export async function POST(request: Request) {
       data: bookmark,
       message: 'Bookmark created successfully'
     }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to create bookmark';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to create bookmark'
+      message: errorMessage
     }, { status: 500 });
   }
 }

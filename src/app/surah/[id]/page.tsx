@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useState, useMemo, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import SurahStructuredData from '../../../components/SurahStructuredData';
+import offlineStorage from '../../../utils/offlineStorage';
 
 const RECITERS = {
   "01": "Abdullah Al-Juhany",
@@ -94,6 +95,19 @@ export default function SurahPage() {
 
   const isLoading = isSurahLoading || isTafsirLoading;
   const error = surahError || tafsirError;
+  
+  // Track this surah for offline access when data is loaded
+  useEffect(() => {
+    if (surah && !isLoading) {
+      // Track the current surah for offline access
+      offlineStorage.trackRecentSurah(surahId);
+      
+      // Cache the surah data for offline access
+      if (surah) {
+        offlineStorage.saveQuranData(`surah-${surahId}`, surah);
+      }
+    }
+  }, [surah, surahId, isLoading]);
   
   // This code section is after loading state and data has been fetched 
   // Handle navigation to specific ayat if provided in URL
@@ -204,7 +218,7 @@ export default function SurahPage() {
           
           <button 
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="bg-amber-500 text-white p-2 rounded-full shadow-lg hover:bg-amber-600"
+            className="bg-book-primary text-white p-2 rounded-full shadow-lg hover:bg-book-secondary"
             aria-label="Kembali ke atas"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -214,18 +228,18 @@ export default function SurahPage() {
         </div>
       )}
 
-      <div className="text-center mb-12 p-8 bg-amber-50 rounded-lg border border-amber-200">
+      <div className="text-center mb-12 p-8 bg-book-paper rounded-lg border border-book-border shadow-md">
         {/* Arabic name */}
-        <p className="text-4xl font-arabic text-amber-800 mb-4">{surah?.nama}</p>
+        <p className="text-4xl font-arabic text-book-primary mb-4">{surah?.nama}</p>
         
         {/* Latin name */}
-        <h1 className="text-3xl font-bold text-amber-900 mb-2">{surah?.namaLatin}</h1>
+        <h1 className="text-3xl font-bold text-book-primary mb-2">{surah?.namaLatin}</h1>
         
         {/* Indonesian meaning */}
-        <p className="text-xl text-amber-700 mb-4">{surah?.arti}</p>
+        <p className="text-xl text-book-secondary mb-4">{surah?.arti}</p>
         
         {/* Location and number of ayats */}
-        <div className="mt-4 text-amber-600">
+        <div className="mt-4 text-book-secondary">
           <p className="text-lg">
             <span className="font-semibold">Tempat Turun:</span>{' '}
             {surah?.tempatTurun === 'mekah' ? 'Makkah' : 'Madinah'} •{' '}
@@ -235,10 +249,10 @@ export default function SurahPage() {
 
         {/* Description with HTML support */}
         {surah?.deskripsi && (
-          <div className="mt-6 text-sm text-amber-700 max-w-2xl mx-auto">
+          <div className="mt-6 text-sm text-book-text max-w-2xl mx-auto">
             <h2 className="text-lg font-semibold mb-2">Deskripsi Surah</h2>
             <div 
-              className="prose prose-amber prose-sm"
+              className="prose prose-stone prose-sm"
               dangerouslySetInnerHTML={{ __html: surah.deskripsi }} 
             />
           </div>
@@ -247,7 +261,7 @@ export default function SurahPage() {
         {/* Audio player */}
         {surah?.audioFull && (
           <div className="mt-8">
-            <h2 className="text-lg font-semibold mb-2 text-amber-800">Murattal</h2>
+            <h2 className="text-lg font-semibold mb-2 text-book-primary">Murattal</h2>
             <div className="flex flex-col items-center gap-4">
               <div className="inline-block">
                 <label htmlFor="full-reciter-select" className="block text-sm font-medium text-amber-700 mb-1">

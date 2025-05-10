@@ -23,7 +23,7 @@ export async function GET(request: Request) {
     });
 
     const [rows] = await conn.execute(
-      `SELECT * FROM reading_positions WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1`,
+      `SELECT * FROM reading_positions WHERE user_id = ? ORDER BY last_read DESC LIMIT 1`,
       [userId]
     );
 
@@ -77,7 +77,7 @@ export async function POST(request: Request) {
         `UPDATE reading_positions SET 
          surah_id = ?, 
          ayat_number = ?, 
-         updated_at = CURRENT_TIMESTAMP 
+         last_read = CURRENT_TIMESTAMP 
          WHERE user_id = ?`,
         [body.surah_id, body.ayat_number, body.user_id]
       );

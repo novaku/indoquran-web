@@ -1,0 +1,8 @@
+// src/app/api/auth/[...nextauth]/route.ts
+import { handlers } from "@/lib/auth/auth";
+
+// Export handlers as GET and POST
+export { handlers as GET, handlers as POST };
+
+// Ensure we use Node.js runtime
+export const runtime = "nodejs";

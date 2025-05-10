@@ -8,20 +8,40 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Original amber theme
         'quran-paper': '#FDF8EE',
         'quran-primary': '#92400E',
         'quran-secondary': '#B45309',
         'quran-accent': '#F59E0B',
         'quran-text': '#422006',
         'quran-border': '#D97706',
+        // New book-like sepia theme
+        'book-bg': '#F8F1E3',
+        'book-paper': '#F5ECD9',
+        'book-primary': '#5D4037',
+        'book-secondary': '#8D6E63',
+        'book-accent': '#A1887F',
+        'book-text': '#3E2723',
+        'book-border': '#8D6E63',
+        'book-highlight': '#BCAAA4',
+        'book': {
+          'bg': '#f8f4e5',
+          'text': '#5D4037',
+          'heading': '#3E2723',
+          'secondary': '#8D6E63',
+          'tertiary': '#795548',
+          'border': '#d3c6a6',
+          'hover': '#e8e0ce',
+          'active': '#e1d7c0',
+        },
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
-        'arabic': ['Noto Naskh Arabic', 'serif'],
-        'arabic-translation': ['var(--font-amiri)'],
+        'arabic': ['Amiri', 'serif'],
+        'uthmani': ['"KFGQPC Uthmanic Script HAFS"', 'Amiri', 'serif'],
       },
       boxShadow: {
         'islamic': '0 4px 14px 0 rgba(146, 64, 14, 0.1)',

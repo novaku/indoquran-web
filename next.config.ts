@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+/** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   devIndicators: false,
   // Server-side environment variables
@@ -38,6 +39,12 @@ const nextConfig: NextConfig = {
   //   dest: 'public',
   //   disable: process.env.NODE_ENV === 'development'
   // }
+
+  // Add this section to specify Node.js packages for server components
+  experimental: {
+    // List packages that should be treated as external dependencies for server components
+    serverComponentsExternalPackages: ['some-node-package'],
+  },
 };
 
 export default nextConfig;

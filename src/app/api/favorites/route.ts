@@ -20,10 +20,11 @@ export async function GET(request: Request) {
       success: true,
       data: favorites
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch favorites';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to fetch favorites'
+      message: errorMessage
     }, { status: 500 });
   }
 }
@@ -54,10 +55,11 @@ export async function POST(request: Request) {
       data: favorite,
       message: 'Verse added to favorites successfully'
     }, { status: 201 });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to add verse to favorites';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to add verse to favorites'
+      message: errorMessage
     }, { status: 500 });
   }
 }

@@ -1,13 +1,43 @@
 import mysql from 'mysql2/promise';
+import { config } from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
+
+// Get directory path for correct relative path resolution
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Try to find environment file in multiple possible locations
+const possibleEnvPaths = [
+  path.resolve(__dirname, '../deploy/.env.local'),
+  path.resolve(__dirname, '../.env.local'),
+  path.resolve(__dirname, '../deploy/.env.production'),
+  path.resolve(__dirname, '../.env.production')
+];
+
+const envPath = possibleEnvPaths.find(p => existsSync(p));
+
+if (envPath) {
+  console.log(`Loading environment from: ${envPath}`);
+  config({ path: envPath });
+} else {
+  console.warn('No environment file found. Using default configuration.');
+}
 
 // Script to create the MySQL database for indoquran-web
 async function createDatabase() {
-  const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    port: 3306
-  });
+  // Use environment variables or fallback to defaults
+  const dbConfig = {
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'root',
+    port: parseInt(process.env.DB_PORT || '3306')
+  };
+  
+  console.log(`Connecting to database at ${dbConfig.host}:${dbConfig.port} as ${dbConfig.user}...`);
+  
+  const connection = await mysql.createConnection(dbConfig);
 
   try {
     console.log('Creating database indoquran_db...');

@@ -2,14 +2,27 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { quranClient } from '../services/quranClient';
-import { SurahCardSkeleton } from '../components/SurahCardSkeleton';
 import { ErrorMessage } from '../components/ErrorMessage';
-import Link from 'next/link';
-import { useState } from 'react';
-import { SurahSearch } from '../components/SurahCard';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import SurahList from '@/components/SurahList';
+import SearchInput from '@/components/SearchInput';
 
-export default function Home() {
+export default function HomePage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialQuery = searchParams.get('q') || '';
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  // States for Redis cache initialization
+  const [isRedisCacheInitializing, setIsRedisCacheInitializing] = useState(false);
+  const [cacheProgress, setCacheProgress] = useState(0);
+  const [cachingStatus, setCachingStatus] = useState('');
+  const [cachingStep, setCachingStep] = useState(1);
+  const [totalSteps, setTotalSteps] = useState(1); // Reduced to 1 step (only Surahs, no Tafsirs)
+  
   const { data: surahs, isLoading, error, refetch } = useQuery({
     queryKey: ['surahs'],
     queryFn: () => quranClient.getAllSurah(),
@@ -21,47 +34,173 @@ export default function Home() {
 
   const [tooltipSurah, setTooltipSurah] = useState<number | null>(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  if (isLoading) {
+  // Debounce the search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300);
+    
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Check Redis cache availability on component mount
+  useEffect(() => {
+    const prepareQuranData = async () => {
+      try {
+        setIsRedisCacheInitializing(true);
+        setCacheProgress(0);
+        setCachingStatus('Memeriksa ketersediaan cache...');
+        console.log('Checking Redis cache availability...');
+        
+        // Step 1: Prepare Surahs
+        setCachingStep(1);
+        
+        // Get the result of checking all surahs in cache, including which ones are missing
+        const { isCached, missingSurahs } = await quranClient.checkAllSurahsInCache();
+        
+        // Ensure the main surah list is cached first
+        if (!isCached && missingSurahs.length === 114) {
+          setCachingStatus('Memuat daftar surah utama...');
+          console.log('Main surah list not found in Redis cache, initializing...');
+          
+          // Force a refetch to populate the main surah list in Redis cache
+          const result = await refetch();
+          
+          if (!result.isSuccess) {
+            console.error('Failed to load and cache main surah list', result.error);
+            setCachingStatus('Gagal memuat daftar surah utama');
+            return;
+          }
+          
+          setCacheProgress(5); // 5% progress after fetching the main list
+          console.log('Successfully loaded and cached main surah list');
+        }
+        
+        // Check if there are any specific surahs missing from cache
+        if (missingSurahs.length > 0) {
+          setCachingStatus(`Memuat ${missingSurahs.length} surah yang belum tersimpan...`);
+          console.log(`Fetching ${missingSurahs.length} missing surahs: ${missingSurahs.join(', ')}`);
+          
+          // Pre-cache the individual surahs that are missing (using batched fetching)
+          const batchSize = 5; // Process 5 surahs at a time to avoid overwhelming the API
+          const totalBatches = Math.ceil(missingSurahs.length / batchSize);
+          const totalSurahs = missingSurahs.length;
+          
+          for (let i = 0; i < totalBatches; i++) {
+            const batchStart = i * batchSize;
+            const batchEnd = Math.min((i + 1) * batchSize, missingSurahs.length);
+            const surahBatch = missingSurahs.slice(batchStart, batchEnd);
+            
+            setCachingStatus(`Memuat surah ${surahBatch.join(', ')}...`);
+            console.log(`Fetching batch ${i + 1}/${totalBatches}: Surahs ${surahBatch.join(', ')}`);
+            
+            try {
+              await Promise.all(surahBatch.map(id => 
+                quranClient.getSurahDetail(id).catch(err => {
+                  console.warn(`Failed to fetch surah ${id}:`, err);
+                  return null;
+                })
+              ));
+              
+              // Calculate progress as a percentage (5% for main list + 95% for individual surahs)
+              const baseProgress = 5;
+              const individualSurahProgress = 95;
+              const percentComplete = baseProgress + Math.round((batchEnd / totalSurahs) * individualSurahProgress);
+              
+              setCacheProgress(percentComplete > 100 ? 100 : percentComplete);
+              console.log(`Surah cache initialization progress: ${percentComplete}%`);
+            } catch (batchError) {
+              console.error(`Error processing batch ${i + 1}:`, batchError);
+            }
+          }
+          
+          setCachingStatus('Semua surah berhasil disimpan di cache');
+          console.log('All missing surah data has been cached to Redis');
+        } else {
+          setCachingStatus('Semua 114 surah sudah tersimpan di cache');
+          console.log('All 114 surahs are already cached in Redis');
+        }
+        
+        // Skip tafsir preparation since we're encountering server/client issues
+        // Tafsirs will be fetched on demand when needed instead of precaching
+        setCachingStatus('Inisialisasi selesai');
+        setCacheProgress(100);
+        console.log('Skipping tafsir precaching due to server/client component limitations');
+      } catch (error) {
+        console.error('Error checking or updating Redis cache:', error);
+        setCachingStatus('Terjadi kesalahan saat memeriksa cache');
+      } finally {
+        // Keep the status visible for a moment even after completion
+        setTimeout(() => {
+          setIsRedisCacheInitializing(false);
+          setCacheProgress(0);
+        }, 2000);
+      }
+    };
+
+    prepareQuranData();
+  }, [refetch]);
+
+  // Show combined loading state (either initial loading or Redis cache initialization)
+  const showLoading = isLoading || isRedisCacheInitializing;
+
+  if (showLoading) {
     return (
       <div className="w-full mx-auto p-4">
-        <div className="animate-pulse">
-          <div className="h-8 bg-amber-100 rounded mb-6 w-48" />
-          <div className="bg-amber-50 rounded-lg p-4">
-            <div className="grid grid-cols-5 gap-4 mb-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-8 bg-amber-100 rounded" />
-              ))}
+        {isRedisCacheInitializing && (
+          <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Mempersiapkan Al-Quran</h2>
+            <p className="mb-4 text-gray-600">{cachingStatus}</p>
+            
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+              <div 
+                className="bg-amber-500 h-2.5 rounded-full transition-all duration-300" 
+                style={{ width: `${cacheProgress}%` }}
+              />
             </div>
-            <div className="space-y-4">
-              {[...Array(10)].map((_, index) => (
-                <div key={index} className="grid grid-cols-5 gap-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-12 bg-amber-50/50 rounded" />
-                  ))}
-                </div>
-              ))}
+            <p className="text-sm text-gray-500">
+              {cacheProgress}% selesai
+            </p>
+            
+            <div className="mt-4 text-sm text-gray-500">
+              <p>Data sedang disiapkan untuk penggunaan offline. Mohon tunggu sebentar...</p>
+              <ul className="list-disc pl-5 mt-2">
+                <li className="font-semibold">Teks Al-Quran dan terjemahan</li>
+              </ul>
             </div>
           </div>
-        </div>
+        )}
+        
+        {!isRedisCacheInitializing && isLoading && (
+          <div className="flex flex-col items-center justify-center p-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500 mb-4"></div>
+            <p className="text-gray-600">Memuat daftar surah...</p>
+          </div>
+        )}
       </div>
     );
   }
 
-  if (error) {
+  if (error && !isRedisCacheInitializing) {
     return (
       <div className="w-full mx-auto mt-8 px-4">
         <ErrorMessage 
           message="Gagal memuat daftar surah. Silakan coba lagi." 
-          retry={() => refetch()}
+          retry={() => {
+            setIsRedisCacheInitializing(true);
+            refetch().finally(() => setIsRedisCacheInitializing(false));
+          }}
+          additionalInfo={
+            "Jika Anda mengalami masalah koneksi, pastikan perangkat terhubung ke internet."
+          }
         />
       </div>
     );
   }
 
   return (
-    <main className="w-full mx-auto px-4 py-8 bg-[#FDF8EE]">
+    <main className="container mx-auto px-4 py-8 bg-[#f8f4e5] text-[#5D4037]">
       <Helmet>
         <title>Al-Quran Indonesia | Baca Al-Quran Online dengan Terjemahan & Tafsir</title>
         <meta name="description" content="Baca Al-Quran online lengkap dengan terjemahan Bahasa Indonesia, tafsir, audio murottal. Tersedia 114 surah dengan navigasi mudah." />
@@ -86,70 +225,32 @@ export default function Home() {
             }
           `}
         </script>
-      </Helmet>
-      <div className="mb-12 text-center">
-        <div className="w-full mx-auto">
-          <SurahSearch 
-            onSearchStateChange={setIsSearching} 
-            onQueryChange={setSearchQuery}
-          />
-        </div>
+      </Helmet>      
+      <div className="mb-6">
+        <SearchInput
+          value={searchQuery}
+          onChange={setSearchQuery}
+          onSearch={(query: string) => {
+            // Redirect to ayat search page with query
+            if (query && query.trim().length >= 3) {
+              router.push(`/search/ayat?q=${encodeURIComponent(query)}`);
+            }
+          }}
+          placeholder="Cari ayat Al-Qur'an..."
+        />
+      </div>
+      
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-gray-800">Daftar Surah</h2>
       </div>
 
-      {(!isSearching || !searchQuery) && (
-        <div className="bg-white rounded-xl overflow-hidden border border-amber-200 shadow-lg relative">
-          <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 opacity-50"></div>
-          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 opacity-50"></div>
-          <div className="text-center py-3 bg-amber-100/80 border-b border-amber-200">
-            <div className="flex items-center justify-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="font-medium text-amber-800">Klik pada baris untuk melihat detail surah</span>
-            </div>
-          </div>
-          <div className="overflow-x-auto max-h-[70vh]">
-            <table className="min-w-full divide-y divide-amber-200">
-              <thead className="sticky top-0 z-10 shadow-md">
-                <tr className="bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200">
-                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950 w-16">No.</th>
-                  <th scope="col" className="px-6 py-5 text-right text-base font-extrabold text-amber-950 w-48">Nama Arab</th>
-                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950">Nama Latin</th>
-                  <th scope="col" className="px-6 py-5 text-center text-base font-extrabold text-amber-950 w-32">Jumlah Ayat</th>
-                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950">Arti</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-amber-100">
-                {surahs?.map((surah) => (
-                  <tr
-                    key={surah.nomor}
-                    className="hover:bg-amber-50/90 transition-all relative group cursor-pointer hover:shadow-md"
-                    onMouseEnter={() => setTooltipSurah(surah.nomor)}
-                    onMouseLeave={() => setTooltipSurah(null)}
-                    onClick={() => window.location.href = `/surah/${surah.nomor}`}
-                  >
-                    <td className="px-6 py-5 whitespace-nowrap text-lg font-semibold text-amber-900">
-                      {surah.nomor}
-                    </td>
-                    <td className="px-6 py-5 text-right whitespace-nowrap">
-                      <span className="text-3xl font-arabic text-amber-800 leading-relaxed">{surah.nama}</span>
-                    </td>
-                    <td className="px-6 py-5 whitespace-nowrap">
-                      <span className="text-amber-900 font-medium text-lg">{surah.namaLatin}</span>
-                    </td>
-                    <td className="px-6 py-5 text-center whitespace-nowrap text-left text-amber-700">
-                      {surah.jumlahAyat} Ayat
-                    </td>
-                    <td className="px-6 py-5 text-amber-700 leading-relaxed">
-                      {surah.arti}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      <SurahList
+        surahs={surahs || null}
+        loading={isLoading}
+        error={error ? String(error) : null}
+        searchQuery={debouncedQuery}
+        setSearchQuery={setSearchQuery} // Pass this down to enable reset
+      />
     </main>
   );
 }

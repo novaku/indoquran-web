@@ -1,17 +1,13 @@
 import mysql from 'mysql2/promise';
-
-// Load environment variables if needed (for local development)
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: '.env.local' });
-}
+import { getEnv } from './env'; // Import from our centralized env utility
 
 // Connection pool configuration
 const poolConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'root',
-  database: process.env.DB_NAME || 'indoquran_db',
-  port: parseInt(process.env.DB_PORT || '3306'),
+  host: getEnv('DB_HOST', 'localhost'),
+  user: getEnv('DB_USER', 'root'),
+  password: getEnv('DB_PASSWORD', 'root'),
+  database: getEnv('DB_NAME', 'indoquran_db'),
+  port: parseInt(getEnv('DB_PORT', '3306')),
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -97,12 +93,28 @@ export async function initDatabase() {
       UNIQUE KEY unique_position (user_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `;
+  
+  const createContactsTable = `
+    CREATE TABLE IF NOT EXISTS contacts (
+      contact_id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) NOT NULL,
+      subject VARCHAR(200) NOT NULL,
+      message TEXT NOT NULL,
+      user_id VARCHAR(36) NULL,
+      status ENUM('unread', 'read', 'replied', 'archived') DEFAULT 'unread',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `;
 
   try {
     await query({ query: createUsersTable });
     await query({ query: createBookmarksTable });
     await query({ query: createFavoritesTable });
     await query({ query: createReadingPositionsTable });
+    await query({ query: createContactsTable });
     console.log('Database tables initialized successfully');
     return true;
   } catch (error) {

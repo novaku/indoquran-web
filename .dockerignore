@@ -1,0 +1,51 @@
+# Docker ignore file
+
+# Node modules and dependencies
+node_modules
+npm-debug.log
+
+# Next.js build output
+.next
+out
+
+# Git and version control
+.git
+.gitignore
+
+# Environment files (now in deploy directory)
+deploy/.env
+deploy/.env.*
+!deploy/.env.example
+!deploy/.env.production.example
+!deploy/.env.local.example
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files themselves (now in deploy directory)
+deploy/Dockerfile
+deploy/docker-compose.yml
+deploy/docker-compose.override.yml
+deploy/docker.sh
+
+# Persistent volumes for docker
+mysql-data
+redis-data
+
+# Build cache
+.npm
+.eslintcache

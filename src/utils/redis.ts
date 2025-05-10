@@ -1,8 +1,10 @@
 'use server';
 
 import Redis, { RedisOptions } from 'ioredis';
+import { getEnv } from './env';
 
 let redisInstance: Redis | null = null;
+// This variable is used to track Redis connection state
 let isRedisConnecting = false;
 let isRedisReady = false;
 
@@ -13,8 +15,9 @@ function initRedisClient(): Redis {
   }
   
   if (!redisInstance) {
-    const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-    const redisPassword = process.env.REDIS_PASSWORD;
+    // Environment variables are loaded from the centralized utility in env.ts
+    const redisUrl = getEnv('REDIS_URL', 'redis://localhost:6379');
+    const redisPassword = getEnv('REDIS_PASSWORD', '');
     
     const options: RedisOptions = {
       enableOfflineQueue: true, // Changed to true to queue commands when disconnected
@@ -119,7 +122,7 @@ async function waitForRedisReady(redis: Redis): Promise<void> {
         await redis.ping();
         isRedisReady = true;
         return resolve();
-      } catch (err) {
+      } catch (_) {
         // Ignore error and continue waiting
       }
       
@@ -135,7 +138,7 @@ async function waitForRedisReady(redis: Redis): Promise<void> {
   });
 }
 
-export async function setCache(key: string, data: any): Promise<void> {
+export async function setCache<T>(key: string, data: T): Promise<void> {
   if (typeof window !== 'undefined') {
     console.warn('Redis setCache called on client side, operation skipped');
     return;
@@ -143,9 +146,29 @@ export async function setCache(key: string, data: any): Promise<void> {
   
   try {
     const redis = initRedisClient();
+    
+    // Wait for Redis to be ready before proceeding
+    if (!isRedisReady) {
+      try {
+        await waitForRedisReady(redis);
+      } catch (timeoutErr) {
+        // If we timeout waiting for Redis, log it but don't crash
+        console.warn('Redis not ready, skipping cache operation:', timeoutErr);
+        return;
+      }
+    }
+    
+    // Check if the redis connection is still valid
+    const isConnected = redis.status === 'ready';
+    if (!isConnected) {
+      console.warn('Redis connection not ready, skipping cache operation');
+      return;
+    }
+    
     await redis.set(key, JSON.stringify(data));
   } catch (error) {
     console.error('Redis set cache error:', error);
+    // Don't rethrow - we don't want Redis errors to break the app
   }
 }
 
@@ -157,10 +180,31 @@ export async function invalidateCache(pattern: string): Promise<void> {
   
   try {
     const redis = initRedisClient();
+    
+    // Wait for Redis to be ready before proceeding
+    if (!isRedisReady) {
+      try {
+        await waitForRedisReady(redis);
+      } catch (timeoutErr) {
+        console.warn('Redis not ready, skipping invalidation operation:', timeoutErr);
+        return;
+      }
+    }
+    
+    // Check if the redis connection is still valid
+    const isConnected = redis.status === 'ready';
+    if (!isConnected) {
+      console.warn('Redis connection not ready, skipping invalidation operation');
+      return;
+    }
+    
+    // Get keys matching pattern
     const keys = await redis.keys(pattern);
     
     if (keys.length > 0) {
-      // Fix: Handle the case where there might be many keys
+      console.log(`Invalidating ${keys.length} cache keys for pattern: ${pattern}`);
+      
+      // Handle the case where there might be many keys
       // Redis has a limit on arguments, so we chunk the deletion if needed
       if (keys.length <= 100) {
         await redis.del(...keys);
@@ -174,6 +218,7 @@ export async function invalidateCache(pattern: string): Promise<void> {
     }
   } catch (error) {
     console.error('Redis invalidate cache error:', error);
+    // Don't rethrow - we don't want Redis errors to break the app
   }
 }
 
@@ -196,8 +241,14 @@ export async function getOrFetchCache<T>(
   }
   
   try {
-    // Try to get from cache first
-    const cachedData = await getCache<T>(key);
+    // Try to get from cache first, but don't fail if Redis is unavailable
+    let cachedData = null;
+    try {
+      cachedData = await getCache<T>(key);
+    } catch (cacheError) {
+      console.warn(`Failed to get data from cache for key ${key}:`, cacheError);
+      // Continue with the function - we'll fall back to direct fetch
+    }
     
     // If found in cache, return it
     if (cachedData) {
@@ -207,12 +258,22 @@ export async function getOrFetchCache<T>(
     // Otherwise fetch fresh data
     const freshData = await fetchFn();
     
-    // Store in cache (with optional TTL)
-    if (ttl) {
-      const redis = initRedisClient();
-      await redis.set(key, JSON.stringify(freshData), 'EX', ttl);
-    } else {
-      await setCache(key, freshData);
+    // Try to store in cache, but don't fail if Redis is unavailable
+    try {
+      // Store in cache (with optional TTL)
+      if (ttl) {
+        const redis = initRedisClient();
+        
+        // Make sure Redis is ready
+        if (isRedisReady) {
+          await redis.set(key, JSON.stringify(freshData), 'EX', ttl);
+        }
+      } else {
+        await setCache(key, freshData);
+      }
+    } catch (cacheSetError) {
+      console.warn(`Failed to store data in cache for key ${key}:`, cacheSetError);
+      // Continue with the function - we already have the fresh data
     }
     
     return freshData;
@@ -220,5 +281,34 @@ export async function getOrFetchCache<T>(
     console.error('Cache/fetch error:', error);
     // If everything fails, fall back to direct API call
     return fetchFn();
+  }
+}
+
+// New function to check if Redis is available
+export async function isRedisAvailable(): Promise<boolean> {
+  if (typeof window !== 'undefined') {
+    console.warn('Redis check called on client side, returning false');
+    return false;
+  }
+  
+  try {
+    const redis = initRedisClient();
+    
+    // If Redis is already ready, return true
+    if (isRedisReady) {
+      return true;
+    }
+    
+    // Try to wait for Redis to become ready
+    try {
+      await waitForRedisReady(redis);
+      return true;
+    } catch (timeoutErr) {
+      console.warn('Redis availability check failed:', timeoutErr);
+      return false;
+    }
+  } catch (error) {
+    console.error('Redis availability check error:', error);
+    return false;
   }
 }

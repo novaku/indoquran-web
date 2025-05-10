@@ -12,7 +12,9 @@ interface RouteParams {
 // GET /api/bookmarks/[userId]/[surahId]/[ayatNumber]
 export async function GET(request: Request, { params }: RouteParams) {
   try {
-    const { userId, surahId, ayatNumber } = params;
+    // Await the params object before destructuring
+    const paramsObj = await params;
+    const { userId, surahId, ayatNumber } = paramsObj;
     
     if (!userId || !surahId || !ayatNumber) {
       return NextResponse.json({
@@ -38,10 +40,11 @@ export async function GET(request: Request, { params }: RouteParams) {
       success: true,
       data: bookmark
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch bookmark';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to fetch bookmark'
+      message: errorMessage
     }, { status: 500 });
   }
 }
@@ -75,10 +78,11 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       success: true,
       message: 'Bookmark deleted successfully'
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to delete bookmark';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to delete bookmark'
+      message: errorMessage
     }, { status: 500 });
   }
 }
@@ -86,7 +90,9 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 // PUT /api/bookmarks/[userId]/[surahId]/[ayatNumber]
 export async function PUT(request: Request, { params }: RouteParams) {
   try {
-    const { userId, surahId, ayatNumber } = params;
+    // Await the params object before destructuring
+    const paramsObj = await params;
+    const { userId, surahId, ayatNumber } = paramsObj;
     const body = await request.json();
     
     if (!userId || !surahId || !ayatNumber) {
@@ -135,10 +141,11 @@ export async function PUT(request: Request, { params }: RouteParams) {
       data: updatedBookmark,
       message: 'Bookmark updated successfully'
     });
-  } catch (error: any) {
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Failed to update bookmark';
     return NextResponse.json({
       success: false,
-      message: error.message || 'Failed to update bookmark'
+      message: errorMessage
     }, { status: 500 });
   }
 }

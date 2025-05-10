@@ -25,5 +25,30 @@
     }
   ],
   "orientation": "portrait",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "categories": ["books", "education", "religion"],
+  "screenshots": [
+    {
+      "src": "/icons/screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Al-Fatihah",
+      "short_name": "Al-Fatihah",
+      "description": "Baca Surah Al-Fatihah",
+      "url": "/surah/1",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Yasin",
+      "short_name": "Yasin",
+      "description": "Baca Surah Yasin",
+      "url": "/surah/36",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": []
 }

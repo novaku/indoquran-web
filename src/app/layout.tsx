@@ -5,6 +5,12 @@ import { Inter, Noto_Naskh_Arabic, Amiri } from 'next/font/google';
 import { TopFooter } from '../components/TopFooter';
 import StructuredData from '../components/StructuredData';
 import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration';
+import PWAInstallPrompt from '../components/PWAInstallPrompt';
+import Header from '@/components/Header';
+import BookThemeProvider from '@/components/BookThemeProvider';
+import ConnectivityStatus from '@/components/ConnectivityStatus';
+import OfflineDataSync from '@/components/OfflineDataSync';
+import React from 'react';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -65,7 +71,28 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: 'cover',
+};
+
+const Footer: React.FC = () => {
+  return (
+    <footer className="bg-amber-800 text-white py-6">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-4 md:mb-0">
+            <p className="text-sm">&copy; {new Date().getFullYear()} Al-Quran Indonesia. All rights reserved.</p>
+          </div>
+          <div className="flex space-x-4">
+            <a href="/about" className="text-sm hover:text-amber-300 transition">About</a>
+            <a href="/contact" className="text-sm hover:text-amber-300 transition">Contact</a>
+            <a href="/privacy" className="text-sm hover:text-amber-300 transition">Privacy Policy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 };
 
 export default function RootLayout({
@@ -78,20 +105,31 @@ export default function RootLayout({
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#d97706" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="IndoQuran" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png" />
       </head>
       <body className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
         <Providers>
-          <main className="w-full mx-auto px-4 py-8 pb-20 bg-gradient-to-b from-amber-50 to-white min-h-screen">
-            <header className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
-              <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
-            </header>
-            {children}
-          </main>
-          <TopFooter />
-          <StructuredData />
-          <ServiceWorkerRegistration />
+          <BookThemeProvider>
+            <Header />
+            <main className="w-full mx-auto px-4 py-8 pb-20 bg-gradient-to-b from-amber-50 to-white min-h-screen">
+              <header className="text-center mb-12">
+                <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
+                <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
+              </header>
+              {children}
+            </main>
+            <Footer />
+            <TopFooter />
+            <StructuredData />
+            <ServiceWorkerRegistration />
+            <PWAInstallPrompt />
+            <ConnectivityStatus />
+            <OfflineDataSync />
+          </BookThemeProvider>
         </Providers>
       </body>
     </html>

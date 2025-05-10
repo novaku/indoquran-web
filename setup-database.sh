@@ -2,10 +2,35 @@
 
 # MySQL database setup script for indoquran-web
 echo "=== Setting up MySQL Database for IndoQuran Web Application ==="
-echo "Host: localhost"
-echo "Username: root"
-echo "Password: root"
-echo "Database Name: indoquran_db"
+
+# Try to find the environment file in different possible locations
+for ENV_FILE in "./deploy/.env.local" "./deploy/.env.production" "./.env.local" "./.env.production"; do
+  if [ -f "$ENV_FILE" ]; then
+    echo "✅ Found environment file: $ENV_FILE"
+    # Source the environment file to get DB configuration
+    source "$ENV_FILE"
+    DB_HOST=${DB_HOST:-localhost}
+    DB_USER=${DB_USER:-root}
+    DB_PASSWORD=${DB_PASSWORD:-root}
+    DB_NAME=${DB_NAME:-indoquran_db}
+    echo "✅ Using database configuration from $ENV_FILE"
+    break
+  fi
+done
+
+# If no env file was found, use defaults
+if [ -z "$ENV_FILE" ] || [ ! -f "$ENV_FILE" ]; then
+  echo "⚠️ No environment file found"
+  echo "Using default database settings."
+  DB_HOST="localhost"
+  DB_USER="root"
+  DB_PASSWORD="root"
+  DB_NAME="indoquran_db"
+fi
+
+echo "Host: $DB_HOST"
+echo "Username: $DB_USER"
+echo "Database Name: $DB_NAME"
 echo ""
 
 # Confirm before proceeding
@@ -18,7 +43,7 @@ then
 fi
 
 # Create the database and tables
-mysql -h localhost -u root -proot <<EOF
+mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASSWORD" <<EOF
 -- Create database
 CREATE DATABASE IF NOT EXISTS indoquran_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -30,6 +55,7 @@ CREATE TABLE IF NOT EXISTS users (
   username VARCHAR(50) UNIQUE NOT NULL,
   email VARCHAR(100) UNIQUE NOT NULL,
   password VARCHAR(255) NOT NULL,
+  provider VARCHAR(20) DEFAULT 'credentials',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

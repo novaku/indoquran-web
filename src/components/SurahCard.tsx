@@ -22,24 +22,24 @@ export const SurahCard = ({ surah }: SurahCardProps) => {
   return (
     <Link 
       href={`/surah/${surah.nomor}`}
-      className="block p-6 bg-amber-50/30 border border-amber-200 rounded-lg hover:bg-amber-50 transition-colors"
+      className="block p-6 bg-book-paper border border-book-border rounded-lg hover:bg-book-highlight/20 transition-colors shadow-sm"
     >
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 flex items-center justify-center bg-amber-100 rounded-full shrink-0">
-          <span className="text-amber-800">{surah.nomor}</span>
+        <div className="w-10 h-10 flex items-center justify-center bg-book-highlight rounded-full shrink-0">
+          <span className="text-book-primary">{surah.nomor}</span>
         </div>
         
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-2">
-            <h3 className="text-xl font-semibold text-amber-900">{surah.namaLatin}</h3>
-            <span className="text-lg font-arabic text-amber-800 shrink-0">{surah.nama}</span>
+            <h3 className="text-xl font-semibold text-book-primary">{surah.namaLatin}</h3>
+            <span className="text-2xl font-arabic text-book-secondary shrink-0">{surah.nama}</span>
           </div>
           
-          <p className="text-sm text-amber-600">
+          <p className="text-sm text-book-secondary">
             {surah.jumlahAyat} Ayat • {surah.tempatTurun === 'mekah' ? 'Makkah' : 'Madinah'}
           </p>
           
-          <p className="text-sm text-amber-700 mt-1">{surah.arti}</p>
+          <p className="text-sm text-book-text mt-1">{surah.arti}</p>
         </div>
       </div>
     </Link>
@@ -111,7 +111,7 @@ const AyatDetailPopup = ({
   results: any[];
 }) => {
   const [selectedReciter, setSelectedReciter] = useState<keyof typeof RECITERS>("01");
-  const [arabicFontSize, setArabicFontSize] = useState(2.25); // rem, default 3xl = 1.875rem, 2.25rem is a bit larger
+  const [arabicFontSize, setArabicFontSize] = useState(2.75); // rem, increased from 2.25rem to 2.75rem for better readability
   const [showTafsir, setShowTafsir] = useState(false);
 
   // Fetch tafsir data when needed
@@ -459,7 +459,7 @@ export const SurahSearch = ({ onSearchStateChange, onQueryChange }: SurahSearchP
 
     try {
       const searchTerms = query.trim().toLowerCase().split(/\s+/);
-      const surahPromises = Array.from({ length: 114 }, (_, i) => quranService.getSurahDetail(i + 1));
+      const surahPromises = Array.from({ length: 114 }, (_, i) => quranClient.getSurahDetail(i + 1));
       const surahDetails = await Promise.all(surahPromises);
       const ayatResults: any[] = [];
 
@@ -506,7 +506,7 @@ export const SurahSearch = ({ onSearchStateChange, onQueryChange }: SurahSearchP
     if (newIndex >= 0 && newIndex < results.length) {
       const item = results[newIndex];
       try {
-        const surahDetail = await quranService.getSurahDetail(item.surahNomor);
+        const surahDetail = await quranClient.getSurahDetail(item.surahNomor);
         const ayatDetail = surahDetail.ayat.find((a: any) => a.nomorAyat === item.ayatNomor);
         if (ayatDetail) {
           setSelectedAyat({
@@ -606,9 +606,9 @@ export const SurahSearch = ({ onSearchStateChange, onQueryChange }: SurahSearchP
                 onClick={() => {
                   // Fetch the complete ayat data when card is clicked
                   const fetchAyatDetail = async () => {
-                    try {
-                      const surahDetail = await quranService.getSurahDetail(item.surahNomor);
-                      const ayatDetail = surahDetail.ayat.find((a: any) => a.nomorAyat === item.ayatNomor);
+                                try {
+                                  const surahDetail = await quranClient.getSurahDetail(item.surahNomor);
+                                  const ayatDetail = surahDetail.ayat.find((a: any) => a.nomorAyat === item.ayatNomor);
                       if (ayatDetail) {
                         setSelectedAyat({
                           surahNumber: item.surahNomor,

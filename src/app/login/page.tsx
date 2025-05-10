@@ -43,8 +43,9 @@ export default function LoginPage() {
       } else {
         router.push(callbackUrl);
       }
-    } catch (error: any) {
-      setError(error.message || 'Terjadi kesalahan saat proses masuk');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat proses masuk';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -57,8 +58,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-amber-50/50 px-4">
-      <div className="w-full max-w-md">
+    <div className="flex flex-col bg-amber-50/50 px-4 pt-16 pb-24">
+      <div className="w-full max-w-md mx-auto">
         <div className="bg-white p-8 rounded-lg shadow-md border border-amber-200">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-amber-800">Masuk ke Al-Quran Indonesia</h1>

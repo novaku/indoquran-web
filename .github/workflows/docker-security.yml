@@ -1,0 +1,72 @@
+name: Docker Security Scan
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'deploy/Dockerfile'
+      - 'deploy/docker-compose.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'deploy/Dockerfile'
+      - 'deploy/docker-compose.yml'
+  workflow_dispatch:
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and export Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deploy/Dockerfile
+          tags: indoquran-web:latest
+          outputs: type=docker,dest=/tmp/indoquran-web.tar
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Load Docker image
+        run: |
+          docker load --input /tmp/indoquran-web.tar
+          
+      - name: Run Docker Scout
+        run: |
+          # Install Docker Scout CLI if not present
+          curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+          chmod +x install-scout.sh
+          ./install-scout.sh
+          
+          # Run scan and capture results
+          docker scout cves indoquran-web:latest --format json > scan_results.json
+          
+          # Check for critical vulnerabilities
+          CRITICAL_COUNT=$(jq '.vulnerabilities | map(select(.severity == "critical")) | length' scan_results.json)
+          HIGH_COUNT=$(jq '.vulnerabilities | map(select(.severity == "high")) | length' scan_results.json)
+          
+          echo "Critical vulnerabilities found: $CRITICAL_COUNT"
+          echo "High vulnerabilities found: $HIGH_COUNT"
+          
+          # Fail if critical vulnerabilities exist
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "::error::Found $CRITICAL_COUNT critical vulnerabilities!"
+            exit 1
+          fi
+          
+          # Warn about high vulnerabilities
+          if [ "$HIGH_COUNT" -gt 0 ]; then
+            echo "::warning::Found $HIGH_COUNT high vulnerabilities that should be addressed"
+          fi
+          
+      - name: Upload scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: scan_results.json
