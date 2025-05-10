@@ -1,33 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app). The application now features bookmark and favorite functionality that uses a MySQL database.
+# IndoQuran Web
 
 ## Getting Started
 
 ### Environment Setup
 
-1. Create a `.env.local` file in the root of the project with the following variables:
+This application requires several environment variables to work correctly. Create a `.env.local` file in the root directory with the following variables:
 
-```
-# Database configuration
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=root
-DB_NAME=indoquran_db
-DB_PORT=3306
-
-# NextAuth configuration
-AUTH_SECRET="your-secret-key-goes-here-min-32-chars"
-NEXTAUTH_URL="http://localhost:3000"
-
-# Google OAuth
-GOOGLE_CLIENT_ID="your-google-client-id"
-GOOGLE_CLIENT_SECRET="your-google-client-secret"
-
-# Facebook OAuth
-FACEBOOK_CLIENT_ID="your-facebook-client-id"
-FACEBOOK_CLIENT_SECRET="your-facebook-client-secret"
-
-# API configuration
+```bash
+# API Configuration
 NEXT_PUBLIC_API_BASE_URL=https://equran.id/api/v2
+
+# Redis Configuration
+REDIS_URL=redis://localhost:6379
+# Optional: Redis password if needed
+# REDIS_PASSWORD=your-redis-password
+
+# Database Configuration
+DATABASE_URL=mysql://root:password@localhost:3306/indoquran_db
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=password
+DB_NAME=indoquran_db
+
+# Next Auth Configuration
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-nextauth-secret-key-here
 ```
 
 2. Replace the OAuth credentials with your own from:

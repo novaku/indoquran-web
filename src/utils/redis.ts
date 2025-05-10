@@ -1,8 +1,10 @@
 'use server';
 
-import Redis from 'ioredis';
+import Redis, { RedisOptions } from 'ioredis';
 
 let redisInstance: Redis | null = null;
+let isRedisConnecting = false;
+let isRedisReady = false;
 
 // Initialize Redis client (not exported)
 function initRedisClient(): Redis {
@@ -12,20 +14,59 @@ function initRedisClient(): Redis {
   
   if (!redisInstance) {
     const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+    const redisPassword = process.env.REDIS_PASSWORD;
     
-    redisInstance = new Redis(redisUrl, {
-      enableOfflineQueue: false,
+    const options: RedisOptions = {
+      enableOfflineQueue: true, // Changed to true to queue commands when disconnected
       maxRetriesPerRequest: 3,
-    });
+      retryStrategy(times) {
+        // Exponential backoff with max 3000ms
+        return Math.min(times * 200, 3000);
+      },
+      connectTimeout: 10000, // 10 seconds
+      reconnectOnError: (err) => {
+        // Reconnect for specific errors that might be temporary
+        const targetError = err.message.slice(0, 'READONLY'.length) === 'READONLY';
+        return targetError ? 1 : false;
+      }
+    };
+    
+    if (redisPassword) {
+      options.password = redisPassword;
+    }
+    
+    isRedisConnecting = true;
+    isRedisReady = false;
+    redisInstance = new Redis(redisUrl, options);
     
     redisInstance.on('error', (error) => {
       console.error('Redis client error:', error);
+      isRedisReady = false;
       // Don't crash the app on Redis connection errors
     });
     
     redisInstance.on('connect', () => {
+      isRedisConnecting = false;
       console.log('Redis client connected successfully');
     });
+
+    redisInstance.on('ready', () => {
+      isRedisReady = true;
+      console.log('Redis client ready to accept commands');
+    });
+
+    // Handle process exit - clean up Redis connection
+    if (typeof process !== 'undefined') {
+      ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal) => {
+        process.once(signal, () => {
+          if (redisInstance) {
+            redisInstance.quit().catch((err) => {
+              console.error('Error closing Redis connection:', err);
+            });
+          }
+        });
+      });
+    }
   }
   
   return redisInstance;
@@ -39,6 +80,12 @@ export async function getCache<T>(key: string): Promise<T | null> {
   
   try {
     const redis = initRedisClient();
+    
+    // Wait for Redis to be ready before proceeding
+    if (!isRedisReady) {
+      await waitForRedisReady(redis);
+    }
+    
     const cachedData = await redis.get(key);
     
     if (!cachedData) {
@@ -50,6 +97,42 @@ export async function getCache<T>(key: string): Promise<T | null> {
     console.error('Redis get cache error:', error);
     return null;
   }
+}
+
+// Helper function to wait for Redis to be ready
+async function waitForRedisReady(redis: Redis): Promise<void> {
+  if (isRedisReady) return;
+  
+  // Use a timeout to avoid hanging indefinitely
+  const timeout = 5000; // 5 seconds
+  const interval = 100; // Check every 100ms
+  let elapsed = 0;
+  
+  return new Promise((resolve, reject) => {
+    const checkReady = async () => {
+      if (isRedisReady) {
+        return resolve();
+      }
+      
+      // Try ping to check connection
+      try {
+        await redis.ping();
+        isRedisReady = true;
+        return resolve();
+      } catch (err) {
+        // Ignore error and continue waiting
+      }
+      
+      elapsed += interval;
+      if (elapsed >= timeout) {
+        return reject(new Error('Redis connection timeout'));
+      }
+      
+      setTimeout(checkReady, interval);
+    };
+    
+    checkReady();
+  });
 }
 
 export async function setCache(key: string, data: any): Promise<void> {
@@ -77,7 +160,17 @@ export async function invalidateCache(pattern: string): Promise<void> {
     const keys = await redis.keys(pattern);
     
     if (keys.length > 0) {
-      await redis.del(...keys);
+      // Fix: Handle the case where there might be many keys
+      // Redis has a limit on arguments, so we chunk the deletion if needed
+      if (keys.length <= 100) {
+        await redis.del(...keys);
+      } else {
+        // Process in batches of 100
+        for (let i = 0; i < keys.length; i += 100) {
+          const batch = keys.slice(i, i + 100);
+          await redis.del(...batch);
+        }
+      }
     }
   } catch (error) {
     console.error('Redis invalidate cache error:', error);

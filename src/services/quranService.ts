@@ -96,15 +96,47 @@ export async function getTafsir(surahId: number): Promise<TafsirResponse['data']
     return cachedData;
   }
   
-  // If not in cache, fetch from API
-  const response = await fetch(`${BASE_URL}/tafsir/${surahId}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch tafsir');
+  try {
+    // Check if BASE_URL is defined
+    if (!BASE_URL) {
+      console.error("API Base URL is not defined. Please check your environment variables.");
+      throw new Error('API configuration error');
+    }
+    
+    // If not in cache, fetch from API with better error handling
+    console.log(`Fetching tafsir data for surah ${surahId} from ${BASE_URL}/tafsir/${surahId}`);
+    
+    const response = await fetch(`${BASE_URL}/tafsir/${surahId}`, {
+      // Adding headers and longer timeout for reliability
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      next: { revalidate: 3600 } // Cache for 1 hour on the Next.js layer
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'No error details available');
+      console.error(`API Error (${response.status}): ${errorText}`);
+      throw new Error(`Failed to fetch tafsir (Status: ${response.status})`);
+    }
+    
+    const result: TafsirResponse = await response.json();
+    
+    // Make sure the expected data structure exists
+    if (!result.data?.tafsir) {
+      console.error('Unexpected API response format:', result);
+      throw new Error('Invalid API response format');
+    }
+    
+    // Cache the data forever
+    await setCache(cacheKey, result.data.tafsir);
+    
+    return result.data.tafsir;
+  } catch (error) {
+    console.error('Error fetching tafsir data:', error);
+    
+    // Return empty array as fallback instead of failing completely
+    return [];
   }
-  const result: TafsirResponse = await response.json();
-  
-  // Cache the data forever
-  await setCache(cacheKey, result.data.tafsir);
-  
-  return result.data.tafsir;
 }
