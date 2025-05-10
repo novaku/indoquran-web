@@ -8,7 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner';
 import LastReadingPosition from '@/components/LastReadingPosition';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { quranService } from '@/services/quranService';
+import * as quranService from '@/services/quranService';
 import { useToast } from '@/contexts/ToastContext';
 
 export default function ProfilePage() {
