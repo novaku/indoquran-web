@@ -6,22 +6,42 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "setup-db": "node scripts/setup-db.js"
   },
   "dependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "next": "15.3.1"
+    "@auth/core": "^0.39.1",
+    "@auth/prisma-adapter": "^2.9.1",
+    "@heroicons/react": "^2.2.0",
+    "@tanstack/react-query": "^5.75.5",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/uuid": "^10.0.0",
+    "axios": "^1.9.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "framer-motion": "^12.10.3",
+    "ioredis": "^5.6.1",
+    "mysql2": "^3.14.1",
+    "next": "15.3.2",
+    "next-auth": "^5.0.0-beta.28",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.5",
+    "redis": "^5.0.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/typography": "^0.5.10",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "@types/react": "18.2.48",
+    "@types/react-dom": "18.2.22",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
-    "eslint-config-next": "15.3.1",
-    "@eslint/eslintrc": "^3"
+    "eslint-config-next": "15.3.2",
+    "postcss": "^8.5.3",
+    "sharp": "^0.34.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5"
   }
 }

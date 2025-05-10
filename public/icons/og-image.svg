@@ -1,0 +1,27 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FEF3C7" />
+  
+  <!-- Decorative Border -->
+  <rect x="30" y="30" width="1140" height="570" fill="none" stroke="#B45309" stroke-width="20" />
+  
+  <!-- Islamic Pattern Background -->
+  <g opacity="0.2">
+    <!-- Geometric patterns -->
+    <circle cx="600" cy="400" r="50" fill="none" stroke="#D97706" stroke-width="2" />
+    <circle cx="600" cy="400" r="75" fill="none" stroke="#D97706" stroke-width="2" />
+    <circle cx="600" cy="400" r="100" fill="none" stroke="#D97706" stroke-width="2" />
+    
+    <!-- Star pattern -->
+    <line x1="600" y1="300" x2="600" y2="500" stroke="#D97706" stroke-width="2" />
+    <line x1="500" y1="400" x2="700" y2="400" stroke="#D97706" stroke-width="2" />
+    <line x1="529" y1="329" x2="671" y2="471" stroke="#D97706" stroke-width="2" />
+    <line x1="529" y1="471" x2="671" y2="329" stroke="#D97706" stroke-width="2" />
+  </g>
+  
+  <!-- Title -->
+  <text x="600" y="200" font-family="Arial, sans-serif" font-size="60" font-weight="bold" fill="#B45309" text-anchor="middle">Al-Quran Indonesia</text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="30" fill="#92400E" text-anchor="middle">Baca Al-Quran dengan Terjemahan &amp; Tafsir</text>
+</svg>

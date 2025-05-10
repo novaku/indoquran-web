@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192px" height="192px" viewBox="0 0 192 192" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <title>icon-192x192</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect fill="#B45309" x="0" y="0" width="192" height="192" rx="16"></rect>
+        <text font-family="Arial-BoldMT, Arial" font-size="72" font-weight="bold" fill="#FFFBEB" text-anchor="middle" x="96" y="120">
+            قرآن
+        </text>
+    </g>
+</svg>

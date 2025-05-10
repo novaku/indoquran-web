@@ -1,103 +1,155 @@
-import Image from "next/image";
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
+import { quranClient } from '../services/quranClient';
+import { SurahCardSkeleton } from '../components/SurahCardSkeleton';
+import { ErrorMessage } from '../components/ErrorMessage';
+import Link from 'next/link';
+import { useState } from 'react';
+import { SurahSearch } from '../components/SurahCard';
+import { Helmet } from 'react-helmet-async';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const { data: surahs, isLoading, error, refetch } = useQuery({
+    queryKey: ['surahs'],
+    queryFn: () => quranClient.getAllSurah(),
+    staleTime: 5 * 60 * 1000,
+  });
+  
+  // Add Helmet for home page SEO
+  const canonicalUrl = "http://indoquran.web.id";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [tooltipSurah, setTooltipSurah] = useState<number | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  if (isLoading) {
+    return (
+      <div className="w-full mx-auto p-4">
+        <div className="animate-pulse">
+          <div className="h-8 bg-amber-100 rounded mb-6 w-48" />
+          <div className="bg-amber-50 rounded-lg p-4">
+            <div className="grid grid-cols-5 gap-4 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-8 bg-amber-100 rounded" />
+              ))}
+            </div>
+            <div className="space-y-4">
+              {[...Array(10)].map((_, index) => (
+                <div key={index} className="grid grid-cols-5 gap-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-12 bg-amber-50/50 rounded" />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full mx-auto mt-8 px-4">
+        <ErrorMessage 
+          message="Gagal memuat daftar surah. Silakan coba lagi." 
+          retry={() => refetch()}
+        />
+      </div>
+    );
+  }
+
+  return (
+    <main className="w-full mx-auto px-4 py-8 bg-[#FDF8EE]">
+      <Helmet>
+        <title>Al-Quran Indonesia | Baca Al-Quran Online dengan Terjemahan & Tafsir</title>
+        <meta name="description" content="Baca Al-Quran online lengkap dengan terjemahan Bahasa Indonesia, tafsir, audio murottal. Tersedia 114 surah dengan navigasi mudah." />
+        <meta name="keywords" content="al quran, quran online, baca quran, al-quran indonesia, terjemahan quran, tafsir quran, quran digital, murottal quran" />
+        <link rel="canonical" href={canonicalUrl} />
+        <script type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Al-Quran Indonesia",
+              "url": "${canonicalUrl}",
+              "description": "Baca Al-Quran online dengan terjemahan dan tafsir Bahasa Indonesia",
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "${canonicalUrl}?search={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+              }
+            }
+          `}
+        </script>
+      </Helmet>
+      <div className="mb-12 text-center">
+        <div className="w-full mx-auto">
+          <SurahSearch 
+            onSearchStateChange={setIsSearching} 
+            onQueryChange={setSearchQuery}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        </div>
+      </div>
+
+      {(!isSearching || !searchQuery) && (
+        <div className="bg-white rounded-xl overflow-hidden border border-amber-200 shadow-lg relative">
+          <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 opacity-50"></div>
+          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200 opacity-50"></div>
+          <div className="text-center py-3 bg-amber-100/80 border-b border-amber-200">
+            <div className="flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="font-medium text-amber-800">Klik pada baris untuk melihat detail surah</span>
+            </div>
+          </div>
+          <div className="overflow-x-auto max-h-[70vh]">
+            <table className="min-w-full divide-y divide-amber-200">
+              <thead className="sticky top-0 z-10 shadow-md">
+                <tr className="bg-gradient-to-r from-amber-200 via-amber-100 to-amber-200">
+                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950 w-16">No.</th>
+                  <th scope="col" className="px-6 py-5 text-right text-base font-extrabold text-amber-950 w-48">Nama Arab</th>
+                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950">Nama Latin</th>
+                  <th scope="col" className="px-6 py-5 text-center text-base font-extrabold text-amber-950 w-32">Jumlah Ayat</th>
+                  <th scope="col" className="px-6 py-5 text-left text-base font-extrabold text-amber-950">Arti</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-amber-100">
+                {surahs?.map((surah) => (
+                  <tr
+                    key={surah.nomor}
+                    className="hover:bg-amber-50/90 transition-all relative group cursor-pointer hover:shadow-md"
+                    onMouseEnter={() => setTooltipSurah(surah.nomor)}
+                    onMouseLeave={() => setTooltipSurah(null)}
+                    onClick={() => window.location.href = `/surah/${surah.nomor}`}
+                  >
+                    <td className="px-6 py-5 whitespace-nowrap text-lg font-semibold text-amber-900">
+                      {surah.nomor}
+                    </td>
+                    <td className="px-6 py-5 text-right whitespace-nowrap">
+                      <span className="text-3xl font-arabic text-amber-800 leading-relaxed">{surah.nama}</span>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="text-amber-900 font-medium text-lg">{surah.namaLatin}</span>
+                    </td>
+                    <td className="px-6 py-5 text-center whitespace-nowrap text-left text-amber-700">
+                      {surah.jumlahAyat} Ayat
+                    </td>
+                    <td className="px-6 py-5 text-amber-700 leading-relaxed">
+                      {surah.arti}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </main>
   );
 }

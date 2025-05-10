@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32px" height="32px" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <title>Quran Book Icon</title>
+  <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <rect fill="#B45309" x="0" y="0" width="32" height="32" rx="4"></rect>
+    <g transform="translate(4, 4)">
+      <!-- Book base -->
+      <path d="M2,2 L2,26 L24,26 L24,2 L2,2 Z" fill="#FFFBEB" />
+      <!-- Book spine -->
+      <path d="M2,2 L2,26 L5,26 L5,2 L2,2 Z" fill="#FDE68A" />
+      <!-- Book pages -->
+      <path d="M5,4 L24,4 L24,24 L5,24 L5,4 Z" fill="#FFFFFF" />
+      <!-- Decorative elements -->
+      <path d="M8,8 L21,8 L21,9 L8,9 L8,8 Z" fill="#B45309" />
+      <path d="M8,12 L21,12 L21,13 L8,13 L8,12 Z" fill="#B45309" />
+      <path d="M8,16 L21,16 L21,17 L8,17 L8,16 Z" fill="#B45309" />
+      <path d="M8,20 L16,20 L16,21 L8,21 L8,20 Z" fill="#B45309" />
+      <!-- Arabic text suggestion -->
+      <text font-family="Arial-BoldMT, Arial" font-size="6" font-weight="bold" fill="#B45309" text-anchor="middle" x="12" y="12">
+        قرآن
+      </text>
+    </g>
+  </g>
+</svg>
