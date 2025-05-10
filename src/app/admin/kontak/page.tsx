@@ -25,6 +25,13 @@ interface ContactsResponse {
   currentPage: number;
 }
 
+interface User {
+  user_id: string;
+  username: string;
+  email: string;
+  role: string;
+}
+
 export default function AdminContactsPage() {
   const { isAuthenticated, user, loading } = useAuthContext();
   const router = useRouter();
