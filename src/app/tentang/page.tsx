@@ -212,18 +212,28 @@ export default function AboutPage() {
                 
                 <h3 className="mt-6">Roadmap Pengembangan</h3>
                 <p>
-                  Ke depannya, kami berencana untuk menambahkan beberapa fitur baru untuk meningkatkan 
-                  pengalaman pengguna Al-Quran Indonesia:
+                  Kami terus mengembangkan Al-Quran Indonesia dengan menambahkan fitur-fitur baru. Berikut adalah fitur yang telah diimplementasikan dan yang masih dalam rencana pengembangan:
                 </p>
                 
-                <ol>
-                  <li>Fitur bookmark dan favorit ayat</li>
-                  <li>Mode gelap (dark mode)</li>
-                  <li>Lebih banyak pilihan qari untuk audio murattal</li>
-                  <li>Fitur catatan pribadi untuk ayat-ayat tertentu</li>
-                  <li>Jadwal waktu sholat terintegrasi</li>
-                  <li>Kaligrafi dan visualisasi ayat Al-Quran</li>
-                </ol>
+                <div className="mb-4">
+                  <h4 className="font-medium text-amber-800">Fitur yang Sudah Diimplementasikan:</h4>
+                  <ol className="list-decimal pl-5 mt-2">
+                    <li><span className="line-through text-amber-600">Fitur bookmark dan favorit ayat</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Mode gelap (dark mode)</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Lebih banyak pilihan qari untuk audio murattal</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Fitur catatan pribadi untuk ayat-ayat tertentu</span> ✓</li>
+                  </ol>
+                </div>
+                
+                <div>
+                  <h4 className="font-medium text-amber-800">Fitur yang Akan Datang:</h4>
+                  <ol className="list-decimal pl-5 mt-2">
+                    <li>Jadwal waktu sholat terintegrasi</li>
+                    <li>Kaligrafi dan visualisasi ayat Al-Quran</li>
+                    <li>Pencarian lanjutan dengan filter dan kategori</li>
+                    <li>Integrasi dengan media sosial untuk berbagi ayat</li>
+                  </ol>
+                </div>
                 
                 <h3 className="mt-6">Kontribusi</h3>
                 <p>

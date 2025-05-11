@@ -10,6 +10,9 @@ import { useBookmarks } from '@/hooks/useBookmarks';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useReadingHistory } from '@/hooks/useReadingHistory';
 import { useToast } from '@/contexts/ToastContext';
+import { useNotes } from '@/hooks/useNotes';
+import { NoteCard, CreateNoteForm } from './NoteComponents';
+import { AyatNote } from '@/services/noteService';
 import offlineStorage from '@/utils/offlineStorage';
 
 interface AudioUrls {
@@ -57,7 +60,7 @@ const Tooltip = ({ text, children }: { text: string; children: React.ReactNode }
 export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
   const [showTafsir, setShowTafsir] = useState(false);
   const [selectedReciter, setSelectedReciter] = useState<keyof typeof RECITERS>("01");
-  const [arabicFontSize, setArabicFontSize] = useState(2.75); // rem, increased from 2.25rem to 2.75rem for better readability
+  const [arabicFontSize, setArabicFontSize] = useState(2.00); // rem, increased from 2.25rem to 2.75rem for better readability
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [bookmarkTitle, setBookmarkTitle] = useState('');
@@ -65,6 +68,16 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
   const [showBookmarkModal, setShowBookmarkModal] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
+  
+  // Note-related states
+  const [showNotesModal, setShowNotesModal] = useState(false);
+  const [userNote, setUserNote] = useState<AyatNote | null>(null);
+  const [publicNotes, setPublicNotes] = useState<AyatNote[]>([]);
+  const [isEditingNote, setIsEditingNote] = useState(false);
+  const [noteLikes, setNoteLikes] = useState<Record<number, boolean>>({});
+  const [isLoadingNotes, setIsLoadingNotes] = useState(false);
+  const [notesCount, setNotesCount] = useState(0);
+  const [isLoadingCount, setIsLoadingCount] = useState(false);
   
   // Get the user context
   const { user, isAuthenticated } = useAuthContext();
@@ -77,6 +90,20 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
   
   const { checkFavorite, addFavorite, removeFavorite } = useFavorites({ 
     userId: user?.user_id || '' 
+  });
+
+  // Initialize notes hook
+  const { 
+    getUserNote, 
+    getPublicNotes, 
+    addNote, 
+    updateNote, 
+    deleteNote,
+    likeNote,
+    unlikeNote,
+    getNotesCount
+  } = useNotes({ 
+    userId: user?.user_id 
   });
   
   // Initialize reading history hook
@@ -133,6 +160,29 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
     }
   }, [isAuthenticated, user, surahId, ayat.nomorAyat, checkBookmark, checkFavorite]);
   
+  // Helper function to refresh the notes count
+  const refreshNotesCount = async () => {
+    setIsLoadingCount(true);
+    try {
+      const count = await getNotesCount(surahId, ayat.nomorAyat);
+      setNotesCount(count);
+    } catch (error) {
+      console.error('Error refreshing notes count:', error);
+    } finally {
+      setIsLoadingCount(false);
+    }
+  };
+
+  // Fetch the notes count when component mounts
+  useEffect(() => {
+    refreshNotesCount();
+    
+    // Set up periodic refresh (every 30 seconds)
+    const intervalId = setInterval(refreshNotesCount, 30000);
+    
+    return () => clearInterval(intervalId);
+  }, [surahId, ayat.nomorAyat]);
+  
   // Set up intersection observer to track reading position
   useEffect(() => {
     if (!ayatCardRef.current || !isAuthenticated || !user) return;
@@ -163,6 +213,178 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
     };
   }, [surahId, ayat.nomorAyat, isAuthenticated, user, saveReadingPosition]);
   
+  // Load notes when notes modal is opened
+  const loadNotes = async () => {
+    setIsLoadingNotes(true);
+    try {
+      // Fetch user's note if authenticated
+      if (isAuthenticated && user?.user_id) {
+        const userNoteData = await getUserNote(surahId, ayat.nomorAyat);
+        setUserNote(userNoteData);
+      }
+      
+      // Fetch public notes
+      const notes = await getPublicNotes(surahId, ayat.nomorAyat);
+      setPublicNotes(notes);
+      
+      // Update notes count
+      setNotesCount(notes.length);
+      
+      // Initialize likes status for each note
+      const likes: Record<number, boolean> = {};
+      notes.forEach(note => {
+        likes[note.note_id] = false; // Default to not liked
+      });
+      setNoteLikes(likes);
+    } catch (error) {
+      console.error('Error loading notes:', error);
+      showToast('Gagal memuat catatan', 'error');
+    } finally {
+      setIsLoadingNotes(false);
+    }
+  };
+  
+  // This function is a duplicate and can be removed
+  
+  // Handle opening the notes modal
+  const handleOpenNotes = () => {
+    setShowNotesModal(true);
+    loadNotes();
+  };
+  
+  // Handle creating a new note
+  const handleCreateNote = async (content: string, isPublic: boolean) => {
+    try {
+      const newNote = await addNote(surahId, ayat.nomorAyat, content, isPublic);
+      if (newNote) {
+        setUserNote(newNote);
+        if (isPublic) {
+          // If the note is public, add it to the public notes list
+          setPublicNotes(prevNotes => [newNote, ...prevNotes.filter(n => n.user_id !== user?.user_id)]);
+          
+          // Update the notes count
+          const updatedCount = await getNotesCount(surahId, ayat.nomorAyat);
+          setNotesCount(updatedCount);
+        }
+        showToast('Catatan berhasil ditambahkan', 'success');
+      }
+    } catch (error) {
+      console.error('Error creating note:', error);
+      showToast('Gagal menambahkan catatan', 'error');
+    }
+  };
+  
+  // Handle updating an existing note
+  const handleUpdateNote = async (content: string, isPublic: boolean) => {
+    if (!userNote) return;
+    
+    try {
+      const wasPublic = userNote.is_public;
+      const success = await updateNote(userNote.note_id, surahId, ayat.nomorAyat, { content, isPublic });
+      if (success) {
+        // Update the user's note
+        setUserNote(prev => prev ? { ...prev, content, is_public: isPublic } : null);
+        
+        // Update in the public notes list if needed
+        if (isPublic) {
+          setPublicNotes(prevNotes => {
+            const noteExists = prevNotes.some(note => note.user_id === user?.user_id);
+            if (noteExists) {
+              return prevNotes.map(note => 
+                note.user_id === user?.user_id ? { ...note, content, is_public: true } : note
+              );
+            } else {
+              return userNote ? [{ ...userNote, content, is_public: true }, ...prevNotes] : prevNotes;
+            }
+          });
+        } else {
+          // Remove from public notes if it's made private
+          setPublicNotes(prevNotes => prevNotes.filter(note => note.user_id !== user?.user_id));
+        }
+        
+        // If the public status changed, update the notes count
+        if (wasPublic !== isPublic) {
+          const updatedCount = await getNotesCount(surahId, ayat.nomorAyat);
+          setNotesCount(updatedCount);
+        }
+        
+        setIsEditingNote(false);
+        showToast('Catatan berhasil diperbarui', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating note:', error);
+      showToast('Gagal memperbarui catatan', 'error');
+    }
+  };
+  
+  // Handle deleting a note
+  const handleDeleteNote = async () => {
+    if (!userNote) return;
+    
+    if (!confirm('Apakah Anda yakin ingin menghapus catatan ini?')) {
+      return;
+    }
+    
+    try {
+      const wasPublic = userNote.is_public;
+      const success = await deleteNote(userNote.note_id);
+      if (success) {
+        // Remove the note from both user and public notes
+        setUserNote(null);
+        setPublicNotes(prevNotes => prevNotes.filter(note => note.user_id !== user?.user_id));
+        
+        // If the note was public, update the notes count
+        if (wasPublic) {
+          const updatedCount = await getNotesCount(surahId, ayat.nomorAyat);
+          setNotesCount(updatedCount);
+        }
+        
+        showToast('Catatan berhasil dihapus', 'success');
+      }
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      showToast('Gagal menghapus catatan', 'error');
+    }
+  };
+  
+  // Handle liking a note
+  const handleLikeNote = async (noteId: number) => {
+    try {
+      const success = await likeNote(noteId);
+      if (success) {
+        // Update the liked status
+        setNoteLikes(prev => ({ ...prev, [noteId]: true }));
+        
+        // Increment likes count
+        setPublicNotes(prevNotes => prevNotes.map(note => 
+          note.note_id === noteId ? { ...note, likes_count: note.likes_count + 1 } : note
+        ));
+      }
+    } catch (error) {
+      console.error('Error liking note:', error);
+      showToast('Gagal menyukai catatan', 'error');
+    }
+  };
+  
+  // Handle unliking a note
+  const handleUnlikeNote = async (noteId: number) => {
+    try {
+      const success = await unlikeNote(noteId);
+      if (success) {
+        // Update the liked status
+        setNoteLikes(prev => ({ ...prev, [noteId]: false }));
+        
+        // Decrement likes count
+        setPublicNotes(prevNotes => prevNotes.map(note => 
+          note.note_id === noteId ? { ...note, likes_count: Math.max(0, note.likes_count - 1) } : note
+        ));
+      }
+    } catch (error) {
+      console.error('Error unliking note:', error);
+      showToast('Gagal membatalkan suka catatan', 'error');
+    }
+  };
+
   // Find the tafsir that matches this ayat
   const ayatTafsir = tafsirData?.find(t => t.ayat === ayat.nomorAyat);
   
@@ -409,33 +631,56 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
         {/* Tafsir Button and Content */}
         <div className="mt-6">
           <div className="flex flex-wrap items-center gap-3 justify-between">
-            <button
-              onClick={() => setShowTafsir(!showTafsir)}
-              className={`
-                px-4 py-2 rounded-md font-medium text-base
-                flex items-center justify-center gap-2 
-                transition-all duration-200 ease-in-out
-                ${showTafsir 
-                  ? "bg-book-highlight text-book-primary border border-book-border shadow-inner" 
-                  : "bg-book-primary text-white border border-book-secondary shadow-sm hover:bg-book-secondary"}
-              `}
-            >
-              {showTafsir ? (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
-                  </svg>
-                  <span>Sembunyikan Tafsir</span>
-                </>
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                  <span>Tampilkan Tafsir</span>
-                </>
-              )}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setShowTafsir(!showTafsir)}
+                className={`
+                  px-4 py-2 rounded-md font-medium text-base
+                  flex items-center justify-center gap-2 
+                  transition-all duration-200 ease-in-out
+                  ${showTafsir 
+                    ? "bg-book-highlight text-book-primary border border-book-border shadow-inner" 
+                    : "bg-book-primary text-white border border-book-secondary shadow-sm hover:bg-book-secondary"}
+                `}
+              >
+                {showTafsir ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 01-1.414-1.414l4-4a1 1 011.414 0l4 4a1 1 010 1.414z" clipRule="evenodd" />
+                    </svg>
+                    <span>Sembunyikan Tafsir</span>
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                    <span>Tampilkan Tafsir</span>
+                  </>
+                )}
+              </button>
+              
+              <button
+                onClick={handleOpenNotes}
+                className="px-4 py-2 rounded-md font-medium text-base flex items-center justify-center gap-2 
+                  bg-blue-600 text-white border border-blue-700 shadow-sm hover:bg-blue-700 
+                  transition-all duration-200 ease-in-out"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clipRule="evenodd" />
+                </svg>
+                <span>Catatan</span>
+                {isLoadingCount ? (
+                  <span className="inline-block w-5 h-5 ml-1">
+                    <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                  </span>
+                ) : notesCount > 0 ? (
+                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-800 rounded-full ml-1">
+                    {notesCount}
+                  </span>
+                ) : null}
+              </button>
+            </div>
 
             {/* WhatsApp Share Button */}
             <button
@@ -529,6 +774,140 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
                   ) : 'Simpan'}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notes Modal */}
+      {showNotesModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-hidden mx-4">
+            <div className="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Catatan untuk Surah {surahData?.namaLatin || surahId}:{ayat.nomorAyat}
+              </h2>
+              <button 
+                onClick={() => setShowNotesModal(false)} 
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 4rem)' }}>
+              {isLoadingNotes ? (
+                <div className="flex justify-center py-8">
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <div className="space-y-8">                    {/* User's Note Section */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                      {isAuthenticated ? 'Catatan Anda' : 'Buat Catatan'}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Catatan akan terlihat oleh publik secara default.
+                    </p>
+                    
+                    {isAuthenticated ? (
+                      <>
+                        {userNote && !isEditingNote ? (
+                          <div className="bg-gray-50 dark:bg-gray-750 rounded-lg p-4 mb-4">
+                            <div className="prose dark:prose-invert mb-4">{userNote.content}</div>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  id="is-public"
+                                  checked={userNote.is_public}
+                                  disabled
+                                  className="mr-2"
+                                />
+                                <label className="text-sm text-gray-700 dark:text-gray-300">
+                                  {userNote.is_public ? 'Publik' : 'Pribadi'}
+                                </label>
+                              </div>
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => setIsEditingNote(true)}
+                                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                >
+                                  Edit
+                                </button>
+                                <button 
+                                  onClick={handleDeleteNote}
+                                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                >
+                                  Hapus
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <CreateNoteForm 
+                            onSubmit={isEditingNote ? handleUpdateNote : handleCreateNote}
+                            initialContent={userNote?.content || ''}
+                            initialIsPublic={userNote?.is_public ?? true}
+                            isEditing={isEditingNote}
+                            onCancel={isEditingNote ? () => setIsEditingNote(false) : undefined}
+                          />
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-center py-8 bg-gray-50 dark:bg-gray-750 rounded-lg">
+                        <p className="mb-4 text-gray-700 dark:text-gray-300">
+                          Anda perlu masuk untuk membuat catatan.
+                        </p>
+                        <a 
+                          href={`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`}
+                          className="px-4 py-2 rounded bg-book-primary text-white hover:bg-book-primary/80"
+                        >
+                          Masuk
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Public Notes Section */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4 flex items-center">
+                      <span>Catatan Publik</span>
+                      <span className="ml-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs px-2 py-1 rounded-full">
+                        {publicNotes.length}
+                      </span>
+                    </h3>
+                    
+                    {publicNotes.length > 0 ? (
+                      <div className="space-y-4">
+                        {publicNotes.map(note => (
+                          <NoteCard 
+                            key={note.note_id}
+                            note={note}
+                            onLike={() => handleLikeNote(note.note_id)}
+                            onUnlike={() => handleUnlikeNote(note.note_id)}
+                            isLikedByUser={noteLikes[note.note_id] || false}
+                            isOwnNote={note.user_id === user?.user_id}
+                            onEdit={note.user_id === user?.user_id ? () => {
+                              setUserNote(note);
+                              setIsEditingNote(true);
+                            } : undefined}
+                            onDelete={note.user_id === user?.user_id ? handleDeleteNote : undefined}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 bg-gray-50 dark:bg-gray-750 rounded-lg">
+                        <p className="text-gray-500 dark:text-gray-400">
+                          Belum ada catatan publik untuk ayat ini.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
