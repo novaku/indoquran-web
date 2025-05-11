@@ -151,56 +151,71 @@ export default function AboutPage() {
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">1. Daftar Surah yang Lengkap</h3>
                   <p className="text-amber-800">
                     Memuat 114 surah Al-Quran lengkap dengan informasi nama, arti, jumlah ayat, dan tempat turun. 
-                    Tampilan dioptimalkan untuk kemudahan navigasi dan pencarian surah tertentu.
+                    Tampilan dioptimalkan untuk kemudahan navigasi dan pencarian surah tertentu dengan desain yang responsif 
+                    dan nyaman diakses dari berbagai perangkat.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">2. Pencarian Terjemahan</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">2. Jadwal Waktu Sholat</h3>
                   <p className="text-amber-800">
-                    Fitur pencarian terjemahan memungkinkan pengguna untuk mencari kata, frasa, atau tema tertentu 
+                    Fitur jadwal waktu sholat terintegrasi yang dapat secara otomatis mendeteksi lokasi pengguna atau 
+                    menggunakan lokasi default (Jakarta Pusat). Menampilkan waktu sholat harian dengan notifikasi pengingat 
+                    dan memungkinkan pengguna untuk melihat waktu sholat berikutnya dengan mudah.
+                  </p>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">3. Pencarian Terjemahan</h3>
+                  <p className="text-amber-800">
+                    Fitur pencarian terjemahan yang canggih memungkinkan pengguna untuk mencari kata, frasa, atau tema tertentu 
                     dalam terjemahan Al-Quran. Hasil pencarian ditampilkan dengan highlight pada kata kunci 
-                    sehingga memudahkan identifikasi.
+                    untuk identifikasi cepat dan tepat.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">3. Tampilan Ayat yang Optimal</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">4. Tampilan Ayat yang Optimal</h3>
                   <p className="text-amber-800">
-                    Setiap ayat ditampilkan dengan format yang mudah dibaca, meliputi teks Arab, teks Latin (transliterasi), 
-                    dan terjemahan Bahasa Indonesia. Tersedia juga pengaturan ukuran teks Arab untuk kenyamanan membaca.
+                    Setiap ayat ditampilkan dengan format yang mudah dibaca, meliputi teks Arab dengan font Uthmani yang jelas, 
+                    teks Latin (transliterasi), dan terjemahan Bahasa Indonesia yang akurat. Tersedia juga pengaturan ukuran teks 
+                    Arab untuk kenyamanan membaca sesuai kebutuhan pengguna.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">4. Tafsir</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">5. Tafsir Komprehensif</h3>
                   <p className="text-amber-800">
-                    Tafsir untuk setiap ayat tersedia untuk memperdalam pemahaman. Pengguna dapat dengan mudah 
-                    menampilkan atau menyembunyikan tafsir sesuai kebutuhan.
+                    Tafsir lengkap untuk setiap ayat tersedia untuk memperdalam pemahaman kontekstual dan makna. 
+                    Pengguna dapat dengan mudah menampilkan atau menyembunyikan tafsir sesuai kebutuhan, 
+                    dengan antarmuka yang intuitif dan responsif.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">5. Audio Murattal</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">6. Audio Murattal Berkualitas</h3>
                   <p className="text-amber-800">
-                    Audio murattal dari 5 qari ternama tersedia untuk setiap surah dan ayat. Pengguna dapat memilih 
-                    qari favorit mereka untuk didengarkan.
+                    Audio murattal berkualitas tinggi dari 5+ qari ternama tersedia untuk setiap surah dan ayat. 
+                    Pengguna dapat memilih qari favorit mereka dan mendengarkan bacaan dengan kontrol pemutaran 
+                    yang nyaman dan intuitif.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">6. Pagination untuk Surah Panjang</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">7. Fitur Personalisasi</h3>
                   <p className="text-amber-800">
-                    Surah dengan jumlah ayat banyak ditampilkan dengan pagination untuk memudahkan navigasi dan 
-                    meningkatkan kinerja aplikasi. Tersedia juga fitur "jump to ayat" untuk langsung menuju ayat tertentu.
+                    Pengguna dapat membuat bookmark, menandai ayat favorit, dan membuat catatan pribadi untuk ayat tertentu. 
+                    Aplikasi juga mengingat posisi terakhir membaca dan menyediakan mode tampilan gelap (dark mode) 
+                    untuk kenyamanan membaca di berbagai kondisi pencahayaan.
                   </p>
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">7. Berbagi Ayat</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">8. Berbagi dan Interaktivitas</h3>
                   <p className="text-amber-800">
-                    Fitur berbagi ayat memudahkan pengguna untuk membagikan ayat tertentu melalui WhatsApp 
-                    beserta terjemahan dan tautan yang dapat dibuka.
+                    Fitur berbagi ayat memudahkan pengguna untuk membagikan ayat tertentu melalui berbagai platform media sosial 
+                    beserta terjemahan dan tautan yang dapat dibuka. Aplikasi juga mendukung navigasi yang mudah dengan 
+                    pagination untuk surah panjang dan fitur "jump to ayat".
                   </p>
                 </div>
               </div>
@@ -212,19 +227,22 @@ export default function AboutPage() {
                 
                 <p>
                   Al-Quran Indonesia dikembangkan menggunakan teknologi web modern untuk memastikan performa, 
-                  keamanan, dan pengalaman pengguna yang optimal. Beberapa teknologi yang digunakan antara lain:
+                  keamanan, dan pengalaman pengguna yang optimal. Aplikasi ini didesain dengan pendekatan mobile-first
+                  dan mengutamakan kecepatan akses serta keterbacaan konten. Beberapa teknologi yang digunakan antara lain:
                 </p>
                 
                 <ul>
-                  <li><strong>Next.js</strong> - Framework React untuk rendering sisi server dan pembuatan aplikasi web yang cepat</li>
-                  <li><strong>TypeScript</strong> - Untuk keamanan tipe dan kode yang lebih mudah dipelihara</li>
-                  <li><strong>TailwindCSS</strong> - Framework CSS untuk styling yang konsisten dan responsif</li>
-                  <li><strong>React Query</strong> - Manajemen state dan data fetching</li>
+                  <li><strong>Next.js 15</strong> - Framework React terbaru untuk rendering sisi server, streaming, dan pembuatan aplikasi web yang cepat dan responsif</li>
+                  <li><strong>TypeScript</strong> - Untuk keamanan tipe, integritas kode, dan pemeliharaan yang lebih baik</li>
+                  <li><strong>TailwindCSS</strong> - Framework CSS modern untuk styling yang konsisten, responsif, dan efisien</li>
+                  <li><strong>React Query</strong> - Manajemen state dan data fetching dengan caching yang optimal</li>
+                  <li><strong>PWA Support</strong> - Mendukung Progressive Web App untuk pengalaman seperti aplikasi native dan akses offline</li>
                 </ul>
                 
                 <h3 className="mt-6">Roadmap Pengembangan</h3>
                 <p>
-                  Kami terus mengembangkan Al-Quran Indonesia dengan menambahkan fitur-fitur baru. Berikut adalah fitur yang telah diimplementasikan dan yang masih dalam rencana pengembangan:
+                  Kami secara aktif mengembangkan Al-Quran Indonesia dengan menambahkan fitur-fitur baru dan menyempurnakan
+                  fitur yang sudah ada. Berikut adalah fitur yang telah diimplementasikan dan yang sedang dalam pengembangan:
                 </p>
                 
                 <div className="mb-4">
@@ -234,23 +252,36 @@ export default function AboutPage() {
                     <li><span className="line-through text-amber-600">Mode gelap (dark mode)</span> ✓</li>
                     <li><span className="line-through text-amber-600">Lebih banyak pilihan qari untuk audio murattal</span> ✓</li>
                     <li><span className="line-through text-amber-600">Fitur catatan pribadi untuk ayat-ayat tertentu</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Jadwal waktu sholat terintegrasi dengan deteksi lokasi</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Notifikasi pengingat waktu sholat</span> ✓</li>
                   </ol>
                 </div>
                 
                 <div>
-                  <h4 className="font-medium text-amber-800">Fitur yang Akan Datang:</h4>
+                  <h4 className="font-medium text-amber-800">Fitur yang Sedang Dikembangkan:</h4>
                   <ol className="list-decimal pl-5 mt-2">
-                    <li>Jadwal waktu sholat terintegrasi</li>
-                    <li>Kaligrafi dan visualisasi ayat Al-Quran</li>
-                    <li>Pencarian lanjutan dengan filter dan kategori</li>
-                    <li>Integrasi dengan media sosial untuk berbagi ayat</li>
+                    <li>Kaligrafi dan visualisasi ayat Al-Quran yang interaktif</li>
+                    <li>Pencarian lanjutan dengan filter berdasarkan tema, juz, dan kategori</li>
+                    <li>Lebih banyak integrasi dengan media sosial untuk berbagi ayat</li>
+                    <li>Mode pembelajaran Al-Quran dengan pelacakan kemajuan</li>
+                    <li>Peningkatan fitur offline dengan sinkronisasi data yang lebih baik</li>
                   </ol>
+                </div>
+                
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 my-6 rounded-r">
+                  <p className="text-green-800 font-medium">Update Terbaru - Mei 2025</p>
+                  <p className="text-green-700 mt-1">
+                    Kami telah berhasil mengimplementasikan fitur jadwal waktu sholat dengan deteksi lokasi otomatis
+                    dan kemampuan untuk mengatur notifikasi. Fitur ini dapat diakses dari halaman utama dan menyediakan
+                    waktu sholat yang akurat berdasarkan lokasi pengguna.
+                  </p>
                 </div>
                 
                 <h3 className="mt-6">Kontribusi</h3>
                 <p>
-                  Al-Quran Indonesia adalah proyek open source yang menerima kontribusi dari pengembang yang tertarik. 
-                  Kontribusi dapat berupa pelaporan bug, saran fitur, atau pengembangan kode.
+                  Al-Quran Indonesia adalah proyek open source yang menerima kontribusi dari komunitas pengembang. 
+                  Kontribusi dapat berupa pelaporan bug, saran fitur, dokumentasi, atau pengembangan kode.
+                  Kami juga mengundang pengujian UX dan feedback dari pengguna untuk terus meningkatkan pengalaman pengguna.
                 </p>
                 
                 <h3 className="mt-6">Kontak dan Dukungan</h3>
@@ -259,8 +290,9 @@ export default function AboutPage() {
                   silakan hubungi kami melalui:
                 </p>
                 <ul>
-                  <li>Email: contact@indoquran.id</li>
-                  <li>Github: github.com/indoquran-web</li>
+                  <li>Email: <a href="mailto:contact@indoquran.id" className="text-amber-700 hover:underline">contact@indoquran.id</a></li>
+                  <li>Github: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">github.com/indoquran-web</a></li>
+                  <li>Formulir Kontak: <Link href="/kontak" className="text-amber-700 hover:underline">Halaman Kontak</Link></li>
                 </ul>
               </div>
             )}

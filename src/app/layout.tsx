@@ -2,11 +2,11 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from './providers';
 import { Inter, Noto_Naskh_Arabic, Amiri } from 'next/font/google';
-import { TopFooter } from '../components/TopFooter';
 import StructuredData from '../components/StructuredData';
 import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration';
 import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import BookThemeProvider from '@/components/BookThemeProvider';
 import ConnectivityStatus from '@/components/ConnectivityStatus';
 import OfflineDataSync from '@/components/OfflineDataSync';
@@ -76,24 +76,7 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-const Footer: React.FC = () => {
-  return (
-    <footer className="bg-amber-800 text-white py-6">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <p className="text-sm">&copy; {new Date().getFullYear()} Al-Quran Indonesia. All rights reserved.</p>
-          </div>
-          <div className="flex space-x-4">
-            <a href="/about" className="text-sm hover:text-amber-300 transition">About</a>
-            <a href="/contact" className="text-sm hover:text-amber-300 transition">Contact</a>
-            <a href="/privacy" className="text-sm hover:text-amber-300 transition">Privacy Policy</a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-};
+// Removed inline Footer component as we now use the imported one
 
 export default function RootLayout({
   children,
@@ -101,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id" suppressHydrationWarning className="scroll-smooth">
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#d97706" />
@@ -110,12 +93,25 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="IndoQuran" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png" />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                  document.documentElement.classList.add('dark');
+                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1f2937');
+                }
+              } catch (e) {}
+            })()
+          `
+        }} />
       </head>
       <body className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
         <Providers>
           <BookThemeProvider>
             <Header />
-            <main className="w-full mx-auto px-4 py-8 pb-20 bg-gradient-to-b from-amber-50 to-white min-h-screen">
+            <main className="w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 min-h-screen">
               <header className="text-center mb-12">
                 <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
                 <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
@@ -123,7 +119,6 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
-            <TopFooter />
             <StructuredData />
             <ServiceWorkerRegistration />
             <PWAInstallPrompt />

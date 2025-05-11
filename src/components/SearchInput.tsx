@@ -94,7 +94,7 @@ export default function SearchInput({
               }
             }}
             onKeyDown={handleKeyDown}
-            className="w-full py-3 px-4 pr-24 rounded-lg border border-[#d3c6a6] bg-[#f8f4e5] focus:ring-2 focus:ring-[#8D6E63] focus:border-transparent transition-all outline-none text-[#5D4037] placeholder-[#9E9E9E]"
+            className="w-full py-2.5 sm:py-3 px-3 sm:px-4 pr-16 sm:pr-24 rounded-lg border border-[#d3c6a6] bg-[#f8f4e5] focus:ring-2 focus:ring-[#8D6E63] focus:border-transparent transition-all outline-none text-[#5D4037] placeholder-[#9E9E9E] text-base"
             placeholder={placeholder}
             ref={inputRef}
             minLength={3}
@@ -117,33 +117,34 @@ export default function SearchInput({
                   // For uncontrolled component, just clear the text
                 }
               }}
-              className="absolute right-14 top-1/2 -translate-y-1/2 p-2 text-[#8D6E63] hover:text-[#6D4C41] transition-colors"
+              className="absolute right-12 sm:right-14 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 text-[#8D6E63] hover:text-[#6D4C41] transition-colors"
               aria-label="Hapus pencarian"
               title="Hapus pencarian"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           )}
           <button
             onClick={handleSearch}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#8D6E63] text-white rounded-md hover:bg-[#6D4C41] transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-[#8D6E63] text-white rounded-md hover:bg-[#6D4C41] transition-colors"
+            aria-label="Cari"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </button>
           {showResults && searchResults && searchResults.length > 0 && (
-            <div className="absolute w-full mt-1 bg-[#f8f4e5] border border-[#d3c6a6] rounded-lg shadow-lg z-20 max-h-[70vh] overflow-y-auto">
+            <div className="absolute w-full mt-1 bg-[#f8f4e5] border border-[#d3c6a6] rounded-lg shadow-lg z-20 max-h-[60vh] overflow-y-auto">
               {searchResults.map((result) => (
                 <Link 
                   key={result.key} 
                   href={result.href}
                   onClick={() => setShowResults(false)}
-                  className="block p-3 border-b border-[#d3c6a6] last:border-b-0 hover:bg-[#e8e0ce] transition-colors"
+                  className="block p-2 sm:p-3 border-b border-[#d3c6a6] last:border-b-0 hover:bg-[#e8e0ce] transition-colors"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                     <div className="text-sm font-bold text-[#5D4037]">{result.title}</div>
                     <div className="text-xs text-[#8D6E63]">{result.surah}</div>
                   </div>
@@ -156,7 +157,7 @@ export default function SearchInput({
       </div>
       
       <p className="text-xs text-gray-500 mt-1">
-        Minimal 3 karakter untuk pencarian. Cari dengan frasa lengkap seperti "maha pengasih" untuk menemukan ayat yang mengandung frasa tersebut.
+        Minimal 3 karakter untuk pencarian. Cari dengan frasa lengkap seperti "maha pengasih" untuk hasil terbaik.
       </p>
     </form>
   );

@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SurahList from '@/components/SurahList';
 import SearchInput from '@/components/SearchInput';
+import PrayerTimesWidget from '@/components/PrayerTimesWidget';
 
 export default function HomePage() {
   const router = useRouter();
@@ -212,11 +213,12 @@ export default function HomePage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8 bg-[#f8f4e5] text-[#5D4037]">
+    <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
       <Helmet>
         <title>Al-Quran Indonesia | Baca Al-Quran Online dengan Terjemahan & Tafsir</title>
         <meta name="description" content="Baca Al-Quran online lengkap dengan terjemahan Bahasa Indonesia, tafsir, audio murottal. Tersedia 114 surah dengan navigasi mudah." />
         <meta name="keywords" content="al quran, quran online, baca quran, al-quran indonesia, terjemahan quran, tafsir quran, quran digital, murottal quran" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
         <link rel="canonical" href={canonicalUrl} />
         <script type="application/ld+json">
           {`
@@ -238,7 +240,12 @@ export default function HomePage() {
           `}
         </script>
       </Helmet>      
-      <div className="mb-6">
+      {/* Prayer Times Widget - Full Width (Now positioned above search) */}
+      <div className="w-full mb-4 sm:mb-6">
+        <PrayerTimesWidget />
+      </div>
+      
+      <div className="mb-4 sm:mb-6">
         <SearchInput
           value={searchQuery}
           onChange={(newQuery: string) => {
@@ -259,10 +266,10 @@ export default function HomePage() {
           placeholder="Cari ayat Al-Qur'an..."
         />
       </div>
-      
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-          <img src="/icons/home-icon.svg" alt="Beranda" className="w-7 h-7 mr-2" />
+
+      <div className="mb-3 sm:mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
+          <img src="/icons/home-icon.svg" alt="Beranda" className="w-6 h-6 sm:w-7 sm:h-7 mr-2" />
           Daftar Surah
         </h2>
       </div>

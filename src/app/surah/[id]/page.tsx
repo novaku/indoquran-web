@@ -8,7 +8,7 @@ import { AyatCardSkeleton } from '../../../components/AyatCardSkeleton';
 import { ErrorMessage } from '../../../components/ErrorMessage';
 import { Ayat } from '../../../types/quran';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import SurahStructuredData from '../../../components/SurahStructuredData';
 import offlineStorage from '../../../utils/offlineStorage';
@@ -36,6 +36,8 @@ export default function SurahPage() {
   const surahId = Number(params.id);
   const [selectedReciter, setSelectedReciter] = useState<ReciterKey>("01");
   const [showFloatingNav, setShowFloatingNav] = useState(false);
+  const [showStickyHeader, setShowStickyHeader] = useState(false);
+  const surahHeaderRef = useRef<HTMLDivElement>(null);
   
   // Get current page from URL or default to 1
   const currentPage = Number(searchParams.get('page') || '1');
@@ -51,11 +53,21 @@ export default function SurahPage() {
     router.push(`/surah/${surahId}?page=${newPage}`);
   };
   
-  // Add scroll listener to show/hide floating navigation
+  // Add scroll listener to show/hide floating navigation and floating surah info
   useEffect(() => {
     const handleScroll = () => {
       // Show floating nav when user has scrolled down a bit
       setShowFloatingNav(window.scrollY > 300);
+      
+      // Show floating surah info when scrolling past the surah header
+      if (surahHeaderRef.current) {
+        // Get the bottom position of the header relative to the viewport
+        const headerRect = surahHeaderRef.current.getBoundingClientRect();
+        // Add 72px offset to account for the main header height
+        const mainHeaderHeight = 72;
+        // Show floating surah info when the header is partially hidden under the main header
+        setShowStickyHeader(headerRect.top < mainHeaderHeight);
+      }
     };
     
     window.addEventListener('scroll', handleScroll);
@@ -124,8 +136,15 @@ export default function SurahPage() {
           setTimeout(() => {
             const ayatElement = document.getElementById(`ayat-${ayatNumber}`);
             if (ayatElement) {
-              // First scroll to the element
-              ayatElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              // Calculate the offset to account for the floating header
+              const scrollMarginTop = 120; // Height of main header + floating surah info
+              const elementTop = ayatElement.getBoundingClientRect().top + window.scrollY - scrollMarginTop;
+              
+              // Scroll to the element with offset
+              window.scrollTo({ 
+                top: elementTop, 
+                behavior: 'smooth'
+              });
               
               // Prepare the element first with transition properties
               ayatElement.style.transition = 'all 0.5s ease-in-out';
@@ -206,6 +225,56 @@ export default function SurahPage() {
         ← Kembali ke Daftar Surah
       </Link>
       
+      {/* Floating Surah Info that appears below the header */}
+      {surah && (
+        <div 
+          className={`fixed top-[72px] left-0 right-0 z-20 bg-[#f8f4e5]/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-md border-b border-[#d3c6a6] dark:border-gray-700 py-2 px-4 transition-all duration-300 ${
+            showStickyHeader ? 'opacity-100 translate-y-0 animate-slideDown' : 'opacity-0 -translate-y-full pointer-events-none'
+          }`}
+        >
+          <div className="flex items-center justify-between max-w-7xl mx-auto">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#8D6E63] text-white font-bold shadow-sm">
+                <span className="text-sm">{surah.nomor}</span>
+              </div>
+              <div>
+                <h2 className="font-bold text-[#5D4037] dark:text-amber-300 flex items-baseline gap-2">
+                  {surah.namaLatin}
+                  <span className="text-xl font-arabic text-[#8D6E63] dark:text-amber-400">{surah.nama}</span>
+                </h2>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-xs text-[#8D6E63] dark:text-amber-400">{surah.arti}</p>
+                  <span className="text-xs px-2 py-0.5 bg-[#e8e0ce] dark:bg-gray-800 rounded-full text-[#8D6E63] dark:text-amber-400 font-medium">
+                    {surah.jumlahAyat} Ayat
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#8D6E63] dark:text-amber-400 hidden sm:block">
+                {surah.tempatTurun === 'mekah' ? 'Makkah' : 'Madinah'} • {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, surah.ayat.length)} dari {surah.jumlahAyat}
+              </span>
+              <button 
+                onClick={() => {
+                  // Scroll to the top of the surah header instead of page top
+                  if (surahHeaderRef.current) {
+                    surahHeaderRef.current.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                className="bg-[#8D6E63] hover:bg-[#6D4C41] dark:bg-amber-600 dark:hover:bg-amber-700 text-white p-2 rounded-full transition-colors"
+                aria-label="Kembali ke atas"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Floating Navigation */}
       {surah?.ayat && surah.ayat.length > pageSize && showFloatingNav && (
         <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2">
@@ -236,8 +305,15 @@ export default function SurahPage() {
           </div>
           
           <button 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="bg-book-primary text-white p-2 rounded-full shadow-lg hover:bg-book-secondary"
+            onClick={() => {
+              // Scroll to the top of the surah header instead of page top
+              if (surahHeaderRef.current) {
+                surahHeaderRef.current.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="bg-[#8D6E63] hover:bg-[#6D4C41] dark:bg-amber-600 dark:hover:bg-amber-700 text-white p-2 rounded-full shadow-lg transition-colors"
             aria-label="Kembali ke atas"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -247,7 +323,7 @@ export default function SurahPage() {
         </div>
       )}
 
-      <div className="text-center mb-12 p-8 bg-book-paper rounded-lg border border-book-border shadow-md">
+      <div ref={surahHeaderRef} className="text-center mb-12 p-8 bg-book-paper rounded-lg border border-book-border shadow-md scroll-mt-24">
         {/* Arabic name */}
         <p className="text-4xl font-arabic text-book-primary mb-4">{surah?.nama}</p>
         
@@ -313,14 +389,14 @@ export default function SurahPage() {
       </div>
 
       {/* Ayat list with pagination */}
-      <div className="space-y-6">
+      <div className={`space-y-6 ${showStickyHeader ? 'mt-16' : ''}`}>
         {surah?.ayat
           ?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
           .map((ayat: Ayat) => (
             <div 
               key={ayat.nomorAyat}
               id={`ayat-${ayat.nomorAyat}`}
-              className="scroll-mt-8 rounded-lg transition-all duration-500"
+              className="scroll-mt-24 rounded-lg transition-all duration-500"
             >
               <AyatCard 
                 ayat={ayat} 

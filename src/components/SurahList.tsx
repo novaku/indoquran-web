@@ -61,26 +61,26 @@ export default function SurahList({
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {surahs.map((surah) => (
         <Link
           href={`/surah/${surah.nomor}`}
           key={surah.nomor}
           className="block"
         >
-          <div className="h-full bg-[#f8f4e5] border border-[#d3c6a6] rounded-lg p-4 hover:shadow-lg transition-shadow duration-200 flex flex-col">
-            <div className="flex items-center justify-between mb-3">
-              <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-[#8D6E63] text-white font-bold shadow-sm">
-                <span className="text-sm">{surah.nomor}</span>
+          <div className="h-full bg-[#f8f4e5] border border-[#d3c6a6] rounded-lg p-3 sm:p-4 hover:shadow-lg transition-shadow duration-200 flex flex-col">
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
+              <div className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#8D6E63] text-white font-bold shadow-sm">
+                <span className="text-xs sm:text-sm">{surah.nomor}</span>
               </div>
-              <span className="text-2xl font-semibold text-[#5D4037] font-arabic">{surah.nama}</span>
+              <span className="text-xl sm:text-2xl font-semibold text-[#5D4037] font-arabic">{surah.nama}</span>
             </div>
             <div>
-              <h3 className="font-bold mb-1 text-[#5D4037]">{surah.namaLatin}</h3>
-              <p className="text-sm text-[#795548] mb-2">
+              <h3 className="font-bold mb-1 text-[#5D4037] text-sm sm:text-base">{surah.namaLatin}</h3>
+              <p className="text-xs sm:text-sm text-[#795548] mb-1 sm:mb-2">
                 {surah.jumlahAyat} Ayat
               </p>
-              <p className="text-xs text-[#8D6E63] italic">
+              <p className="text-xs text-[#8D6E63] italic line-clamp-2">
                 {surah.arti}
               </p>
             </div>

@@ -1,10 +1,11 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState, useRef, type ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import { NextAuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export function Providers({ children }: { children: ReactNode }) {
   const queryClientRef = useRef<QueryClient | null>(null);
@@ -24,7 +25,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClientRef.current}>
         <NextAuthProvider>
           <ToastProvider>
-            {children}
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
           </ToastProvider>
         </NextAuthProvider>
       </QueryClientProvider>

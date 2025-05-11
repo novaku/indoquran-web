@@ -26,11 +26,35 @@ DB_NAME=indoquran_db
 # Next Auth Configuration
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your-nextauth-secret-key-here
+
+# OAuth Provider Credentials
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Facebook OAuth
+FACEBOOK_CLIENT_ID=your-facebook-app-id
+FACEBOOK_CLIENT_SECRET=your-facebook-app-secret
 ```
 
-2. Replace the OAuth credentials with your own from:
-   - [Google Cloud Console](https://console.cloud.google.com/) 
-   - [Facebook Developer Portal](https://developers.facebook.com/)
+### OAuth Configuration
+
+To set up OAuth authentication:
+
+1. **Google OAuth**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Navigate to "APIs & Services" > "Credentials"
+   - Create an OAuth client ID (Application type: Web application)
+   - Add authorized redirect URIs: `http://localhost:3000/api/auth/callback/google` for development
+   - Copy the Client ID and Client Secret to your `.env.local` file
+
+2. **Facebook OAuth**:
+   - Go to [Facebook Developer Portal](https://developers.facebook.com/)
+   - Create a new app or select an existing one
+   - Add the Facebook Login product to your app
+   - Configure the OAuth redirect URI: `http://localhost:3000/api/auth/callback/facebook`
+   - Copy the App ID and App Secret to your `.env.local` file
 
 ### Database Setup
 
@@ -73,7 +97,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a custom font family.
 
 ## Features
 
@@ -96,10 +120,10 @@ The MySQL database connection is configured with:
 - Host: localhost
 - Port: 3306
 - Username: root
-- Password: root
+- Password: password
 - Database: indoquran_db
 
-To change these settings, modify the values in `.env.local` file.
+To change these settings, modify the values in your `.env.local` file.
 
 ## Favicon and App Icons
 
@@ -134,6 +158,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 ### Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+When deploying to Vercel, make sure to:
+1. Add all environment variables in the Vercel project settings
+2. Configure OAuth redirect URIs for your production domain
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
@@ -198,7 +226,8 @@ This will start the application in development mode with hot-reloading enabled.
 For production deployment with Docker:
 
 1. Make sure your `deploy/.env.production` file is configured with your production settings
-2. Run the deployment command:
+2. Update OAuth redirect URIs in your OAuth provider dashboards to include your production domain
+3. Run the deployment command:
 
 ```bash
 ./deploy/docker.sh deploy
@@ -247,4 +276,4 @@ The Docker image can be scanned for security vulnerabilities using:
 ./deploy/docker.sh scan
 ```
 
-This will build the image and scan it for vulnerabilities using Docker Scout. The scan will identify any critical or high vulnerabilities that need to be addressed.
+This will build the image and scan it for security vulnerabilities using Docker Scout. The scan will identify any critical or high vulnerabilities that need to be addressed.
