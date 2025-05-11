@@ -2,13 +2,21 @@ import { NextResponse } from 'next/server';
 import { noteService } from '@/services/noteService';
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 
+interface RouteParams {
+  params: {
+    userId: string;
+  }
+}
+
 // GET /api/notes/user/[userId]
 export async function GET(
   request: Request,
-  { params }: { params: { userId: string } }
+  { params }: RouteParams
 ) {
   try {
-    const userId = params.userId;
+    // Await the params object before destructuring
+    const paramsObj = await params;
+    const userId = paramsObj.userId;
     
     // Verify authentication
     const session = await auth();

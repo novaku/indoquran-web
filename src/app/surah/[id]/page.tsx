@@ -120,17 +120,36 @@ export default function SurahPage() {
           // Navigate to the correct page that contains the ayat
           router.replace(`/surah/${surahId}?page=${correctPage}&ayat=${ayatNumber}`);
         } else {
-          // After page loads, scroll to the specific ayat
+          // After page loads, scroll to the specific ayat with enhanced highlighting
           setTimeout(() => {
             const ayatElement = document.getElementById(`ayat-${ayatNumber}`);
             if (ayatElement) {
+              // First scroll to the element
               ayatElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              // Add highlight class
-              ayatElement.classList.add('highlight-ayat');
-              // Remove highlight class after animation completes
+              
+              // Prepare the element first with transition properties
+              ayatElement.style.transition = 'all 0.5s ease-in-out';
+              
+              // Short delay before adding highlight class for better effect after scrolling
               setTimeout(() => {
-                ayatElement.classList.remove('highlight-ayat');
-              }, 2000);
+                // Add highlight class with shadow effect
+                ayatElement.classList.add('highlight-ayat');
+                
+                // Create a subtle focus effect 
+                ayatElement.style.transform = 'scale(1.008)';
+                
+                // Reset the transform after a short delay
+                setTimeout(() => {
+                  ayatElement.style.transform = 'scale(1)';
+                }, 700);
+                
+                // Remove highlight class after animation completes
+                setTimeout(() => {
+                  // Fade out the highlight effect gradually
+                  ayatElement.style.transition = 'all 1s ease-out';
+                  ayatElement.classList.remove('highlight-ayat');
+                }, 3500); // Longer duration for better visibility
+              }, 200);
             }
           }, 500);
         }
@@ -301,7 +320,7 @@ export default function SurahPage() {
             <div 
               key={ayat.nomorAyat}
               id={`ayat-${ayat.nomorAyat}`}
-              className="scroll-mt-8 rounded-lg transition-all"
+              className="scroll-mt-8 rounded-lg transition-all duration-500"
             >
               <AyatCard 
                 ayat={ayat} 

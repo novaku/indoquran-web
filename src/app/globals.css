@@ -38,3 +38,34 @@
 .font-uthmani {
   font-family: 'KFGQPC Uthmanic Script HAFS', 'Amiri', serif;
 }
+
+/* Highlight for targeted ayat */
+@keyframes highlightFade {
+  0% {
+    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4); /* amber-500 with opacity */
+    transform: translateY(0);
+    background-color: rgba(245, 158, 11, 0.05);
+  }
+  35% {
+    box-shadow: 0 0 15px 8px rgba(245, 158, 11, 0.5);
+    transform: translateY(-2px);
+    background-color: rgba(245, 158, 11, 0.12);
+  }
+  70% {
+    box-shadow: 0 0 10px 6px rgba(245, 158, 11, 0.4);
+    transform: translateY(-1px);
+    background-color: rgba(245, 158, 11, 0.08);
+  }
+  100% {
+    box-shadow: 0 0 5px 2px rgba(245, 158, 11, 0.2);
+    transform: translateY(0);
+    background-color: rgba(245, 158, 11, 0.03);
+  }
+}
+
+.highlight-ayat {
+  box-shadow: 0 0 15px 6px rgba(245, 158, 11, 0.5);
+  animation: highlightFade 3.5s ease-in-out;
+  border-radius: 0.5rem;
+  background-color: rgba(245, 158, 11, 0.08);
+}

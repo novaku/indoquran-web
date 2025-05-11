@@ -485,9 +485,9 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
     <div 
       ref={ayatCardRef} 
       id={`ayat-${ayat.nomorAyat}`}
-      className={`mb-6 pb-6 border-b border-[#d3c6a6] transition-all duration-300 ${
-        isBookmarked ? 'bg-[#e8e0ce] rounded-lg p-4' : ''
-      }`}
+      className={`mb-6 pb-6 border-b border-[#d3c6a6] transition-all duration-500 
+        ${isBookmarked ? 'bg-[#e8e0ce]' : ''} 
+        hover:bg-[#f3efe0] rounded-lg p-4`}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center">

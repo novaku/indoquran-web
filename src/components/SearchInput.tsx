@@ -94,11 +94,38 @@ export default function SearchInput({
               }
             }}
             onKeyDown={handleKeyDown}
-            className="w-full py-3 px-4 pr-12 rounded-lg border border-[#d3c6a6] bg-[#f8f4e5] focus:ring-2 focus:ring-[#8D6E63] focus:border-transparent transition-all outline-none text-[#5D4037] placeholder-[#9E9E9E]"
+            className="w-full py-3 px-4 pr-24 rounded-lg border border-[#d3c6a6] bg-[#f8f4e5] focus:ring-2 focus:ring-[#8D6E63] focus:border-transparent transition-all outline-none text-[#5D4037] placeholder-[#9E9E9E]"
             placeholder={placeholder}
             ref={inputRef}
             minLength={3}
           />
+          {/* Clear button - only show when there's text */}
+          {(isControlled ? value : query) && (
+            <button
+              type="button"
+              onClick={() => {
+                if (isControlled) {
+                  onChange?.('');
+                  
+                  // Check if we are on the homepage - if so, refresh the page
+                  if (pathname === '/') {
+                    // Clear query params and refresh the page
+                    router.push('/', { scroll: true });
+                  }
+                } else {
+                  setQuery('');
+                  // For uncontrolled component, just clear the text
+                }
+              }}
+              className="absolute right-14 top-1/2 -translate-y-1/2 p-2 text-[#8D6E63] hover:text-[#6D4C41] transition-colors"
+              aria-label="Hapus pencarian"
+              title="Hapus pencarian"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
           <button
             onClick={handleSearch}
             className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-[#8D6E63] text-white rounded-md hover:bg-[#6D4C41] transition-colors"

@@ -51,38 +51,50 @@ export default function AboutPage() {
       
       <div className="bg-white rounded-xl overflow-hidden border border-amber-200 shadow-lg mb-8">
         <div className="p-8">
-          <h1 className="text-3xl font-bold text-amber-900 mb-6">Tentang Al-Quran Indonesia</h1>
+          <h1 className="text-3xl font-bold text-amber-900 mb-6 flex items-center">
+            <img src="/icons/tentang-icon.svg" alt="Tentang" className="w-8 h-8 mr-3" />
+            Tentang Al-Quran Indonesia
+          </h1>
           
           <div className="border-b border-amber-200 mb-6">
             <nav className="flex space-x-2">
               <button
                 onClick={() => setActiveTab('tentang')}
-                className={`px-4 py-2 font-medium rounded-t-lg ${
+                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'tentang' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
                 }`}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+                </svg>
                 Tentang Aplikasi
               </button>
               <button
                 onClick={() => setActiveTab('fitur')}
-                className={`px-4 py-2 font-medium rounded-t-lg ${
+                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'fitur' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
                 }`}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+                </svg>
                 Fitur Utama
               </button>
               <button
                 onClick={() => setActiveTab('pengembangan')}
-                className={`px-4 py-2 font-medium rounded-t-lg ${
+                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'pengembangan' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
                 }`}
               >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
+                </svg>
                 Pengembangan
               </button>
             </nav>

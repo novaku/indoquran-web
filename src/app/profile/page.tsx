@@ -104,6 +104,8 @@ export default function ProfilePage() {
       return new Set(bookmarks.map(b => b.surah_id));
     } else if (activeTab === 'favorites' && favorites) {
       return new Set(favorites.map(f => f.surah_id));
+    } else if (activeTab === 'notes' && userNotes) {
+      return new Set(userNotes.map(n => n.surah_id));
     }
     return new Set<number>();
   };
@@ -161,7 +163,17 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="bg-amber-50 rounded-lg border border-amber-200 p-6 mb-8">
-        <h1 className="text-2xl font-bold text-amber-800 mb-4">Profil Pengguna</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-amber-800 flex items-center">
+            <img src="/icons/profile-icon.svg" alt="Profil" className="w-7 h-7 mr-2" />
+            Profil Pengguna
+          </h1>
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center border-2 border-amber-300">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+        </div>
         
         {isAuthenticated && user ? (
           <div className="mb-6">
@@ -191,7 +203,7 @@ export default function ProfilePage() {
         <>
           <div className="flex border-b border-amber-200 mb-6">
             <button
-              className={`py-2 px-4 ${activeTab === 'bookmarks' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
+              className={`py-2 px-4 flex items-center ${activeTab === 'bookmarks' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
               onClick={() => {
                 setActiveTab('bookmarks');
                 // Only force refresh if this is the first time viewing the tab or if explicitly refreshing
@@ -201,10 +213,13 @@ export default function ProfilePage() {
                 }
               }}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+              </svg>
               Bookmark
             </button>
             <button
-              className={`py-2 px-4 ${activeTab === 'favorites' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
+              className={`py-2 px-4 flex items-center ${activeTab === 'favorites' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
               onClick={() => {
                 setActiveTab('favorites');
                 // Only force refresh if this is the first time viewing the tab or if explicitly refreshing
@@ -214,20 +229,26 @@ export default function ProfilePage() {
                 }
               }}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+              </svg>
               Favorit
             </button>
             <button
-              className={`py-2 px-4 ${activeTab === 'history' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
+              className={`py-2 px-4 flex items-center ${activeTab === 'history' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
               onClick={() => {
                 setActiveTab('history');
                 // Mark as initialized - actual data fetching is handled by LastReadingPosition
                 setTabsInitialized(prev => ({ ...prev, history: true }));
               }}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+              </svg>
               Riwayat Baca
             </button>
             <button
-              className={`py-2 px-4 ${activeTab === 'notes' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
+              className={`py-2 px-4 flex items-center ${activeTab === 'notes' ? 'text-amber-800 border-b-2 border-amber-600 font-medium' : 'text-gray-500 hover:text-amber-600'}`}
               onClick={() => {
                 setActiveTab('notes');
                 // Only force refresh if this is the first time viewing the tab or if explicitly refreshing
@@ -237,6 +258,9 @@ export default function ProfilePage() {
                 }
               }}
             >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+              </svg>
               Catatan
             </button>
           </div>
@@ -525,7 +549,8 @@ export default function ProfilePage() {
                     
                     // Render grouped notes
                     return Object.entries(notesBySurah).map(([surahId, surahNotes]) => {
-                      // Use the surah_name from the first note in the group
+                      const numericSurahId = Number(surahId);
+                      const surahData = surahResults.data?.[numericSurahId];
                       const firstNote = surahNotes[0];
                       
                       return (
@@ -533,8 +558,11 @@ export default function ProfilePage() {
                           {/* Surah Header */}
                           <div className="bg-amber-50 p-4 border-b border-amber-200">
                             <h3 className="font-bold text-amber-800">
-                              {firstNote.surah_name} {firstNote.surah_name_arabic && `(${firstNote.surah_name_arabic})`}
+                              {surahData ? `${surahData.namaLatin} (${surahData.nama})` : firstNote.surah_name ? `${firstNote.surah_name} ${firstNote.surah_name_arabic ? `(${firstNote.surah_name_arabic})` : ''}` : `Surah ${surahId}`}
                             </h3>
+                            {surahData && (
+                              <p className="text-sm text-amber-700">{surahData.arti}</p>
+                            )}
                           </div>
                           
                           {/* Ayat Notes List */}

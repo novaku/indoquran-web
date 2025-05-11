@@ -9,7 +9,7 @@ interface User {
   email: string;
 }
 
-export function useAuth() {
+function useAuth() {
   const { data: session, status } = useSession();
   
   // Format the user data to maintain compatibility with existing code
@@ -20,6 +20,21 @@ export function useAuth() {
   } : null;
   
   const loading = status === 'loading';
+
+  // Login function that uses NextAuth signIn
+  const login = useCallback(async (email: string, password: string) => {
+    const result = await signIn('credentials', {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (result?.error) {
+      throw new Error(result.error);
+    }
+
+    return result;
+  }, []);
 
   // For backward compatibility - redirects to login page instead
   const createTempUser = useCallback(async () => {
@@ -34,8 +49,11 @@ export function useAuth() {
   return {
     user,
     loading,
+    login,
     createTempUser,
     logout,
     isAuthenticated: status === 'authenticated'
   };
 }
+
+export default useAuth;

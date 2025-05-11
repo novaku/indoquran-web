@@ -59,6 +59,13 @@ export default function HomePage() {
         // Get the result of checking all surahs in cache, including which ones are missing
         const { isCached, missingSurahs } = await quranClient.checkAllSurahsInCache();
         
+        // If everything is cached, we don't need to show the preparation UI
+        if (isCached && missingSurahs.length === 0) {
+          console.log('All surahs are already cached. Skipping initialization.');
+          setIsRedisCacheInitializing(false);
+          return;
+        }
+        
         // Ensure the main surah list is cached first
         if (!isCached && missingSurahs.length === 114) {
           setCachingStatus('Memuat daftar surah utama...');
@@ -117,9 +124,11 @@ export default function HomePage() {
           
           setCachingStatus('Semua surah berhasil disimpan di cache');
           console.log('All missing surah data has been cached to Redis');
-        } else {
-          setCachingStatus('Semua 114 surah sudah tersimpan di cache');
+        } else if (missingSurahs.length === 0) {
+          // All 114 surahs are already cached, immediately finish
           console.log('All 114 surahs are already cached in Redis');
+          setIsRedisCacheInitializing(false);
+          return;
         }
         
         // Skip tafsir preparation since we're encountering server/client issues
@@ -130,12 +139,15 @@ export default function HomePage() {
       } catch (error) {
         console.error('Error checking or updating Redis cache:', error);
         setCachingStatus('Terjadi kesalahan saat memeriksa cache');
+        setTimeout(() => setIsRedisCacheInitializing(false), 1000);
       } finally {
-        // Keep the status visible for a moment even after completion
-        setTimeout(() => {
-          setIsRedisCacheInitializing(false);
-          setCacheProgress(0);
-        }, 2000);
+        // Keep the status visible for a moment even after completion if we had to load data
+        if (isRedisCacheInitializing) {
+          setTimeout(() => {
+            setIsRedisCacheInitializing(false);
+            setCacheProgress(0);
+          }, 2000);
+        }
       }
     };
 
@@ -229,7 +241,15 @@ export default function HomePage() {
       <div className="mb-6">
         <SearchInput
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(newQuery: string) => {
+            setSearchQuery(newQuery);
+            
+            // If query is cleared, refresh the surah list data
+            if (!newQuery && searchQuery) {
+              // Only trigger a refetch if we're clearing an existing query
+              refetch();
+            }
+          }}
           onSearch={(query: string) => {
             // Redirect to ayat search page with query
             if (query && query.trim().length >= 3) {
@@ -241,7 +261,10 @@ export default function HomePage() {
       </div>
       
       <div className="mb-4">
-        <h2 className="text-2xl font-bold text-gray-800">Daftar Surah</h2>
+        <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+          <img src="/icons/home-icon.svg" alt="Beranda" className="w-7 h-7 mr-2" />
+          Daftar Surah
+        </h2>
       </div>
 
       <SurahList
