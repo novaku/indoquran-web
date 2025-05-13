@@ -4,6 +4,7 @@ import logger from '@/utils/logger';
 
 // GET /api/reading-position?userId=xxx
 export async function GET(request: Request) {
+  let conn;
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -15,7 +16,7 @@ export async function GET(request: Request) {
       }, { status: 400 });
     }
 
-    const conn = await mysql.createConnection({
+    conn = await mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
@@ -28,8 +29,6 @@ export async function GET(request: Request) {
     
     // Execute query
     const [rows] = await conn.execute<mysql.RowDataPacket[]>(query, params);
-
-    await conn.end();
 
     const readingPosition = rows.length > 0 ? rows[0] as mysql.RowDataPacket : null;
     
@@ -52,11 +51,20 @@ export async function GET(request: Request) {
       success: false,
       message: error.message || 'Gagal mengambil posisi membaca'
     }, { status: 500 });
+  } finally {
+    if (conn) {
+      try {
+        await conn.end();
+      } catch (closeError) {
+        logger.error('Error closing database connection:', closeError);
+      }
+    }
   }
 }
 
 // POST /api/reading-position
 export async function POST(request: Request) {
+  let conn;
   try {
     const body = await request.json();
     
@@ -71,7 +79,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const conn = await mysql.createConnection({
+    conn = await mysql.createConnection({
       host: process.env.DB_HOST,
       user: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
@@ -115,8 +123,6 @@ export async function POST(request: Request) {
     logger.debug(selectQuery, [body.user_id]);
     
     const [rows] = await conn.execute(selectQuery, [body.user_id]);
-
-    await conn.end();
     
     logger.info('Reading position updated successfully', {
       userId: body.user_id,
@@ -135,5 +141,13 @@ export async function POST(request: Request) {
       success: false,
       message: error.message || 'Gagal menyimpan posisi membaca'
     }, { status: 500 });
+  } finally {
+    if (conn) {
+      try {
+        await conn.end();
+      } catch (closeError) {
+        logger.error('Error closing database connection:', closeError);
+      }
+    }
   }
 }

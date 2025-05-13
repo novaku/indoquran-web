@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import useAuth from '@/hooks/useAuth';
+import LazyLoadImage from '@/components/LazyLoadImage';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -72,7 +73,7 @@ export default function LoginPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-md">
       <h1 className="text-2xl font-bold mb-6 text-[#5D4037] text-center flex items-center justify-center">
-        <img src="/icons/login-icon.svg" alt="Login" className="w-7 h-7 mr-2" />
+        <LazyLoadImage src="/icons/login-icon.svg" alt="Login" width={28} height={28} className="w-7 h-7 mr-2" />
         {showForgotPassword ? 'Reset Password' : 'Masuk ke Akun Anda'}
       </h1>
       

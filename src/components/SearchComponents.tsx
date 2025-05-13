@@ -4,6 +4,7 @@ import React, { useState, useRef, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import HighlightedText from './HighlightedText';
+import AyatPopup from './AyatPopup';
 
 // Surah type definition for autocomplete
 interface SurahSuggestion {
@@ -419,7 +420,7 @@ export function BasicSearch({
   }
 
   return (
-    <div className="mb-6">
+    <div className="w-full mb-6">
       <form onSubmit={handleSubmit}>
         <div className="flex items-center border-2 border-amber-400 dark:border-amber-700 rounded-lg overflow-hidden">
           <input
@@ -535,6 +536,7 @@ export function AyatSearchResults({
   const [internalCurrentPage, setInternalCurrentPage] = useState(1);
   const [isPaginationLoading, setIsPaginationLoading] = useState(false);
   const [loadingPageNumber, setLoadingPageNumber] = useState<number | null>(null);
+  const [selectedAyat, setSelectedAyat] = useState<{surahId: number; ayatNumber: number} | null>(null);
   
   // Use either controlled (external) values or internal state
   const currentPage = externalCurrentPage;
@@ -694,15 +696,16 @@ export function AyatSearchResults({
       
       <div className="space-y-6">
         {results.map((result, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div 
+            key={index} 
+            className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
+            onClick={() => setSelectedAyat({ surahId: result.surahId, ayatNumber: result.ayatNumber })}
+          >
             <div className="flex justify-between items-start mb-2">
               <h3 className="font-bold text-lg">
-                <Link 
-                  href={`/surah/${result.surahId}?ayat=${result.ayatNumber}`}
-                  className="text-amber-600 hover:text-amber-700"
-                >
+                <span className="text-amber-600 hover:text-amber-700">
                   {result.surahNameLatin} ({result.surahId}:{result.ayatNumber})
-                </Link>
+                </span>
               </h3>
               <span className="text-gray-500 text-sm">{result.surahName}</span>
             </div>
@@ -711,127 +714,11 @@ export function AyatSearchResults({
               <div className="text-gray-800 mb-1" 
                    dangerouslySetInnerHTML={{ __html: result.matchSnippet }} />
               
-              <div className="text-gray-600 text-sm mt-2 text-right">
-                <Link 
-                  href={`/surah/${result.surahId}?ayat=${result.ayatNumber}`} 
-                  className="text-amber-500 hover:text-amber-600 flex items-center justify-end gap-1"
-                >
-                  <span>Lihat ayat</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              </div>
+              
             </div>
           </div>
         ))}
       </div>
-      
-      {/* Bottom pagination for better UX when there are many results */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-6">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <button
-              onClick={() => changePage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className={`flex items-center gap-1 px-2 py-1 rounded ${
-                currentPage === 1
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-amber-600 hover:bg-amber-50'
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              <span>Sebelumnya</span>
-            </button>
-            
-            {/* Page number buttons - show 5 pages max with current in middle when possible */}
-            <div className="hidden sm:flex items-center gap-1">
-              {[...Array(totalPages)].map((_, i) => {
-                const pageNum = i + 1;
-                
-                // Logic to show limited page buttons
-                // Always show first and last page
-                // Show 2 pages before and after current page if possible
-                const showPageNum = 
-                  pageNum === 1 || 
-                  pageNum === totalPages ||
-                  (pageNum >= currentPage - 2 && pageNum <= currentPage + 2);
-                
-                // Show ellipsis for page gaps
-                const showEllipsisBefore = pageNum === currentPage - 2 && currentPage > 4;
-                const showEllipsisAfter = pageNum === currentPage + 2 && currentPage < totalPages - 3;
-                
-                if (showEllipsisBefore) {
-                  return (
-                    <React.Fragment key={`ellipsis-before-${pageNum}`}>
-                      <span className="px-2 text-gray-500">...</span>
-                    </React.Fragment>
-                  );
-                }
-                
-                if (showEllipsisAfter) {
-                  return (
-                    <React.Fragment key={`ellipsis-after-${pageNum}`}>
-                      <span className="px-2 text-gray-500">...</span>
-                    </React.Fragment>
-                  );
-                }
-                
-                if (showPageNum) {
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => changePage(pageNum)}
-                      className={`w-8 h-8 flex items-center justify-center rounded-full
-                        ${currentPage === pageNum 
-                          ? 'bg-amber-500 text-white' 
-                          : 'text-amber-600 hover:bg-amber-50'}`
-                      }
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                }
-                
-                return null;
-              })}
-            </div>
-            
-            {/* Mobile dropdown for smaller screens */}
-            <div className="sm:hidden flex items-center gap-2">
-              <select
-                value={currentPage}
-                onChange={handlePageChange}
-                className="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              >
-                {[...Array(totalPages)].map((_, i) => (
-                  <option key={i} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-              <span className="text-sm text-gray-600">dari {totalPages}</span>
-            </div>
-            
-            <button
-              onClick={() => changePage(Math.min(totalPages, currentPage + 1))}
-              disabled={currentPage === totalPages}
-              className={`flex items-center gap-1 px-2 py-1 rounded ${
-                currentPage === totalPages
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-amber-600 hover:bg-amber-50'
-              }`}
-            >
-              <span>Berikutnya</span>
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
       
       {/* Show total results statistics even when on an empty page due to navigation */}
       {results.length > 0 && paginatedResults.length === 0 && (
@@ -843,6 +730,73 @@ export function AyatSearchResults({
             Kembali ke halaman pertama
           </button></p>
         </div>
+      )}
+      
+      {/* Dedicated bottom dropdown pagination for easier navigation */}
+      {results.length > 0 && totalPages > 1 && (
+        <div className="mt-8 mb-4 flex justify-center">
+          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-5 py-3 border border-amber-200 dark:border-amber-700">
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">
+                Loncat ke Halaman:
+              </span>
+              <div className="flex items-center gap-3">
+                <select
+                  value={currentPage}
+                  onChange={handlePageChange}
+                  className="block w-full min-w-[120px] border border-amber-300 dark:border-amber-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-gray-800 text-amber-800 dark:text-amber-200"
+                  aria-label="Pilih halaman untuk dilihat"
+                >
+                  {[...Array(totalPages)].map((_, i) => (
+                    <option key={i} value={i + 1}>
+                      Halaman {i + 1} dari {totalPages}
+                    </option>
+                  ))}
+                </select>
+                <span className="flex gap-2">
+                  <button
+                    onClick={() => changePage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className={`p-2 rounded-md ${
+                      currentPage === 1
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                    }`}
+                    aria-label="Halaman sebelumnya"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => changePage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className={`p-2 rounded-md ${
+                      currentPage === totalPages
+                        ? 'text-gray-400 cursor-not-allowed'
+                        : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                    }`}
+                    aria-label="Halaman berikutnya"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Ayat Popup */}
+      {selectedAyat && (
+        <AyatPopup
+          isOpen={!!selectedAyat}
+          onClose={() => setSelectedAyat(null)}
+          surahId={selectedAyat.surahId}
+          ayatNumber={selectedAyat.ayatNumber}
+        />
       )}
     </div>
   );

@@ -116,7 +116,7 @@ export default function AyatSearchPage() {
   // Debounce function now handled by SearchInput component
   
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4">
       <DynamicHead 
         title={debouncedQuery ? `Hasil Pencarian: ${debouncedQuery} | IndoQuran` : 'Pencarian Ayat | IndoQuran'}
         description="Cari ayat dalam Al-Quran berdasarkan kata kunci"
@@ -127,7 +127,8 @@ export default function AyatSearchPage() {
         <p className="text-gray-600">Cari ayat dalam Al-Quran berdasarkan kata kunci (minimal 3 karakter)</p>
       </div>
       
-      <div className="mb-8">          <BasicSearch
+      <div className="mb-8 w-full">
+        <BasicSearch
           value={searchQuery}
           onChange={(newValue) => {
             console.log('[SearchPage] onChange called with:', newValue);
@@ -164,7 +165,7 @@ export default function AyatSearchPage() {
           <p className="text-sm">{(error as Error).message}</p>
         </div>
       ) : (
-        <React.Fragment>
+        <div className="w-full">
           {/* Wrap in error boundary or try-catch to prevent element type errors */}
           {debouncedQuery.trim().length >= 3 ? (
             <AyatSearchResults 
@@ -189,7 +190,7 @@ export default function AyatSearchPage() {
               <p className="text-gray-600">Masukkan minimal 3 karakter untuk mencari</p>
             </div>
           )}
-        </React.Fragment>
+        </div>
       )}
       
       <div className="mt-8 text-center">

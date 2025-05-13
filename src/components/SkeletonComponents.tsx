@@ -152,11 +152,55 @@ export function ReadingHistorySkeleton() {
   );
 }
 
+/**
+ * NoteSkeleton - Loading placeholder for notes section
+ */
+export function NoteSkeleton({ count = 3, groupsCount = 2 }) {
+  // Create array of group sizes to simulate surah groups
+  const groupSizes = Array.from({ length: Math.min(groupsCount, count) }).map((_, i) => {
+    // Last group gets remainder items
+    if (i === groupsCount - 1) {
+      return Math.max(1, count - Math.floor(count / groupsCount) * (groupsCount - 1));
+    }
+    return Math.max(1, Math.floor(count / groupsCount));
+  });
+
+  return (
+    <div className="grid gap-6 animate-pulse">
+      {groupSizes.map((groupSize, groupIndex) => (
+        <div key={`group-${groupIndex}`} className="bg-white rounded-lg border border-green-200 overflow-hidden">
+          {/* Surah Header Skeleton */}
+          <div className="bg-green-50 p-4 border-b border-green-200">
+            <div className="h-6 bg-green-100 rounded w-1/3 mb-2"></div>
+          </div>
+
+          {/* Notes List Skeleton */}
+          <div>
+            {Array.from({ length: groupSize }).map((_, itemIndex) => (
+              <div key={`item-${groupIndex}-${itemIndex}`} className="p-4 border-b border-green-100 last:border-0">
+                <div>
+                  <div className="h-5 bg-green-100 rounded w-40 mb-2"></div>
+                  <div className="h-16 bg-green-50 rounded w-full mb-2"></div>
+                  <div className="h-3 bg-green-50 rounded w-1/4 mt-2"></div>
+                  <div className="flex justify-end mt-2">
+                    <div className="h-8 w-24 bg-green-50 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // Default export for backward compatibility
 export default {
   AyatCardSkeleton,
   SurahCardSkeleton,
   BookmarkSkeleton,
   FavoriteSkeleton,
-  ReadingHistorySkeleton
+  ReadingHistorySkeleton,
+  NoteSkeleton
 };

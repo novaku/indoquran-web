@@ -9,6 +9,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import SurahList from '@/components/SurahList';
 import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
+import LazyLoadImage from '@/components/LazyLoadImage';
 import PrayerTimesWidget from '@/components/PrayerTimesWidget';
 import TafsirMaudhuiTree from '@/components/TafsirMaudhuiTree';
 import tafsirData from '@/utils/tafsir_maudhui_full.json';
@@ -359,7 +360,7 @@ export default function HomePage() {
                 : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
               }`}
           >
-            <img src="/icons/home-icon.svg" alt="Beranda" className="w-5 h-5 mr-2" />
+            <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={20} height={20} className="w-5 h-5 mr-2" />
             Daftar Surah
             <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">114</span>
             {activeTab === 'surah' && (
@@ -410,7 +411,7 @@ export default function HomePage() {
             className="animate-fadeIn">
             <div className="mb-3 sm:mb-4">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
-                <img src="/icons/home-icon.svg" alt="Beranda" className="w-6 h-6 sm:w-7 sm:h-7 mr-2" />
+                <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={28} height={28} className="w-6 h-6 sm:w-7 sm:h-7 mr-2" />
                 Daftar Surah
               </h2>
             </div>

@@ -62,7 +62,7 @@ export default function SearchPage() {
         <h1 className="text-2xl font-bold">Hasil Pencarian</h1>
       </div>
       
-      <div className="mb-6">
+      <div className="mb-6 w-full">
         <SearchInput 
           value={searchQuery}
           onChange={setSearchQuery}
@@ -81,13 +81,15 @@ export default function SearchPage() {
             Menampilkan hasil pencarian untuk: <span className="font-medium">"{query}"</span>
           </p>
           
-          <SurahList 
-            surahs={filteredSurahs}
-            loading={isLoadingSurahs}
-            error={surahsError ? "Gagal memuat hasil pencarian" : null}
-            searchQuery={query}
-            setSearchQuery={setSearchQuery}
-          />
+          <div className="w-full">
+            <SurahList 
+              surahs={filteredSurahs}
+              loading={isLoadingSurahs}
+              error={surahsError ? "Gagal memuat hasil pencarian" : null}
+              searchQuery={query}
+              setSearchQuery={setSearchQuery}
+            />
+          </div>
         </>
       ) : (
         <div className="text-center p-8 bg-amber-50 rounded-lg">

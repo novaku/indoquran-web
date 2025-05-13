@@ -96,25 +96,6 @@ export default function Header() {
           </Link>
           
           <div className="flex items-center space-x-2">
-            {/* Theme toggle button with tooltip */}
-            <Tooltip text={theme === 'dark' ? 'Aktifkan Mode Terang' : 'Aktifkan Mode Gelap'}>
-              <button
-                onClick={toggleTheme}
-                className={`p-2 rounded-md transition-colors ${
-                  isReadingPage
-                    ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]'
-                    : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
-                } dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-gray-800`}
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )}
-              </button>
-            </Tooltip>
-            
             {/* Main navigation dropdown menu */}            <div className="relative" ref={mainMenuRef}>
               <Tooltip text="Menu Navigasi">
                 <button 

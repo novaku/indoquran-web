@@ -98,7 +98,7 @@ export default function LastReadingPosition({ isActive = false }: LastReadingPos
           <span className="font-medium">Surah:</span>{' '}
           {surahData ? (
             <span>
-              {surahData.namaLatin} ({surahData.nama})
+              {readingPosition.surah_id}. {surahData.namaLatin} ({surahData.nama})
             </span>
           ) : (
             <span>Surah {readingPosition.surah_id}</span>

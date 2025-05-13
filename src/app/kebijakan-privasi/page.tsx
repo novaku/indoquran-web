@@ -1,13 +1,14 @@
 'use client';
 
 import React from 'react';
+import LazyLoadImage from '@/components/LazyLoadImage';
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-amber-800 mb-6 flex items-center">
-          <img src="/icons/kebijakan-privasi-icon.svg" alt="Kebijakan Privasi" className="w-8 h-8 mr-3" />
+          <LazyLoadImage src="/icons/kebijakan-privasi-icon.svg" alt="Kebijakan Privasi" width={32} height={32} className="w-8 h-8 mr-3" />
           Kebijakan Privasi
         </h1>
         

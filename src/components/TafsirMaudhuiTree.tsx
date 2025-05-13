@@ -1,8 +1,44 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import tafsirData from '../utils/tafsir_maudhui_full.json';
+import { AyatCard } from './AyatCard'; // Import AyatCard component
+import { useQuery } from '@tanstack/react-query';
+import quranClient from '../services/quranClient';
+
+// Mapping of surah numbers to their names
+const surahNames: {[key: number]: string} = {
+  1: "Al-Fatihah", 2: "Al-Baqarah", 3: "Ali 'Imran", 4: "An-Nisa'", 5: "Al-Ma'idah",
+  6: "Al-An'am", 7: "Al-A'raf", 8: "Al-Anfal", 9: "At-Tawbah", 10: "Yunus",
+  11: "Hud", 12: "Yusuf", 13: "Ar-Ra'd", 14: "Ibrahim", 15: "Al-Hijr",
+  16: "An-Nahl", 17: "Al-Isra'", 18: "Al-Kahf", 19: "Maryam", 20: "Ta-Ha",
+  21: "Al-Anbiya'", 22: "Al-Hajj", 23: "Al-Mu'minun", 24: "An-Nur", 25: "Al-Furqan",
+  26: "Ash-Shu'ara'", 27: "An-Naml", 28: "Al-Qasas", 29: "Al-Ankabut", 30: "Ar-Rum",
+  31: "Luqman", 32: "As-Sajdah", 33: "Al-Ahzab", 34: "Saba'", 35: "Fatir",
+  36: "Ya-Sin", 37: "As-Saffat", 38: "Sad", 39: "Az-Zumar", 40: "Ghafir",
+  41: "Fussilat", 42: "Ash-Shura", 43: "Az-Zukhruf", 44: "Ad-Dukhan", 45: "Al-Jathiyah",
+  46: "Al-Ahqaf", 47: "Muhammad", 48: "Al-Fath", 49: "Al-Hujurat", 50: "Qaf",
+  51: "Adh-Dhariyat", 52: "At-Tur", 53: "An-Najm", 54: "Al-Qamar", 55: "Ar-Rahman",
+  56: "Al-Waqi'ah", 57: "Al-Hadid", 58: "Al-Mujadilah", 59: "Al-Hashr", 60: "Al-Mumtahanah",
+  61: "As-Saff", 62: "Al-Jumu'ah", 63: "Al-Munafiqun", 64: "At-Taghabun", 65: "At-Talaq",
+  66: "At-Tahrim", 67: "Al-Mulk", 68: "Al-Qalam", 69: "Al-Haqqah", 70: "Al-Ma'arij",
+  71: "Nuh", 72: "Al-Jinn", 73: "Al-Muzzammil", 74: "Al-Muddathir", 75: "Al-Qiyamah",
+  76: "Al-Insan", 77: "Al-Mursalat", 78: "An-Naba'", 79: "An-Nazi'at", 80: "'Abasa",
+  81: "At-Takwir", 82: "Al-Infitar", 83: "Al-Mutaffifin", 84: "Al-Inshiqaq", 85: "Al-Buruj",
+  86: "At-Tariq", 87: "Al-A'la", 88: "Al-Ghashiyah", 89: "Al-Fajr", 90: "Al-Balad",
+  91: "Ash-Shams", 92: "Al-Layl", 93: "Ad-Duha", 94: "Ash-Sharh", 95: "At-Tin",
+  96: "Al-'Alaq", 97: "Al-Qadr", 98: "Al-Bayyinah", 99: "Az-Zalzalah", 100: "Al-'Adiyat",
+  101: "Al-Qari'ah", 102: "At-Takathur", 103: "Al-'Asr", 104: "Al-Humazah", 105: "Al-Fil",
+  106: "Quraysh", 107: "Al-Ma'un", 108: "Al-Kawthar", 109: "Al-Kafirun", 110: "An-Nasr",
+  111: "Al-Masad", 112: "Al-Ikhlas", 113: "Al-Falaq", 114: "An-Nas"
+};
+
+// Function to get surah name by number
+const getSurahName = (surahNumber: number): string => {
+  return surahNames[surahNumber] || `Surah ${surahNumber}`;
+};
 
 type Ayah = {
   surah: number;
@@ -15,13 +51,123 @@ type Topic = {
   verses: Ayah[];
 };
 
+// Define AyatPopup component
+const AyatPopup: React.FC<{ 
+  isOpen: boolean; 
+  onClose: () => void; 
+  surahId: number; 
+  ayatId: number;
+}> = ({ 
+  isOpen, 
+  onClose, 
+  surahId, 
+  ayatId 
+}) => {
+  const { data: ayatData, isLoading } = useQuery({
+    queryKey: ['ayat', surahId, ayatId],
+    queryFn: async () => {
+      const surahData = await quranClient.getSurahDetail(surahId);
+      const ayat = surahData.ayat.find(a => a.nomorAyat === ayatId);
+      return ayat;
+    },
+    enabled: isOpen // Only fetch when popup is open
+  });
+  
+  // Client-side only mounting check
+  const [isMounted, setIsMounted] = useState(false);
+  
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
+
+  // Handle body scroll lock
+  useEffect(() => {
+    if (isOpen && isMounted) {
+      // Save current scroll position and add styles to lock scroll
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflowY = 'hidden';
+      
+      // Cleanup function that runs when the component unmounts or when dependencies change
+      return () => {
+        // Restore scroll position when popup closes
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflowY = '';
+        window.scrollTo(0, scrollY); // Use the captured scrollY value
+      };
+    }
+  }, [isOpen, isMounted]);
+
+  // Handle escape key to close
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !isMounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+      {/* Backdrop with blur effect */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      ></div>
+      
+      <div className="relative bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto m-4 z-[10000]">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {getSurahName(surahId)} ({surahId}) : Ayat {ayatId}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
+            aria-label="Tutup"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div className="p-6">
+          {isLoading && (
+            <div className="flex justify-center py-8">
+              <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+          
+          {!isLoading && ayatData && (
+            <AyatCard ayat={ayatData} surahId={surahId} />
+          )}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
 const TafsirMaudhuiTree = () => {
   const router = useRouter();
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // We don't need isLoading state anymore as we're using anchor tags that open in new tabs
   const [searchTerm, setSearchTerm] = useState('');
   const [loadingAyah, setLoadingAyah] = useState<{surah: number; ayah: number} | null>(null);
+  // State for the ayat popup
+  const [selectedAyat, setSelectedAyat] = useState<{surah: number; ayah: number} | null>(null);
   
   // Calculate total verses across all topics
   const totalVerses = useMemo(() => {
@@ -49,16 +195,29 @@ const TafsirMaudhuiTree = () => {
     }
   };
 
-  const handleAyahClick = (surah: number, ayah: number) => {
-    setIsLoading(true);
-    setLoadingAyah({ surah, ayah });
-    router.push(`/surah/${surah}?ayat=${ayah}`);
+  // Function to get ayah URL
+  const getAyahUrl = (surah: number, ayah: number) => {
+    return `/surah/${surah}?ayat=${ayah}`;
+  };
+  
+  // Handle ayah click - now opens a popup instead of a new tab
+  const handleAyahClick = (surah: number, ayah: number, event?: React.MouseEvent) => {
+    if (event) {
+      event.preventDefault(); // Prevent default link behavior
+    }
     
-    // Reset loading state after a timeout in case navigation gets stuck
+    setLoadingAyah({ surah, ayah });
+    setSelectedAyat({ surah, ayah });
+    
+    // Reset loading state after a timeout
     setTimeout(() => {
-      setIsLoading(false);
       setLoadingAyah(null);
-    }, 3000);
+    }, 2000);
+  };
+
+  // Close the ayat popup
+  const closeAyatPopup = () => {
+    setSelectedAyat(null);
   };
 
   // Filter topics based on search term
@@ -215,20 +374,17 @@ const TafsirMaudhuiTree = () => {
                         style={{ animationDelay: `${index * 50}ms` }}
                       >
                         <button
-                          onClick={() => handleAyahClick(verse.surah, verse.ayah)}
-                          className={`w-full text-left py-1.5 px-3 rounded hover:bg-amber-100 transition-colors flex items-center
-                            ${isLoading ? 'opacity-70' : ''}
+                          onClick={(e) => handleAyahClick(verse.surah, verse.ayah, e)}
+                          className={`w-full text-left py-1.5 px-3 rounded hover:bg-amber-100 transition-colors flex items-center cursor-pointer
                             ${isVerseLoading ? 'bg-amber-100' : ''}
-                            ${isLoading ? 'pointer-events-none' : ''}
                           `}
-                          title={`Buka Surah ${verse.surah} Ayat ${verse.ayah}`}
-                          disabled={isLoading}
+                          title={`Buka ${getSurahName(verse.surah)} (${verse.surah}) Ayat ${verse.ayah} dalam popup`}
                         >
                           <span className="mr-2 bg-amber-200 text-amber-800 w-6 h-6 rounded-full flex items-center justify-center text-xs">
                             {index + 1}
                           </span>
                           <span>
-                            Surah {verse.surah} : Ayat {verse.ayah}
+                            {getSurahName(verse.surah)} ({verse.surah}) : Ayat {verse.ayah}
                           </span>
                           <span className="ml-auto text-xs text-amber-700">
                             {isVerseLoading ? (
@@ -238,7 +394,8 @@ const TafsirMaudhuiTree = () => {
                               </svg>
                             ) : (
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                               </svg>
                             )}
                           </span>
@@ -264,6 +421,16 @@ const TafsirMaudhuiTree = () => {
           )}
         </div>
       </div>
+      
+      {/* Ayat Popup - Display when an ayat is selected */}
+      {selectedAyat && (
+        <AyatPopup
+          isOpen={!!selectedAyat}
+          onClose={closeAyatPopup}
+          surahId={selectedAyat.surah}
+          ayatId={selectedAyat.ayah}
+        />
+      )}
     </div>
   );
 };
