@@ -15,13 +15,25 @@ export default function HighlightedText({
   className = '', 
   highlightClassName = 'font-bold text-amber-700 dark:text-amber-300' 
 }: HighlightedTextProps) {
+  // Check if we have valid inputs
+  if (!text || !query || query.trim() === '') {
+    return <span className={className}>{text}</span>;
+  }
+
+  // Process the search query and get the highlighted parts
   const parts = highlightText(text, query);
   
+  // Create nice highlighted version with extra styling
   return (
     <span className={className}>
       {parts.map((part, i) => (
         part.isHighlighted ? (
-          <span key={i} className={highlightClassName}>{part.text}</span>
+          <mark 
+            key={i} 
+            className={`${highlightClassName} px-0.5 rounded`}
+          >
+            {part.text}
+          </mark>
         ) : (
           <span key={i}>{part.text}</span>
         )

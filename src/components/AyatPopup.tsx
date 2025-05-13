@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery } from '@tanstack/react-query';
 import quranClient from '../services/quranClient';
 import { LoadingSpinner } from './LoadingSpinner';
+import HighlightedText from './HighlightedText';
 
 interface AyatPopupProps { 
   isOpen: boolean; 
   onClose: () => void; 
   surahId: number; 
   ayatNumber: number;
+  searchQuery?: string; // Optional search query for highlighting
 }
 
 // Reciters available for audio playback
@@ -47,7 +49,8 @@ const AyatPopup = ({
   isOpen, 
   onClose, 
   surahId, 
-  ayatNumber
+  ayatNumber,
+  searchQuery = '' // Default to empty string if not provided
 }: AyatPopupProps) => {
   const [arabicFontSize, setArabicFontSize] = useState(2.25); // rem
   const [selectedReciter, setSelectedReciter] = useState<keyof typeof RECITERS>("01");
@@ -207,15 +210,25 @@ const AyatPopup = ({
               
               <hr className="border-t border-amber-200" />
               
+              {/* Display transliteration without highlighting */}
               <p className="text-lg text-amber-800 font-arabic-translation text-left">
                 {ayatData.teksLatin}
               </p>
               
               <hr className="border-t border-amber-200" />
               
-              <p className="text-gray-700 text-left">
-                {ayatData.teksIndonesia}
-              </p>
+              {/* Display Indonesian translation with highlighting */}
+              <div className="text-gray-700 text-left">
+                {searchQuery && searchQuery.trim().length > 0 ? (
+                  <HighlightedText 
+                    text={ayatData.teksIndonesia}
+                    query={searchQuery}
+                    highlightClassName="font-bold bg-amber-100 text-amber-900 px-1 rounded"
+                  />
+                ) : (
+                  <React.Fragment>{ayatData.teksIndonesia}</React.Fragment>
+                )}
+              </div>
 
               {/* Tafsir Toggle Button and Share Button */}
               <div className="mt-6 flex flex-wrap items-center gap-3 justify-between">

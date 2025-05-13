@@ -796,6 +796,7 @@ export function AyatSearchResults({
           onClose={() => setSelectedAyat(null)}
           surahId={selectedAyat.surahId}
           ayatNumber={selectedAyat.ayatNumber}
+          searchQuery={searchQuery ? searchQuery.trim() : ''} // Ensure searchQuery is properly processed
         />
       )}
     </div>
