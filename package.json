@@ -24,6 +24,7 @@
     "@types/uuid": "^10.0.0",
     "axios": "^1.9.0",
     "bcryptjs": "^3.0.2",
+    "critters": "^0.0.23",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "framer-motion": "^12.10.3",

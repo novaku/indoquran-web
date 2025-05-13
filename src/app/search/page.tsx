@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +10,7 @@ import SurahList, { SurahIndexItem } from '@/components/SurahList';
 import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
 import Link from 'next/link';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const router = useRouter();
@@ -103,5 +103,14 @@ export default function SearchPage() {
         </div>
       )}
     </main>
+  );
+}
+
+// Export default component with Suspense boundary
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

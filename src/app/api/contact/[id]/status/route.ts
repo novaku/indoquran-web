@@ -1,14 +1,12 @@
+// filepath: /Users/novaherdi/Documents/GitHub/indoquran-web/src/app/api/contact/[id]/status/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { updateContactStatus } from '@/services/contactService';
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 
-interface Params {
-  params: {
-    id: string;
-  }
-}
-
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest, 
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     // Check if user is authorized (admin)
     const session = await auth();
@@ -21,42 +19,45 @@ export async function PUT(request: NextRequest, { params }: Params) {
       );
     }
     
-    const contactId = parseInt(params.id, 10);
-    if (isNaN(contactId)) {
+    // Get contact ID from params
+    const resolvedParams = await params;
+    const { id } = resolvedParams;
+    
+    if (!id || isNaN(Number(id))) {
       return NextResponse.json(
         { error: 'Invalid contact ID' },
         { status: 400 }
       );
     }
     
+    // Get status from request body
     const body = await request.json();
-    const { status } = body;
     
-    if (!status || !['unread', 'read', 'replied', 'archived'].includes(status)) {
+    if (!body || typeof body.status !== 'string' || !['pending', 'processed', 'completed', 'archived'].includes(body.status)) {
       return NextResponse.json(
-        { error: 'Invalid status value' },
+        { error: 'Invalid status value. Must be one of: pending, processed, completed, archived' },
         { status: 400 }
       );
     }
     
-    const result = await updateContactStatus(
-      contactId, 
-      status as 'unread' | 'read' | 'replied' | 'archived'
-    );
+    // Update the contact status
+    const result = await updateContactStatus(Number(id), body.status);
     
     if (result) {
-      return NextResponse.json({ success: true });
+      return NextResponse.json({ 
+        success: true,
+        message: `Contact status updated to ${body.status}`
+      });
     } else {
       return NextResponse.json(
-        { error: 'Contact not found or status not updated' },
-        { status: 404 }
+        { error: 'Failed to update contact status' },
+        { status: 500 }
       );
     }
-    
-  } catch (error: any) {
-    console.error('Error updating contact status:', error);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     return NextResponse.json(
-      { error: error.message || 'An unexpected error occurred' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

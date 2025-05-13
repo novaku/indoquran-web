@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import quranClient from '../services/quranClient';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ import PrayerTimesWidget from '@/components/PrayerTimesWidget';
 import TafsirMaudhuiTree from '@/components/TafsirMaudhuiTree';
 import tafsirData from '@/utils/tafsir_maudhui_full.json';
 
-export default function HomePage() {
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
@@ -450,5 +450,14 @@ export default function HomePage() {
         )}
       </div>
     </main>
+  );
+}
+
+// Export default component with Suspense boundary
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

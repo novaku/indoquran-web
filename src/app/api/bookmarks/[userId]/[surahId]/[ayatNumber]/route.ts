@@ -1,20 +1,20 @@
+// filepath: /Users/novaherdi/Documents/GitHub/indoquran-web/src/app/api/bookmarks/[userId]/[surahId]/[ayatNumber]/route.ts
 import { NextResponse } from 'next/server';
 import { bookmarkService } from '@/services/bookmarkService';
 
-interface RouteParams {
-  params: {
+// GET /api/bookmarks/[userId]/[surahId]/[ayatNumber]
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{
     userId: string;
     surahId: string;
     ayatNumber: string;
-  }
-}
-
-// GET /api/bookmarks/[userId]/[surahId]/[ayatNumber]
-export async function GET(request: Request, { params }: RouteParams) {
+  }> }
+) {
   try {
-    // Await the params object before destructuring
-    const paramsObj = await params;
-    const { userId, surahId, ayatNumber } = paramsObj;
+    // Await the params object since it's a promise in Next.js 15
+    const resolvedParams = await params;
+    const { userId, surahId, ayatNumber } = resolvedParams;
     
     if (!userId || !surahId || !ayatNumber) {
       return NextResponse.json({
@@ -50,9 +50,17 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 // DELETE /api/bookmarks/[userId]/[surahId]/[ayatNumber]
-export async function DELETE(request: Request, { params }: RouteParams) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{
+    userId: string;
+    surahId: string;
+    ayatNumber: string;
+  }> }
+) {
   try {
-    const { userId, surahId, ayatNumber } = params;
+    const resolvedParams = await params;
+    const { userId, surahId, ayatNumber } = resolvedParams;
     
     if (!userId || !surahId || !ayatNumber) {
       return NextResponse.json({
@@ -88,11 +96,17 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 }
 
 // PUT /api/bookmarks/[userId]/[surahId]/[ayatNumber]
-export async function PUT(request: Request, { params }: RouteParams) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{
+    userId: string;
+    surahId: string;
+    ayatNumber: string;
+  }> }
+) {
   try {
-    // Await the params object before destructuring
-    const paramsObj = await params;
-    const { userId, surahId, ayatNumber } = paramsObj;
+    const resolvedParams = await params;
+    const { userId, surahId, ayatNumber } = resolvedParams;
     const body = await request.json();
     
     if (!userId || !surahId || !ayatNumber) {

@@ -505,6 +505,7 @@ export default function AboutPage() {
                 <div>
                   <h4 className="font-medium text-amber-800">Fitur yang Sedang Dikembangkan:</h4>
                   <ol className="list-decimal pl-5 mt-2">
+                    <li><span className="line-through text-amber-600">Sistem donasi untuk mendukung pengembangan aplikasi</span> ✓</li>
                     <li>Kaligrafi dan visualisasi ayat Al-Quran yang interaktif</li>
                     <li>Pencarian lanjutan dengan filter berdasarkan tema, juz, dan kategori</li>
                     <li>Lebih banyak integrasi dengan media sosial untuk berbagi ayat</li>
@@ -525,6 +526,11 @@ export default function AboutPage() {
                     dengan tema spesifik dari berbagai surah, sehingga memudahkan pengguna untuk mempelajari Al-Quran secara tematik dan komprehensif.
                     Kami juga telah menyempurnakan UX/UI aplikasi untuk memberikan pengalaman yang lebih menyenangkan.
                   </p>
+                  <p className="text-green-700 mt-2">
+                    <strong>Update 14 Mei 2025:</strong> Kami baru saja merilis halaman donasi yang memungkinkan para pengguna untuk berkontribusi dalam pengembangan aplikasi ini. 
+                    Donasi Anda akan sangat membantu kami dalam meningkatkan kualitas dan menambahkan fitur-fitur baru untuk IndoQuran. 
+                    Silakan kunjungi <Link href="/donasi" className="text-green-800 font-semibold hover:underline">halaman Donasi</Link> untuk informasi lebih lanjut.
+                  </p>
                 </div>
                 
                 <h3 className="mt-6">Kontribusi</h3>
@@ -541,7 +547,7 @@ export default function AboutPage() {
                   silakan hubungi kami melalui:
                 </p>
                 <ul>
-                  <li>Email: <a href="mailto:contact@indoquran.id" className="text-amber-700 hover:underline">contact@indoquran.id</a></li>
+                  <li>Email: <a href="mailto:kontak@indoquran.web.id" className="text-amber-700 hover:underline">kontak@indoquran.web.id</a></li>
                   <li>GitHub: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">github.com/indoquran-web</a></li>
                   <li>Formulir Kontak: <Link href="/kontak" className="text-amber-700 hover:underline">Halaman Kontak</Link></li>
                 </ul>
@@ -558,6 +564,19 @@ export default function AboutPage() {
                 
                 <div className="space-y-8">
                   <div className="border-l-4 border-amber-500 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.1 (14 Mei 2025)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Penambahan Halaman Donasi & Peningkatan UI</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Peluncuran halaman donasi untuk mendukung pengembangan aplikasi</li>
+                      <li>Integrasi dengan berbagai metode pembayaran (transfer bank, e-wallet, QRIS)</li>
+                      <li>Sistem pengelolaan transparansi penggunaan dana donasi</li>
+                      <li>Fitur penghargaan digital untuk donatur</li>
+                      <li>Perbaikan responsivitas pada tampilan mobile</li>
+                      <li>Optimasi performa dan kecepatan loading aplikasi</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.0 (13 Mei 2025)</h3>
                     <p className="text-sm text-gray-500 mb-3">Pembaruan Utama - Fitur Jadwal Sholat & Tafsir Tematik</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">

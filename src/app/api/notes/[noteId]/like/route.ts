@@ -1,14 +1,16 @@
+// filepath: /Users/novaherdi/Documents/GitHub/indoquran-web/src/app/api/notes/[noteId]/like/route.ts
 import { NextResponse } from 'next/server';
 import { noteService } from '@/services/noteService';
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 
 // POST /api/notes/[noteId]/like
 export async function POST(
   request: Request,
-  { params }: { params: { noteId: string } }
+  { params }: { params: Promise<{ noteId: string }> }
 ) {
   try {
-    const noteId = Number(params.noteId);
+    const resolvedParams = await params;
+    const noteId = Number(resolvedParams.noteId);
     
     // Verify authentication
     const session = await auth();
@@ -59,10 +61,11 @@ export async function POST(
 // DELETE /api/notes/[noteId]/like
 export async function DELETE(
   request: Request,
-  { params }: { params: { noteId: string } }
+  { params }: { params: Promise<{ noteId: string }> }
 ) {
   try {
-    const noteId = Number(params.noteId);
+    const resolvedParams = await params;
+    const noteId = Number(resolvedParams.noteId);
     
     // Verify authentication
     const session = await auth();

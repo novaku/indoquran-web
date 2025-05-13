@@ -35,6 +35,17 @@ const Footer: React.FC = () => {
             </p>
           </div>
           <div className="flex items-center gap-4 text-sm">
+            <Link href="/donasi" className="text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 transition-colors flex items-center mr-4">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="currentColor" 
+                className="w-4 h-4 mr-1"
+              >
+                <path d="M12,2 C17.5228475,2 22,6.4771525 22,12 C22,17.5228475 17.5228475,22 12,22 C6.4771525,22 2,17.5228475 2,12 C2,6.4771525 6.4771525,2 12,2 Z M11,8 L11,6 L13,6 L13,8 L15.75,8 C16.1642136,8 16.5,8.33578644 16.5,8.75 L16.5,16.25 C16.5,16.6642136 16.1642136,17 15.75,17 L8.25,17 C7.83578644,17 7.5,16.6642136 7.5,16.25 L7.5,8.75 C7.5,8.33578644 7.83578644,8 8.25,8 L11,8 Z" />
+              </svg>
+              Donasi
+            </Link>
             <Tooltip text={useAutoLocation ? 'Beralih ke lokasi default (Jakarta)' : 'Deteksi lokasi otomatis'} position="top">
               <button 
                 onClick={toggleLocationPreference}

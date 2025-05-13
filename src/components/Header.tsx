@@ -59,6 +59,24 @@ export default function Header() {
       )
     },
     {
+      href: '/doa',
+      label: 'Doa Bersama',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        </svg>
+      )
+    },
+    {
+      href: '/donasi',
+      label: 'Donasi',
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-4.5-4.15v3.85H14v-3.35c-1.3.55-2.6.85-3.9.85s-2.6-.3-3.9-.85v3.35H3.75V7.85c1.55.95 3.25 1.5 5.25 1.5s3.7-.55 5.3-1.5zm-7.1-1.35c1.05 0 1.95-.5 2.6-1.5h-5.25c.65 1 1.6 1.5 2.65 1.5z" />
+        </svg>
+      )
+    },
+    {
       href: '/kebijakan-privasi',
       label: 'Kebijakan Privasi',
       icon: (

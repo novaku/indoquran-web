@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import quranClient from '@/services/quranClient';
@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { AyatSearchResults, BasicSearch } from '@/components/SearchComponents';
 import DynamicHead from '@/components/DynamicHead';
 
-export default function AyatSearchPage() {
+function AyatSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
@@ -199,5 +199,14 @@ export default function AyatSearchPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+// Export default component with Suspense boundary
+export default function AyatSearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <AyatSearch />
+    </Suspense>
   );
 }

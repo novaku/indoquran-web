@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { noteService, NoteInput } from '@/services/noteService';
-import { auth } from "@/app/api/auth/[...nextauth]/route";
+import { auth } from "@/lib/auth";
 
 // GET /api/notes?surahId=xxx&ayatNumber=xxx
 // Gets all public notes for a specific ayat
