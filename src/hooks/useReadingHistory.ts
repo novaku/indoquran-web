@@ -2,20 +2,12 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
-import offlineStorage from '@/utils/offlineStorage';
 
 interface ReadingPosition {
   user_id: string;
   surah_id: number;
   ayat_number: number;
   last_read: string;
-}
-
-interface OfflineReadingPosition {
-  id?: string;
-  surahId: number;
-  ayatNumber: number;
-  timestamp: number;
 }
 
 interface UseReadingHistoryOptions {
@@ -36,100 +28,54 @@ export function useReadingHistory({ userId }: UseReadingHistoryOptions) {
     setError(null);
     
     try {
-      // Try to get from API first
       const response = await axios.get(`/api/reading-position?userId=${userId}`);
       
       if (response.data.success) {
         setReadingPosition(response.data.data);
-        
-        // Save to offline storage for offline access
-        if (offlineStorage.isOfflineSupported()) {
-          offlineStorage.saveReadingPosition(userId, response.data.data.surah_id, response.data.data.ayat_number);
-        }
       } else {
-        // If API fails, try to get from offline storage
-        if (offlineStorage.isOfflineSupported()) {
-          const offlinePosition = await offlineStorage.getReadingPosition(userId) as OfflineReadingPosition;
-          if (offlinePosition) {
-            setReadingPosition({
-              user_id: userId,
-              surah_id: offlinePosition.surahId,
-              ayat_number: offlinePosition.ayatNumber,
-              last_read: new Date(offlinePosition.timestamp).toISOString()
-            });
-          }
-        } else {
-          setError(response.data.message || 'Gagal mengambil posisi membaca');
-        }
+        setError('Failed to fetch reading position');
       }
-    } catch (err: any) {
-      // On network error, try offline storage
-      if (offlineStorage.isOfflineSupported()) {
-        try {
-          const offlinePosition = await offlineStorage.getReadingPosition(userId) as OfflineReadingPosition;
-          if (offlinePosition) {
-            setReadingPosition({
-              user_id: userId,
-              surah_id: offlinePosition.surahId,
-              ayat_number: offlinePosition.ayatNumber,
-              last_read: new Date(offlinePosition.timestamp).toISOString()
-            });
-          }
-        } catch (offlineErr) {
-          setError('Gagal mengambil posisi membaca dari penyimpanan offline');
-        }
-      } else {
-        setError(err.message || 'Terjadi kesalahan saat mengambil posisi membaca');
-      }
+    } catch (err) {
+      console.error('Error fetching reading position:', err);
+      setError('Failed to fetch reading position');
     } finally {
       setLoading(false);
     }
   }, [userId]);
 
-  // Save the current reading position
+  // Save reading position to the API
   const saveReadingPosition = useCallback(async (surahId: number, ayatNumber: number) => {
-    if (!userId) return false;
+    if (!userId) return;
     
-    setLoading(true);
+    // Don't set loading to true during save to avoid UI flicker
     setError(null);
     
     try {
-      // Save to offline storage first for immediate feedback
-      if (offlineStorage.isOfflineSupported()) {
-        await offlineStorage.saveReadingPosition(userId, surahId, ayatNumber);
+      const now = Date.now();
+      // Prevent excessive API calls by throttling saves to once per 5 seconds
+      if (now - lastSaved < 5000) {
+        return;
       }
       
-      // Then save to the server
+      setLastSaved(now);
+      
       const response = await axios.post('/api/reading-position', {
-        user_id: userId,
+        user_id: userId,  // Fixed parameter name to match API expectations
         surah_id: surahId,
         ayat_number: ayatNumber
       });
       
       if (response.data.success) {
-        setReadingPosition({
-          user_id: userId,
-          surah_id: surahId,
-          ayat_number: ayatNumber,
-          last_read: new Date().toISOString()
-        });
-        setLastSaved(Date.now());
-        return true;
+        setReadingPosition(response.data.data);
       } else {
-        // Even if server save fails, we still have offline data
-        setError(response.data.message || 'Gagal menyimpan posisi membaca ke server');
-        return false;
+        console.error('Failed to save reading position:', response.data.message);
       }
-    } catch (err: any) {
-      // Server save failed, but offline save might have succeeded
-      setError(err.message || 'Terjadi kesalahan saat menyimpan posisi membaca');
-      return false;
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error('Error saving reading position:', err);
     }
-  }, [userId]);
+  }, [userId, lastSaved]);
 
-  // Load reading position on mount
+  // Initial fetch on component mount
   useEffect(() => {
     if (userId) {
       fetchReadingPosition();
@@ -140,8 +86,7 @@ export function useReadingHistory({ userId }: UseReadingHistoryOptions) {
     readingPosition,
     loading,
     error,
-    lastSaved,
-    fetchReadingPosition,
-    saveReadingPosition
+    saveReadingPosition,
+    fetchReadingPosition
   };
 }

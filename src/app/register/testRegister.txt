@@ -1,0 +1,52 @@
+Registration Flow Test:
+
+1. User navigates to /register
+2. User fills out the registration form with:
+   - Name: Test User
+   - Email: test@example.com 
+   - Password: password123
+   - Confirm Password: password123
+3. User submits the form
+4. The system checks if the email already exists
+5. If the email doesn't exist, it creates a new user account
+6. The system shows a success message
+7. The user is redirected to /login page after 2 seconds
+
+API Contract:
+
+POST /api/register
+Request Body:
+{
+  "name": "Test User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+Successful Response (200 OK):
+{
+  "success": true,
+  "message": "Pendaftaran berhasil",
+  "data": {
+    "user_id": "abc123",
+    "username": "Test User",
+    "email": "test@example.com"
+  }
+}
+
+Error Response (409 Conflict - Email already exists):
+{
+  "success": false,
+  "message": "Email sudah terdaftar. Silakan gunakan email lain atau login"
+}
+
+Error Response (400 Bad Request - Invalid input):
+{
+  "success": false,
+  "message": "Nama, email, dan password harus diisi"
+}
+
+Error Response (500 Internal Server Error):
+{
+  "success": false,
+  "message": "Terjadi kesalahan saat mendaftar: [error message]"
+}

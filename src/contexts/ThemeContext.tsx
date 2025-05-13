@@ -36,12 +36,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove('dark');
     }
-    
-    // Update theme color meta tag for PWA
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', newTheme === 'dark' ? '#1f2937' : '#d97706');
-    }
   };
 
   const toggleTheme = () => {

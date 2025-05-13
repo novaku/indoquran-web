@@ -16,6 +16,20 @@ module.exports = {
       '2xl': '1536px',
     },
     extend: {
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideIn: {
+          '0%': { opacity: '0', transform: 'translateX(-10px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        }
+      },
+      animation: {
+        'fadeIn': 'fadeIn 0.3s ease-out forwards',
+        'slideIn': 'slideIn 0.3s ease-out forwards',
+      },
       colors: {
         // Original amber theme
         'quran-paper': '#FDF8EE',
@@ -49,8 +63,8 @@ module.exports = {
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
       fontFamily: {
-        'arabic': ['Amiri', 'serif'],
-        'uthmani': ['"KFGQPC Uthmanic Script HAFS"', 'Amiri', 'serif'],
+        'arabic': ['var(--font-arabic)', 'var(--font-amiri)', 'serif'],
+        'uthmani': ['"KFGQPC Uthmanic Script HAFS"', 'var(--font-arabic)', 'var(--font-amiri)', 'serif'],
       },
       boxShadow: {
         'islamic': '0 4px 14px 0 rgba(146, 64, 14, 0.1)',

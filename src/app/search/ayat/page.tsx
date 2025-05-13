@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { quranClient } from '@/services/quranClient';
-import { Helmet } from 'react-helmet-async';
+import quranClient from '@/services/quranClient';
 import Link from 'next/link';
-import AyatSearchResults from '@/components/AyatSearchResults';
-import SearchInput from '@/components/SearchInput';
+import { AyatSearchResults, BasicSearch } from '@/components/SearchComponents';
+import DynamicHead from '@/components/DynamicHead';
 
 export default function AyatSearchPage() {
   const router = useRouter();
@@ -19,34 +18,97 @@ export default function AyatSearchPage() {
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const [currentPage, setCurrentPage] = useState(initialPage);
   
-  // Use debounce to avoid too many searches while typing
+  // Track if we're handling an external URL change
+  const isUrlChangeHandled = useRef(false);
+  
+  // Only sync from URL on initial page load
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(searchQuery);
-      // Update URL with search query, reset to page 1 when query changes
-      if (searchQuery.trim() !== '') {
-        router.push(`/search/ayat?q=${encodeURIComponent(searchQuery.trim())}&page=1`, { scroll: false });
-        setCurrentPage(1);
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
+    const urlQuery = searchParams.get('q') || '';
+    
+    if (urlQuery) {
+      setSearchQuery(urlQuery);
+      setDebouncedQuery(urlQuery);
+      setCurrentPage(urlPage);
+    }
+    
+    // We're only running this on mount, not on searchParams change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  // Handle manual URL changes (browser back/forward)
+  useEffect(() => {
+    const handlePopState = () => {
+      // When the user navigates with browser controls, sync state with URL
+      const newUrlParams = new URLSearchParams(window.location.search);
+      const newQuery = newUrlParams.get('q') || '';
+      const newPage = parseInt(newUrlParams.get('page') || '1', 10);
+      
+      console.log('[SearchPage] Browser navigation detected, syncing with URL', {
+        query: newQuery,
+        page: newPage
+      });
+      
+      if (newQuery) {
+        setSearchQuery(newQuery);
+        setDebouncedQuery(newQuery);
+        setCurrentPage(newPage);
       }
+    };
+    
+    // Listen for popstate events (browser back/forward)
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+  
+  // Debounce search query changes
+  useEffect(() => {
+    // Skip empty queries or very short inputs
+    if (!searchQuery || searchQuery.trim().length < 3) return;
+    
+    // Use a debounce timer
+    const timer = setTimeout(() => {
+      // Just update the debounced query state - no URL changes
+      setDebouncedQuery(searchQuery.trim());
+      // Reset to page 1 when query changes
+      setCurrentPage(1);
     }, 500);
     
     return () => clearTimeout(timer);
-  }, [searchQuery, router]);
+  }, [searchQuery]);
   
-  // Update URL when page changes but query remains the same
-  useEffect(() => {
-    if (debouncedQuery.trim() !== '' && initialPage !== currentPage) {
-      router.push(`/search/ayat?q=${encodeURIComponent(debouncedQuery.trim())}&page=${currentPage}`, { scroll: false });
-    }
-  }, [currentPage, debouncedQuery, router, initialPage]);
+  // No need to track user page changes anymore since we're using POST
+  // We'll handle page changes directly in the component without URL updates
   
   const { 
-    data: searchResults = [], 
+    data: searchResponse, 
     isLoading, 
     error 
   } = useQuery({
-    queryKey: ['ayatSearch', debouncedQuery],
-    queryFn: () => quranClient.searchAyatText(debouncedQuery),
+    queryKey: ['ayatSearch', debouncedQuery, currentPage],
+    queryFn: async () => {
+      try {
+        // Use POST-style parameters with pagination
+        const response = await quranClient.searchAyatText({
+          query: debouncedQuery,
+          page: currentPage,
+          itemsPerPage: 10
+        });
+        
+        return response;
+      } catch (err) {
+        console.error("Error searching ayat:", err);
+        return { 
+          results: [], 
+          totalResults: 0, 
+          totalPages: 0, 
+          currentPage: 1 
+        };
+      }
+    },
     enabled: debouncedQuery.trim().length >= 3,
     staleTime: 5 * 60 * 1000, // Cache results for 5 minutes
   });
@@ -55,26 +117,42 @@ export default function AyatSearchPage() {
   
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <Helmet>
-        <title>{debouncedQuery ? `Hasil Pencarian: ${debouncedQuery} | IndoQuran` : 'Pencarian Ayat | IndoQuran'}</title>
-        <meta name="description" content="Cari ayat dalam Al-Quran berdasarkan kata kunci" />
-      </Helmet>
+      <DynamicHead 
+        title={debouncedQuery ? `Hasil Pencarian: ${debouncedQuery} | IndoQuran` : 'Pencarian Ayat | IndoQuran'}
+        description="Cari ayat dalam Al-Quran berdasarkan kata kunci"
+      />
       
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-4">Pencarian Ayat Al-Quran</h1>
         <p className="text-gray-600">Cari ayat dalam Al-Quran berdasarkan kata kunci (minimal 3 karakter)</p>
       </div>
       
-      <div className="mb-8">
-        <SearchInput
+      <div className="mb-8">          <BasicSearch
           value={searchQuery}
-          onChange={setSearchQuery}
+          onChange={(newValue) => {
+            console.log('[SearchPage] onChange called with:', newValue);
+            setSearchQuery(newValue);
+          }}
           placeholder="Masukkan kata kunci pencarian ayat..."
           onSearch={(query: string) => {
+            console.log('[SearchPage] onSearch called with:', query);
+            
+            // Special case for clear action
+            if (query === 'CLEAR') {
+              console.log('[SearchPage] Clear action received');
+              // Just update the local state, don't navigate away from current page
+              setDebouncedQuery('');
+              // Update URL to remove search params but stay on search page
+              router.replace('/search/ayat', { scroll: false });
+              return;
+            }
+            
             if (query && query.trim().length >= 3) {
               setDebouncedQuery(query);
               // Update URL with search query
-              router.push(`/search/ayat?q=${encodeURIComponent(query.trim())}`, { scroll: false });
+              const newUrl = `/search/ayat?q=${encodeURIComponent(query.trim())}`;
+              console.log('[SearchPage] Navigating to:', newUrl);
+              router.push(newUrl, { scroll: false });
             }
           }}
         />
@@ -86,14 +164,32 @@ export default function AyatSearchPage() {
           <p className="text-sm">{(error as Error).message}</p>
         </div>
       ) : (
-        <AyatSearchResults 
-          results={searchResults} 
-          isLoading={isLoading && debouncedQuery.trim().length >= 3} 
-          searchQuery={debouncedQuery}
-          itemsPerPage={10}
-          currentPage={currentPage}
-          onPageChange={(page) => setCurrentPage(page)}
-        />
+        <React.Fragment>
+          {/* Wrap in error boundary or try-catch to prevent element type errors */}
+          {debouncedQuery.trim().length >= 3 ? (
+            <AyatSearchResults 
+              results={searchResponse?.results || []} 
+              isLoading={Boolean(isLoading && debouncedQuery.trim().length >= 3)} 
+              searchQuery={debouncedQuery}
+              itemsPerPage={10}
+              currentPage={searchResponse?.currentPage || currentPage}
+              totalPages={searchResponse?.totalPages || 1}
+              totalResults={searchResponse?.totalResults || 0}
+              onPageChange={(page) => {
+                // Simple page change - no need for URL updates
+                if (page !== currentPage) {
+                  setCurrentPage(page);
+                  // Scroll to top of results
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+            />
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-600">Masukkan minimal 3 karakter untuk mencari</p>
+            </div>
+          )}
+        </React.Fragment>
       )}
       
       <div className="mt-8 text-center">

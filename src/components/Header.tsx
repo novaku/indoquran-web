@@ -13,7 +13,7 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated, logout, loading } = useAuthContext();
+  const { isAuthenticated, logout, loading, user } = useAuthContext();
   const { theme, toggleTheme } = useTheme();
   
   // Determine if current page is a reading page (surah or ayat page)
@@ -178,8 +178,12 @@ export default function Header() {
                   aria-expanded={isMenuOpen}
                   aria-label="Toggle user menu"
                 >
-                  <UserIcon className="h-5 w-5 mr-1" />
-                  <span className="mr-1">Akun</span>
+                  <UserIcon className="h-5 w-5 mr-1 flex-shrink-0" />
+                  {isAuthenticated && !loading && user ? (
+                    <span className="mr-1 truncate max-w-[120px] hidden sm:inline-block">{user.email}</span>
+                  ) : (
+                    <span className="mr-1">Akun</span>
+                  )}
                   {isMenuOpen ? (
                     <ChevronUpIcon className="h-4 w-4" />
                   ) : (
@@ -189,12 +193,18 @@ export default function Header() {
               </Tooltip>
               
               {isMenuOpen && (
-                <div className={`absolute right-0 mt-2 w-64 sm:w-56 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
+                <div className={`absolute right-0 mt-2 w-64 sm:w-72 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
                   isReadingPage ? 'bg-[#f8f4e5] border border-[#d3c6a6]' : 'bg-white border border-gray-200'
                 }`}>
                   <div className="py-1">
-                    {!loading && (isAuthenticated ? (
+                    {!loading && (isAuthenticated && user ? (
                       <>
+                        {/* Display user email in dropdown */}
+                        <div className={`px-4 py-2 mb-1 text-sm font-medium border-b ${
+                          isReadingPage ? 'border-[#d3c6a6] text-[#5D4037]' : 'border-gray-100 text-gray-700'
+                        }`}>
+                          <div className="truncate">{user.email}</div>
+                        </div>
                         <Link
                           href="/profile"
                           className={`flex items-center px-4 py-2 text-sm rounded-md ${

@@ -1,73 +1,40 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import offlineStorage from '../utils/offlineStorage';
 
 /**
  * Component to display the current connectivity status
  */
 export default function ConnectivityStatus() {
-  const [isOnline, setIsOnline] = useState(true);
-  const [showIndicator, setShowIndicator] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
-  
+  const [isOfflineMode, setIsOfflineMode] = useState(false);
+
   useEffect(() => {
-    // Initialize with current network state
-    setIsOnline(navigator.onLine);
-    
-    const handleOnline = () => {
-      setIsOnline(true);
-      setShowIndicator(true);
-      setFadeOut(false);
-      
-      // Hide the indicator after 5 seconds
-      setTimeout(() => {
-        setFadeOut(true);
-        setTimeout(() => setShowIndicator(false), 500); // 500ms for fade out animation
-      }, 5000);
-    };
-    
-    const handleOffline = () => {
-      setIsOnline(false);
-      setShowIndicator(true);
-      setFadeOut(false);
-    };
-    
-    // Register event listeners
+    // Check online status on mount
+    setIsOfflineMode(!navigator.onLine);
+
+    // Set up event listeners for online/offline status
+    const handleOnline = () => setIsOfflineMode(false);
+    const handleOffline = () => setIsOfflineMode(true);
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
-    // Clean up event listeners
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-  
-  // Don't render anything if we don't need to show the indicator
-  if (!showIndicator) {
-    return null;
-  }
-  
-  const bgColor = isOnline ? 'bg-green-500' : 'bg-red-500';
-  const message = isOnline ? 'Back Online' : 'You are offline';
-  const iconClass = isOnline ? 'fas fa-wifi' : 'fas fa-wifi-slash';
-  
+
+  if (!isOfflineMode) return null;
+
   return (
-    <div
-      className={`fixed bottom-5 left-5 z-50 rounded-lg px-4 py-2 text-white shadow-lg transition-opacity duration-500 ${
-        fadeOut ? 'opacity-0' : 'opacity-100'
-      } ${bgColor}`}
-    >
-      <div className="flex items-center space-x-2">
-        <i className={iconClass}></i>
-        <span>{message}</span>
-        {!isOnline && (
-          <span className="text-xs ml-2">
-            (Some features may be limited)
-          </span>
-        )}
-      </div>
+    <div className="bg-amber-100 text-amber-800 p-2 text-center text-sm">
+      <span className="inline-block align-middle mr-1">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      </span>
+      Anda sedang tidak terhubung ke internet. Beberapa fitur mungkin tidak tersedia.
     </div>
   );
 }

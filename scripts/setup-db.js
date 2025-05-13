@@ -3,6 +3,8 @@ import { config } from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { existsSync } from 'fs';
+// Use a simplified logger for scripts
+import { logSqlQuery } from '../src/utils/debug-helpers.js';
 
 // Get directory path for correct relative path resolution
 const __filename = fileURLToPath(import.meta.url);
@@ -41,16 +43,20 @@ async function createDatabase() {
 
   try {
     console.log('Creating database indoquran_db...');
-    await connection.query('CREATE DATABASE IF NOT EXISTS indoquran_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    const createDbQuery = 'CREATE DATABASE IF NOT EXISTS indoquran_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci';
+    logSqlQuery(createDbQuery);
+    await connection.query(createDbQuery);
     console.log('Database created successfully!');
 
     // Switch to the newly created database
-    await connection.query('USE indoquran_db');
+    const useDbQuery = 'USE indoquran_db';
+    logSqlQuery(useDbQuery);
+    await connection.query(useDbQuery);
 
     console.log('Creating tables...');
     
     // Create users table
-    await connection.query(`
+    const createUsersTableQuery = `
       CREATE TABLE IF NOT EXISTS users (
       user_id VARCHAR(36) PRIMARY KEY,
       username VARCHAR(50) UNIQUE NOT NULL,
@@ -61,11 +67,14 @@ async function createDatabase() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
+    `;
+    
+    logSqlQuery(createUsersTableQuery);
+    await connection.query(createUsersTableQuery);
     console.log('Users table created.');
 
     // Create bookmarks table
-    await connection.query(`
+    const createBookmarksTableQuery = `
       CREATE TABLE IF NOT EXISTS bookmarks (
         bookmark_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id VARCHAR(36) NOT NULL,
@@ -78,11 +87,14 @@ async function createDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
         UNIQUE KEY unique_bookmark (user_id, surah_id, ayat_number)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
+    `;
+    
+    logSqlQuery(createBookmarksTableQuery);
+    await connection.query(createBookmarksTableQuery);
     console.log('Bookmarks table created.');
 
     // Create favorites table
-    await connection.query(`
+    const createFavoritesTableQuery = `
       CREATE TABLE IF NOT EXISTS favorites (
         favorite_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id VARCHAR(36) NOT NULL,
@@ -92,11 +104,14 @@ async function createDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
         UNIQUE KEY unique_favorite (user_id, surah_id, ayat_number)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
+    `;
+    
+    logSqlQuery(createFavoritesTableQuery);
+    await connection.query(createFavoritesTableQuery);
     console.log('Favorites table created.');
 
     // Create reading positions table
-    await connection.query(`
+    const createReadingPositionsTableQuery = `
       CREATE TABLE IF NOT EXISTS reading_positions (
         position_id INT AUTO_INCREMENT PRIMARY KEY,
         user_id VARCHAR(36) NOT NULL,
@@ -106,7 +121,10 @@ async function createDatabase() {
         FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
         UNIQUE KEY unique_position (user_id)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `);
+    `;
+    
+    logSqlQuery(createReadingPositionsTableQuery);
+    await connection.query(createReadingPositionsTableQuery);
     console.log('Reading positions table created.');
 
     console.log('All tables created successfully!');

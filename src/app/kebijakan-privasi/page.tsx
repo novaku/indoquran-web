@@ -1,51 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import OfflineBanner from '@/components/OfflineBanner';
-import offlineStorage from '@/utils/offlineStorage';
+import React from 'react';
 
 export default function PrivacyPolicyPage() {
-  // Cache this page for offline access when it's loaded
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Track that this page was visited (for offline access history)
-      offlineStorage.trackStaticPage('/kebijakan-privasi');
-      
-      // Get the current page content
-      const pageContent = {
-        title: 'Kebijakan Privasi | IndoQuran',
-        content: document.querySelector('main')?.innerHTML || '',
-        lastUpdated: Date.now()
-      };
-      
-      // Store the page content for offline access
-      offlineStorage.saveStaticPage('/kebijakan-privasi', pageContent);
-    }
-  }, []);
-
-  const [isOffline, setIsOffline] = useState(false);
-  
-  // Check if we're offline
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setIsOffline(offlineStorage.isOffline());
-      
-      const handleOnline = () => setIsOffline(false);
-      const handleOffline = () => setIsOffline(true);
-      
-      window.addEventListener('online', handleOnline);
-      window.addEventListener('offline', handleOffline);
-      
-      return () => {
-        window.removeEventListener('online', handleOnline);
-        window.removeEventListener('offline', handleOffline);
-      };
-    }
-  }, []);
-
   return (
     <main className="container mx-auto px-4 py-8">
-      <OfflineBanner />
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-amber-800 mb-6 flex items-center">
           <img src="/icons/kebijakan-privasi-icon.svg" alt="Kebijakan Privasi" className="w-8 h-8 mr-3" />
@@ -74,7 +33,6 @@ export default function PrivacyPolicyPage() {
             <li><strong>Informasi Kontak:</strong> Saat menggunakan formulir kontak kami, kami mengumpulkan nama, alamat email, dan isi pesan Anda untuk merespons pertanyaan Anda.</li>
             <li><strong>Data Lokasi:</strong> Hanya dengan izin eksplisit Anda, kami mengakses informasi lokasi untuk menyediakan jadwal waktu salat yang akurat untuk wilayah Anda.</li>
             <li><strong>Informasi Perangkat:</strong> Kami mengumpulkan informasi dasar seperti jenis perangkat, browser, dan sistem operasi untuk memastikan aplikasi berjalan dengan optimal di perangkat Anda.</li>
-            <li><strong>Penyimpanan Lokal:</strong> Kami memanfaatkan penyimpanan lokal di perangkat Anda untuk mendukung fitur offline dan mempercepat akses ke konten.</li>
           </ul>
           
           <h2 className="text-xl font-semibold text-amber-700 mt-6 mb-3">3. Bagaimana Kami Menggunakan Informasi</h2>
@@ -125,11 +83,10 @@ export default function PrivacyPolicyPage() {
           </p>
           <ul className="list-disc pl-6 mb-4">
             <li><strong>Cookie:</strong> Membantu kami mengingat preferensi Anda dan meningkatkan navigasi dalam aplikasi</li>
-            <li><strong>Penyimpanan Lokal:</strong> Memungkinkan akses ke data Al-Quran secara offline dan memperlancar pengalaman membaca</li>
             <li><strong>Analitik:</strong> Membantu kami memahami bagaimana aplikasi digunakan untuk perbaikan berkelanjutan</li>
           </ul>
           <p>
-            Anda memiliki kontrol penuh untuk mengatur preferensi cookie dan penyimpanan lokal melalui pengaturan browser atau perangkat Anda.
+            Anda memiliki kontrol penuh untuk mengatur preferensi cookie melalui pengaturan browser atau perangkat Anda.
           </p>
           
           <h2 className="text-xl font-semibold text-amber-700 mt-6 mb-3">8. Hak-Hak Anda sebagai Pengguna</h2>

@@ -122,16 +122,30 @@ export async function getSurahDetail(id: number): Promise<Surah> {
 }
 
 export async function getTafsir(surahId: number): Promise<TafsirResponse['data']['tafsir']> {
+  const cacheKey = `quran:tafsir:${surahId}`;
+  
   try {
-    // Check if BASE_URL is defined
-    if (!BASE_URL) {
-      console.error("API Base URL is not defined. Please check your environment variables.");
-      throw new Error('API configuration error');
+    // Try to get data from cache first
+    const cachedData = await getCache<TafsirResponse['data']['tafsir']>(cacheKey);
+    if (cachedData) {
+      console.log(`Retrieved tafsir for surah ${surahId} from Redis cache`);
+      return cachedData;
     }
-    
-    // Fetch from API with better error handling
-    console.log(`Fetching tafsir data for surah ${surahId} from ${BASE_URL}/tafsir/${surahId}`);
-    
+  } catch (cacheError) {
+    // If there's an error accessing Redis, log it but continue to fetch from API
+    console.warn(`Redis cache error when retrieving tafsir for surah ${surahId}:`, cacheError);
+  }
+  
+  // Check if BASE_URL is defined
+  if (!BASE_URL) {
+    console.error("API Base URL is not defined. Please check your environment variables.");
+    throw new Error('API configuration error');
+  }
+  
+  // Fetch from API with better error handling
+  console.log(`Fetching tafsir data for surah ${surahId} from ${BASE_URL}/tafsir/${surahId}`);
+  
+  try {
     const response = await fetch(`${BASE_URL}/tafsir/${surahId}`, {
       // Adding headers and longer timeout for reliability
       headers: {
@@ -153,6 +167,14 @@ export async function getTafsir(surahId: number): Promise<TafsirResponse['data']
     if (!result.data?.tafsir) {
       console.error('Unexpected API response format:', result);
       throw new Error('Invalid API response format');
+    }
+    
+    // Cache the tafsir data in Redis with a longer TTL (1 week)
+    try {
+      await setCache(cacheKey, result.data.tafsir);
+      console.log(`Successfully cached tafsir for surah ${surahId} in Redis`);
+    } catch (cacheError) {
+      console.warn(`Redis cache error when setting tafsir for surah ${surahId}:`, cacheError);
     }
     
     return result.data.tafsir;
@@ -222,6 +244,56 @@ export async function checkAllSurahsInCache(): Promise<{ isCached: boolean; miss
   };
 }
 
+// Function to check if all tafsirs (1-114) are cached in Redis and return missing ones
+export async function checkAllTafsirsInCache(): Promise<{ isCached: boolean; missingTafsirs: number[] }> {
+  // First check if Redis is available
+  const redisAvailable = await isRedisAvailable();
+  if (!redisAvailable) {
+    console.log('Redis is not available');
+    return { isCached: false, missingTafsirs: Array.from({ length: 114 }, (_, i) => i + 1) };
+  }
+  
+  // Check all 114 tafsirs to determine which ones are missing from cache
+  const missingTafsirs: number[] = [];
+  
+  // We'll check in batches to avoid overloading Redis
+  const checkBatch = async (startId: number, endId: number) => {
+    const promises = [];
+    for (let surahId = startId; surahId <= endId; surahId++) {
+      promises.push(
+        getCache<TafsirResponse['data']['tafsir']>(`quran:tafsir:${surahId}`)
+          .then(cached => ({ surahId, cached: !!cached }))
+          .catch(() => ({ surahId, cached: false }))
+      );
+    }
+    
+    const results = await Promise.all(promises);
+    return results.filter(result => !result.cached).map(result => result.surahId);
+  };
+  
+  // Check in batches of 20 to avoid overloading Redis
+  const batchSize = 20;
+  const batches = Math.ceil(114 / batchSize);
+  
+  for (let i = 0; i < batches; i++) {
+    const start = i * batchSize + 1;
+    const end = Math.min((i + 1) * batchSize, 114);
+    const batchMissing = await checkBatch(start, end);
+    missingTafsirs.push(...batchMissing);
+  }
+  
+  if (missingTafsirs.length > 0) {
+    console.log(`Found ${missingTafsirs.length} tafsirs missing from Redis cache: ${missingTafsirs.join(', ')}`);
+  } else {
+    console.log('All 114 tafsirs are cached in Redis');
+  }
+  
+  return { 
+    isCached: missingTafsirs.length === 0, 
+    missingTafsirs 
+  };
+}
+
 // Define a type for search results
 export interface AyatSearchResult {
   surahId: number;
@@ -232,15 +304,31 @@ export interface AyatSearchResult {
   matchSnippet: string;
 }
 
-// New function to search for text in all surah ayats (MySQL-like query format)
-export async function searchAyatText(searchQuery: string): Promise<AyatSearchResult[]> {
+// Search types for pagination and POST-based request
+export interface SearchParams {
+  query: string;
+  page?: number;
+  itemsPerPage?: number;
+}
+
+export interface SearchResponse {
+  results: AyatSearchResult[];
+  totalResults: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+// New function to search for text in all surah ayats using POST parameters (with pagination)
+export async function searchAyatText(searchParams: SearchParams): Promise<SearchResponse> {
+  const { query: searchQuery, page = 1, itemsPerPage = 10 } = searchParams;
+  
   if (!searchQuery || searchQuery.trim().length < 3) {
-    return [];
+    return { results: [], totalResults: 0, totalPages: 0, currentPage: page };
   }
 
   // Split the search query into terms for AND-based search
   const searchTerms = searchQuery.toLowerCase().trim().split(/\s+/);
-  const results: AyatSearchResult[] = [];
+  const allResults: AyatSearchResult[] = [];
   const redisAvailable = await isRedisAvailable();
   
   if (!redisAvailable) {
@@ -299,13 +387,48 @@ export async function searchAyatText(searchQuery: string): Promise<AyatSearchRes
       );
     }
     
-    const searchResults = await Promise.all(searchPromises);
-    const flattenedResults = searchResults.flat();
+    // Wait for all search operations to complete
+    const allSurahResults = await Promise.all(searchPromises);
     
-    return flattenedResults;
+    // Flatten the array of arrays
+    allSurahResults.flat().forEach(result => {
+      if (result) allResults.push(result);
+    });
+    
+    // Sort results by surah and ayat numbers
+    allResults.sort((a, b) => {
+      if (a.surahId !== b.surahId) {
+        return a.surahId - b.surahId;
+      }
+      return a.ayatNumber - b.ayatNumber;
+    });
+    
+    // Calculate pagination
+    const totalResults = allResults.length;
+    const totalPages = Math.max(1, Math.ceil(totalResults / itemsPerPage));
+    const safeCurrentPage = Math.min(Math.max(1, page), Math.max(1, totalPages));
+    
+    // Get results for the current page only
+    const startIdx = (safeCurrentPage - 1) * itemsPerPage;
+    const endIdx = Math.min(startIdx + itemsPerPage, totalResults);
+    const paginatedResults = allResults.slice(startIdx, endIdx);
+    
+    console.log(`Search completed, found ${totalResults} matching ayats, showing page ${safeCurrentPage} of ${totalPages}`);
+    
+    return {
+      results: paginatedResults,
+      totalResults,
+      totalPages,
+      currentPage: safeCurrentPage
+    };
   } catch (error) {
-    console.error('Error searching ayat text:', error);
-    throw error;
+    console.error('Error searching ayats:', error);
+    return {
+      results: [],
+      totalResults: 0,
+      totalPages: 0,
+      currentPage: page
+    };
   } finally {
     // No need to release Redis client as we're using the utility functions
   }

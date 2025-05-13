@@ -1,0 +1,572 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useBookmarks } from '@/hooks/useBookmarks';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useNotes } from '@/hooks/useNotes';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import LastReadingPosition from '@/components/LastReadingPosition';
+import BookmarkSkeleton from '@/components/BookmarkSkeleton';
+import FavoriteSkeleton from '@/components/FavoriteSkeleton';
+import ReadingHistorySkeleton from '@/components/ReadingHistorySkeleton';
+import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import * as quranService from '@/services/quranService';
+import { useToast } from '@/contexts/ToastContext';
+import { AyatNote } from '@/services/noteService';
+import Link from 'next/link';
+
+export default function ProfilePage() {
+  const { user, isAuthenticated, loading: authLoading, createTempUser, logout } = useAuthContext();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('bookmarks');
+  const [tabsInitialized, setTabsInitialized] = useState<Record<string, boolean>>({
+    bookmarks: false,
+    favorites: false,
+    history: false,
+    notes: false
+  });
+  const { showToast } = useToast();
+
+  // If not authenticated and not loading, redirect to login page
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  const {
+    bookmarks,
+    loading: bookmarksLoading,
+    error: bookmarksError,
+    fetchBookmarks,
+    removeBookmark
+  } = useBookmarks({ userId: user?.user_id || '' });
+
+  const {
+    favorites,
+    loading: favoritesLoading,
+    error: favoritesError,
+    fetchFavorites,
+    removeFavorite
+  } = useFavorites({ userId: user?.user_id || '' });
+  
+  // Add state for notes
+  const [userNotes, setUserNotes] = useState<AyatNote[]>([]);
+  const [notesLoading, setNotesLoading] = useState<boolean>(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
+  
+  const { 
+    isLoading: hookNotesLoading,
+    error: hookNotesError,
+    getUserNotes,
+    deleteNote
+  } = useNotes({ userId: user?.user_id || '' });
+
+  // Function to fetch user's notes
+  const fetchUserNotes = async (forceRefresh = false) => {
+    if (!user?.user_id) return;
+    
+    setNotesLoading(true);
+    try {
+      const notes = await getUserNotes(forceRefresh);
+      setUserNotes(notes);
+      setNotesError(null);
+    } catch (error) {
+      setNotesError('Gagal memuat catatan');
+      console.error('Error fetching notes:', error);
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  // Fetch data only for the active tab when it changes or when user authenticates
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // Only fetch data for the active tab and mark as initialized
+      if (activeTab === 'bookmarks' && !tabsInitialized.bookmarks) {
+        fetchBookmarks();
+        setTabsInitialized(prev => ({ ...prev, bookmarks: true }));
+      } else if (activeTab === 'favorites' && !tabsInitialized.favorites) {
+        fetchFavorites();
+        setTabsInitialized(prev => ({ ...prev, favorites: true }));
+      } else if (activeTab === 'notes' && !tabsInitialized.notes) {
+        fetchUserNotes();
+        setTabsInitialized(prev => ({ ...prev, notes: true }));
+      }
+      // Reading history is handled internally by LastReadingPosition component
+    }
+  }, [isAuthenticated, user, activeTab, fetchBookmarks, fetchFavorites, fetchUserNotes, tabsInitialized]);
+
+  // Get unique surah IDs only for the active tab data
+  const getNeededSurahIds = () => {
+    if (activeTab === 'bookmarks' && bookmarks) {
+      return [...new Set(bookmarks.map(bookmark => bookmark.surahId))];
+    }
+    if (activeTab === 'favorites' && favorites) {
+      return [...new Set(favorites.map(favorite => favorite.surahId))];
+    }
+    if (activeTab === 'notes' && userNotes) {
+      return [...new Set(userNotes.map(note => note.surahId))];
+    }
+    return [];
+  };
+  
+  // Only fetch surah data for items in the current active tab
+  const surahResults = useQuery({
+    queryKey: ['surahsForProfile', activeTab, getNeededSurahIds()],
+    queryFn: async () => {
+      const neededSurahIds = getNeededSurahIds();
+      if (neededSurahIds.length === 0) return {};
+      
+      const results: Record<number, any> = {};
+      for (const surahId of neededSurahIds) {
+        try {
+          const surah = await quranService.getSurahDetail(surahId);
+          results[surahId] = surah;
+        } catch (error) {
+          console.error(`Error fetching surah ${surahId}:`, error);
+        }
+      }
+      return results;
+    },
+    enabled: isAuthenticated && getNeededSurahIds().length > 0,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  const navigateToSurah = (surahId: number, ayatNumber: number) => {
+    router.push(`/surah/${surahId}?ayat=${ayatNumber}`);
+  };
+
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <Link href="/" className="text-amber-600 hover:text-amber-700 mb-8 inline-flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+        </svg>
+        Kembali ke Beranda
+      </Link>
+      
+      <div className="bg-white rounded-xl overflow-hidden border border-amber-200 shadow-lg mb-8">
+        <div className="p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-amber-900 flex items-center">
+              <img src="/icons/profile-icon.svg" alt="Profil" className="w-8 h-8 mr-3" />
+              Profil Pengguna
+            </h1>
+            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center border-2 border-amber-300">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+        
+          {isAuthenticated && user ? (
+            <div className="mb-6">
+              <p className="mb-2"><span className="font-semibold">Nama Pengguna:</span> {user.username}</p>
+              <p className="mb-4"><span className="font-semibold">Email:</span> {user.email}</p>
+              <button 
+                onClick={logout}
+                className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
+              >
+                Keluar
+              </button>
+            </div>
+          ) : (
+            <div className="mb-6">
+              <p className="mb-4">Silakan login untuk mengakses fitur profil.</p>
+              <button 
+                onClick={createTempUser}
+                className="px-4 py-2 bg-amber-600 text-white rounded hover:bg-amber-700"
+              >
+                Masuk sebagai pengguna sementara
+              </button>
+            </div>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <div className="border-b border-amber-200 mb-6">
+                <nav className="flex flex-wrap gap-1">
+                  <button
+                    onClick={() => {
+                      setActiveTab('bookmarks');
+                      if (!tabsInitialized.bookmarks) {
+                        fetchBookmarks(true);
+                        setTabsInitialized(prev => ({ ...prev, bookmarks: true }));
+                      }
+                    }}
+                    className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
+                      activeTab === 'bookmarks' 
+                        ? 'text-amber-900 border-b-2 border-amber-600' 
+                        : 'text-amber-600 hover:text-amber-800'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                    </svg>
+                    Bookmark
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('favorites');
+                      if (!tabsInitialized.favorites) {
+                        fetchFavorites(true);
+                        setTabsInitialized(prev => ({ ...prev, favorites: true }));
+                      }
+                    }}
+                    className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
+                      activeTab === 'favorites' 
+                        ? 'text-amber-900 border-b-2 border-amber-600' 
+                        : 'text-amber-600 hover:text-amber-800'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    Favorit
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('history');
+                      setTabsInitialized(prev => ({ ...prev, history: true }));
+                    }}
+                    className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
+                      activeTab === 'history' 
+                        ? 'text-amber-900 border-b-2 border-amber-600' 
+                        : 'text-amber-600 hover:text-amber-800'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Riwayat Baca
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveTab('notes');
+                      if (!tabsInitialized.notes) {
+                        fetchUserNotes(true);
+                        setTabsInitialized(prev => ({ ...prev, notes: true }));
+                      }
+                    }}
+                    className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
+                      activeTab === 'notes' 
+                        ? 'text-amber-900 border-b-2 border-amber-600' 
+                        : 'text-amber-600 hover:text-amber-800'
+                    }`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                    </svg>
+                    Catatan
+                  </button>
+                </nav>
+              </div>
+
+              {activeTab === 'bookmarks' && (
+                <div className="animate-fadeIn">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-amber-800">Bookmark Saya</h2>
+                    <button 
+                      onClick={() => fetchBookmarks(true)}
+                      className="text-amber-600 hover:text-amber-800 flex items-center"
+                      disabled={bookmarksLoading}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                      <span className="text-sm">Segarkan</span>
+                    </button>
+                  </div>
+                  
+                  {bookmarksLoading || (bookmarks && bookmarks.length > 0 && surahResults.isLoading) ? (
+                    <BookmarkSkeleton count={3} />
+                  ) : bookmarksError ? (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <p>Gagal memuat bookmark. Silakan coba lagi.</p>
+                    </div>
+                  ) : bookmarks && bookmarks.length > 0 ? (
+                    <div className="space-y-3 animate-fadeIn">
+                      {bookmarks.map((bookmark) => {
+                        const surah = surahResults.data?.[bookmark.surahId];
+                        return (
+                          <div 
+                            key={`${bookmark.surahId}-${bookmark.ayatNumber}`} 
+                            className="bg-amber-50 p-4 rounded-lg border border-amber-200 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-lg text-amber-900">
+                                  {surah ? `${surah.namaLatin} (${bookmark.surahId}:${bookmark.ayatNumber})` : `Surah ${bookmark.surahId}:${bookmark.ayatNumber}`}
+                                </h3>
+                                {surah && (
+                                  <p className="text-sm text-gray-600">{surah.arti}</p>
+                                )}
+                                <p className="text-amber-800 mt-1">{bookmark.addedAt ? new Date(bookmark.addedAt).toLocaleString('id-ID') : 'Tanggal tidak tersedia'}</p>
+                              </div>
+                              
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => navigateToSurah(bookmark.surahId, bookmark.ayatNumber)} 
+                                  className="p-2 bg-amber-100 rounded hover:bg-amber-200 text-amber-700"
+                                  aria-label="Buka ayat"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                  </svg>
+                                </button>
+                                
+                                <button 
+                                  onClick={async () => {
+                                    try {
+                                      await removeBookmark(bookmark.surahId, bookmark.ayatNumber);
+                                      showToast('Bookmark berhasil dihapus', 'success');
+                                    } catch (error) {
+                                      console.error('Error removing bookmark:', error);
+                                      showToast('Gagal menghapus bookmark', 'error');
+                                    }
+                                  }} 
+                                  className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-700"
+                                  aria-label="Hapus bookmark"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-amber-300 mb-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
+                      </svg>
+                      <p className="text-gray-600">Anda belum memiliki bookmark.</p>
+                      <p className="text-gray-500 mt-1 text-sm">Tambahkan bookmark dengan klik ikon bookmark pada ayat.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'favorites' && (
+                <div className="animate-fadeIn">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-amber-800">Ayat Favorit Saya</h2>
+                    <button 
+                      onClick={() => fetchFavorites(true)}
+                      className="text-amber-600 hover:text-amber-800 flex items-center"
+                      disabled={favoritesLoading}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                      <span className="text-sm">Segarkan</span>
+                    </button>
+                  </div>
+                  
+                  {favoritesLoading || (favorites && favorites.length > 0 && surahResults.isLoading) ? (
+                    <FavoriteSkeleton count={3} />
+                  ) : favoritesError ? (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <p>Gagal memuat ayat favorit. Silakan coba lagi.</p>
+                    </div>
+                  ) : favorites && favorites.length > 0 ? (
+                    <div className="space-y-3 animate-fadeIn">
+                      {favorites.map((favorite) => {
+                        const surah = surahResults.data?.[favorite.surahId];
+                        return (
+                          <div 
+                            key={`${favorite.surahId}-${favorite.ayatNumber}`} 
+                            className="bg-rose-50 p-4 rounded-lg border border-rose-200 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-semibold text-lg text-rose-900">
+                                  {surah ? `${surah.namaLatin} (${favorite.surahId}:${favorite.ayatNumber})` : `Surah ${favorite.surahId}:${favorite.ayatNumber}`}
+                                </h3>
+                                {surah && (
+                                  <p className="text-sm text-gray-600">{surah.arti}</p>
+                                )}
+                                <p className="text-rose-800 mt-1">{favorite.addedAt ? new Date(favorite.addedAt).toLocaleString('id-ID') : 'Tanggal tidak tersedia'}</p>
+                              </div>
+                              
+                              <div className="flex space-x-2">
+                                <button 
+                                  onClick={() => navigateToSurah(favorite.surahId, favorite.ayatNumber)} 
+                                  className="p-2 bg-rose-100 rounded hover:bg-rose-200 text-rose-700"
+                                  aria-label="Buka ayat"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                  </svg>
+                                </button>
+                                
+                                <button 
+                                  onClick={async () => {
+                                    try {
+                                      await removeFavorite(favorite.surahId, favorite.ayatNumber);
+                                      showToast('Ayat favorit berhasil dihapus', 'success');
+                                    } catch (error) {
+                                      console.error('Error removing favorite:', error);
+                                      showToast('Gagal menghapus ayat favorit', 'error');
+                                    }
+                                  }} 
+                                  className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-700"
+                                  aria-label="Hapus favorit"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-rose-300 mb-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                      </svg>
+                      <p className="text-gray-600">Anda belum memiliki ayat favorit.</p>
+                      <p className="text-gray-500 mt-1 text-sm">Tambahkan ayat favorit dengan klik ikon hati pada ayat.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'history' && (
+                <div className="animate-fadeIn">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-amber-800">Riwayat Membaca</h2>
+                  </div>
+                  
+                  <LastReadingPosition 
+                    userId={user?.user_id || ''} 
+                    onNavigate={(surahId, ayatNumber) => navigateToSurah(surahId, ayatNumber)}
+                    showSkeleton={<ReadingHistorySkeleton />}
+                  />
+                </div>
+              )}
+
+              {activeTab === 'notes' && (
+                <div className="animate-fadeIn">
+                  <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold text-amber-800">Catatan Saya</h2>
+                    <button 
+                      onClick={() => fetchUserNotes(true)}
+                      className="text-amber-600 hover:text-amber-800 flex items-center"
+                      disabled={notesLoading}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                      <span className="text-sm">Segarkan</span>
+                    </button>
+                  </div>
+                  
+                  {notesLoading || (userNotes && userNotes.length > 0 && surahResults.isLoading) ? (
+                    <div className="space-y-4 animate-pulse">
+                      {[...Array(3)].map((_, index) => (
+                        <div key={index} className="bg-gray-100 p-4 rounded-lg">
+                          <div className="h-5 bg-gray-200 rounded w-1/3 mb-2"></div>
+                          <div className="h-3 bg-gray-200 rounded w-1/4 mb-4"></div>
+                          <div className="h-16 bg-gray-200 rounded w-full"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : notesError ? (
+                    <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <p>Gagal memuat catatan. Silakan coba lagi.</p>
+                    </div>
+                  ) : userNotes && userNotes.length > 0 ? (
+                    <div className="space-y-3 animate-fadeIn">
+                      {userNotes.map((note) => {
+                        const surah = surahResults.data?.[note.surahId];
+                        return (
+                          <div 
+                            key={note.id} 
+                            className="bg-green-50 p-4 rounded-lg border border-green-200 hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div className="w-full">
+                                <h3 className="font-semibold text-lg text-green-900">
+                                  {surah ? `${surah.namaLatin} (${note.surahId}:${note.ayatNumber})` : `Surah ${note.surahId}:${note.ayatNumber}`}
+                                </h3>
+                                <p className="text-sm text-gray-600">{
+                                  note.updatedAt !== note.createdAt 
+                                    ? `Diperbarui ${new Date(note.updatedAt).toLocaleString('id-ID')}` 
+                                    : `Dibuat ${new Date(note.createdAt).toLocaleString('id-ID')}`
+                                }</p>
+                                <div className="mt-2 p-3 bg-white rounded border border-green-100 text-gray-800">
+                                  {note.content}
+                                </div>
+                              </div>
+                              
+                              <div className="flex space-x-2 flex-shrink-0 ml-2">
+                                <button 
+                                  onClick={() => navigateToSurah(note.surahId, note.ayatNumber)} 
+                                  className="p-2 bg-green-100 rounded hover:bg-green-200 text-green-700"
+                                  aria-label="Buka ayat"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                  </svg>
+                                </button>
+                                
+                                <button 
+                                  onClick={async () => {
+                                    try {
+                                      await deleteNote(note.id);
+                                      fetchUserNotes(true); // Refresh notes
+                                      showToast('Catatan berhasil dihapus', 'success');
+                                    } catch (error) {
+                                      console.error('Error deleting note:', error);
+                                      showToast('Gagal menghapus catatan', 'error');
+                                    }
+                                  }} 
+                                  className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-700"
+                                  aria-label="Hapus catatan"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-green-300 mb-2">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                      </svg>
+                      <p className="text-gray-600">Anda belum memiliki catatan.</p>
+                      <p className="text-gray-500 mt-1 text-sm">Tambahkan catatan dengan klik ikon catatan pada ayat.</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

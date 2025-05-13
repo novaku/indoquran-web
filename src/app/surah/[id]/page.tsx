@@ -2,16 +2,16 @@
 
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { quranClient } from '../../../services/quranClient';
+import quranClient from '../../../services/quranClient';
 import { AyatCard } from '../../../components/AyatCard';
-import { AyatCardSkeleton } from '../../../components/AyatCardSkeleton';
+import { AyatCardSkeleton } from '../../../components/SkeletonComponents';
 import { ErrorMessage } from '../../../components/ErrorMessage';
 import { Ayat } from '../../../types/quran';
 import Link from 'next/link';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import SurahStructuredData from '../../../components/SurahStructuredData';
-import offlineStorage from '../../../utils/offlineStorage';
+
 
 const RECITERS = {
   "01": "Abdullah Al-Juhany",
@@ -110,15 +110,7 @@ export default function SurahPage() {
   
   // Track this surah for offline access when data is loaded
   useEffect(() => {
-    if (surah && !isLoading) {
-      // Track the current surah for offline access
-      offlineStorage.trackRecentSurah(surahId);
-      
-      // Cache the surah data for offline access
-      if (surah) {
-        offlineStorage.saveQuranData(`surah-${surahId}`, surah);
-      }
-    }
+    // No longer tracking for offline access
   }, [surah, surahId, isLoading]);
   
   // This code section is after loading state and data has been fetched 

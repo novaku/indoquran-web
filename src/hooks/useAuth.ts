@@ -36,10 +36,58 @@ function useAuth() {
     return result;
   }, []);
 
+  // Request password reset for a user
+  const forgotPassword = useCallback(async (email: string) => {
+    try {
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Password reset request failed');
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Password reset request error:', error);
+      throw error;
+    }
+  }, []);
+  
   // For backward compatibility - redirects to login page instead
   const createTempUser = useCallback(async () => {
     await signIn(undefined, { callbackUrl: '/profile' });
     return null;
+  }, []);
+
+  // Register a new user
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -50,6 +98,8 @@ function useAuth() {
     user,
     loading,
     login,
+    register,
+    forgotPassword,
     createTempUser,
     logout,
     isAuthenticated: status === 'authenticated'

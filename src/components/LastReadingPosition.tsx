@@ -7,7 +7,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import * as quranService from '@/services/quranService';
 import { LoadingSpinner } from './LoadingSpinner';
-import ReadingHistorySkeleton from './ReadingHistorySkeleton';
+import { ReadingHistorySkeleton } from './SkeletonComponents';
 
 const formatDate = (dateString: string) => {
   try {

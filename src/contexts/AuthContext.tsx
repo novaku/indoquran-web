@@ -12,6 +12,8 @@ interface AuthContextType {
     role?: string;
   } | null;
   loading: boolean;
+  login: (email: string, password: string) => Promise<any>;
+  register: (name: string, email: string, password: string) => Promise<any>;
   createTempUser: () => Promise<any>;
   logout: () => void;
   isAuthenticated: boolean;

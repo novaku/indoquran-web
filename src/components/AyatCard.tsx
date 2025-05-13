@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Ayat } from '../types/quran';
-import { quranClient } from '../services/quranClient';
+import quranClient from '../services/quranClient';
 import { LoadingSpinner } from './LoadingSpinner';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useBookmarks } from '@/hooks/useBookmarks';
@@ -13,7 +13,6 @@ import { useToast } from '@/contexts/ToastContext';
 import { useNotes } from '@/hooks/useNotes';
 import { NoteCard, CreateNoteForm } from './NoteComponents';
 import { AyatNote } from '@/services/noteService';
-import offlineStorage from '@/utils/offlineStorage';
 
 interface AudioUrls {
   "01": string;
@@ -186,18 +185,29 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
   // Set up intersection observer to track reading position
   useEffect(() => {
     if (!ayatCardRef.current || !isAuthenticated || !user) return;
+    
+    // Use ref to store the timeout ID to properly clear it
+    let savePositionTimeout: NodeJS.Timeout | null = null;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           // When ayat is visible in viewport for more than 70%
           if (entry.isIntersecting && entry.intersectionRatio > 0.7) {
-            // Save reading position with debounce to avoid too many API calls
-            const savePosition = setTimeout(() => {
-              saveReadingPosition(surahId, ayat.nomorAyat);
-            }, 1000);
+            // Clear any existing timeout to avoid duplicate saves
+            if (savePositionTimeout) {
+              clearTimeout(savePositionTimeout);
+            }
             
-            return () => clearTimeout(savePosition);
+            // Set a new timeout to save the position after the user has viewed the ayat for a second
+            savePositionTimeout = setTimeout(() => {
+              saveReadingPosition(surahId, ayat.nomorAyat);
+              console.log(`Reading position saved: Surah ${surahId}, Ayat ${ayat.nomorAyat}`);
+            }, 1000);
+          } 
+          // When ayat is no longer in view, clear the timeout
+          else if (savePositionTimeout) {
+            clearTimeout(savePositionTimeout);
           }
         });
       },
@@ -207,6 +217,10 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
     observer.observe(ayatCardRef.current);
 
     return () => {
+      // Clean up - clear timeout and disconnect observer when component unmounts
+      if (savePositionTimeout) {
+        clearTimeout(savePositionTimeout);
+      }
       if (ayatCardRef.current) {
         observer.unobserve(ayatCardRef.current);
       }
@@ -653,7 +667,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
                 ) : (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z" clipRule="evenodd" />
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 011.414 0L10 10.586l3.293-3.293a1 1 011.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z" clipRule="evenodd" />
                     </svg>
                     <span>Tampilkan Tafsir</span>
                   </>

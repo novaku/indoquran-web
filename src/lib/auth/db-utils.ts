@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import logger from "@/utils/logger";
 
 // Set Node.js runtime for this file too
 export const runtime = 'nodejs';
@@ -18,14 +19,16 @@ export async function getUserByEmail(email: string) {
   });
 
   try {
-    const [rows]: [any[], any] = await conn.execute(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
-    );
+    const query = 'SELECT * FROM users WHERE email = ?';
+    logger.debug(query, [email]);
+    
+    const [rows]: [any[], any] = await conn.execute(query, [email]);
     await conn.end();
+    
+    logger.info('User lookup by email completed', { found: !!rows[0] });
     return rows[0] as any;
   } catch (error) {
-    console.error('Database query error:', error);
+    logger.error('Database query error in getUserByEmail:', { email, error });
     await conn.end();
     return null;
   }
@@ -52,20 +55,22 @@ export async function createUser(userData: {
     const user_id = uuidv4();
     const hashedPassword = userData.password ? await bcrypt.hash(userData.password, 10) : null;
     
-    await conn.execute(
-      'INSERT INTO users (user_id, username, email, password, provider) VALUES (?, ?, ?, ?, ?)',
-      [user_id, userData.name, userData.email, hashedPassword || '', userData.provider || 'credentials']
-    );
+    const insertQuery = 'INSERT INTO users (user_id, username, email, password, provider) VALUES (?, ?, ?, ?, ?)';
+    const insertParams = [user_id, userData.name, userData.email, hashedPassword || '', userData.provider || 'credentials'];
     
-    const [rows]: [any[], any] = await conn.execute(
-      'SELECT * FROM users WHERE user_id = ?',
-      [user_id]
-    );
+    logger.debug(insertQuery, insertParams);
+    await conn.execute(insertQuery, insertParams);
+    
+    const selectQuery = 'SELECT * FROM users WHERE user_id = ?';
+    logger.debug(selectQuery, [user_id]);
+    
+    const [rows]: [any[], any] = await conn.execute(selectQuery, [user_id]);
     
     await conn.end();
+    logger.info('New user created', { userId: user_id, email: userData.email });
     return rows[0] as any;
   } catch (error) {
-    console.error('Database query error:', error);
+    logger.error('Database query error in createUser:', { userData: { ...userData, password: '[REDACTED]' }, error });
     await conn.end();
     return null;
   }

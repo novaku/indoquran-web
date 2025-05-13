@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Surah } from '../types/quran';
 import { useState, useEffect } from 'react';
-import { quranClient } from '../services/quranClient';
+import quranClient from '../services/quranClient';
 import { useQuery } from '@tanstack/react-query';
 import { LoadingSpinner } from './LoadingSpinner';
 

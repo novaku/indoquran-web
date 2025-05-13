@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import { getEnv } from './env'; // Import from our centralized env utility
+import logger from './logger'; // Import our logger
 
 // Connection pool configuration
 const poolConfig = {
@@ -16,13 +17,24 @@ const poolConfig = {
 // Create MySQL connection pool
 const pool = mysql.createPool(poolConfig);
 
+// Log connection pool creation
+logger.info('MySQL connection pool created', { connectionLimit: poolConfig.connectionLimit });
+
 // Basic query function
 export async function query({ query, values = [] }: { query: string; values?: any[] }) {
+  const startTime = performance.now();
   try {
+    // Execute query
     const [results] = await pool.execute(query, values);
+    
+    // Calculate duration for performance monitoring (general debug info)
+    const duration = Math.round(performance.now() - startTime);
+    logger.debug(`Query completed in ${duration}ms`);
+    
     return results;
   } catch (error) {
-    console.error('Database query error:', error);
+    // Log query errors
+    logger.error('Database query error', { query, values, error });
     throw error;
   }
 }

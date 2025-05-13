@@ -3,28 +3,28 @@ import "./globals.css";
 import { Providers } from './providers';
 import { Inter, Noto_Naskh_Arabic, Amiri } from 'next/font/google';
 import StructuredData from '../components/StructuredData';
-import ServiceWorkerRegistration from '../components/ServiceWorkerRegistration';
-import PWAInstallPrompt from '../components/PWAInstallPrompt';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookThemeProvider from '@/components/BookThemeProvider';
-import ConnectivityStatus from '@/components/ConnectivityStatus';
-import OfflineDataSync from '@/components/OfflineDataSync';
 import React from 'react';
 
+// Optimize Inter font loading - only load Latin subset
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
+  preload: true,
 });
 
+// Optimize Arabic font loading with smaller subset choices
 const arabic = Noto_Naskh_Arabic({ 
   subsets: ['arabic'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '700'], // Reduced font weights to improve loading
   variable: '--font-arabic',
   display: 'swap',
   preload: true,
 });
 
+// Keep Amiri as secondary Arabic font
 const amiri = Amiri({ 
   subsets: ['arabic'],
   weight: ['400', '700'],
@@ -86,13 +86,7 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning className="scroll-smooth">
       <head>
-        <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#d97706" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="IndoQuran" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
-        <link rel="apple-touch-startup-image" href="/icons/icon-512x512.png" />
         <script dangerouslySetInnerHTML={{
           __html: `
             (function() {
@@ -120,10 +114,6 @@ export default function RootLayout({
             </main>
             <Footer />
             <StructuredData />
-            <ServiceWorkerRegistration />
-            <PWAInstallPrompt />
-            <ConnectivityStatus />
-            <OfflineDataSync />
           </BookThemeProvider>
         </Providers>
       </body>

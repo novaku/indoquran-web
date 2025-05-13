@@ -1,211 +1,166 @@
-// Service Worker for IndoQuran Web App - With Offline Support
+// Service worker for IndoQuran-Web app
 
-const CACHE_NAME = 'indoquran-cache-v1';
-const DYNAMIC_CACHE_NAME = 'indoquran-dynamic-cache-v1';
+// Cache version (change this whenever service worker needs updating)
+const CACHE_VERSION = 'v1.0.0';
 
-// Resources to cache immediately when the service worker is installed
-const urlsToCache = [
+// Cache names
+const STATIC_CACHE = `indoquran-static-${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `indoquran-dynamic-${CACHE_VERSION}`;
+const QURAN_CACHE = `indoquran-quran-${CACHE_VERSION}`;
+
+// Resources that should be pre-cached
+const STATIC_ASSETS = [
   '/',
-  '/favicon.ico',
-  '/manifest.json',
-  '/kontak',
-  '/kebijakan-privasi',
   '/offline',
+  '/favicon.ico',
+  '/favicon.svg',
   '/icons/icon-192x192.png',
-  '/icons/icon-384x384.png',
   '/icons/icon-512x512.png',
-  '/fonts/NotoNaskhArabic%5Bwght%5D.ttf'
+  '/fonts/Amiri-Regular.ttf',
+  '/fonts/Amiri-Bold.ttf',
+  '/fonts/UthmanicHafs.ttf'
 ];
 
-// Skip waiting and claim clients immediately to ensure the new service worker takes control
-self.addEventListener('install', (event) => {
+// Install event - precache static assets
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches.open(STATIC_CACHE)
       .then(cache => {
-        console.log('Opened cache:', CACHE_NAME);
-        return cache.addAll(urlsToCache);
+        console.log('Caching app shell and static assets');
+        return cache.addAll(STATIC_ASSETS);
       })
       .then(() => self.skipWaiting())
   );
 });
 
-self.addEventListener('activate', (event) => {
-  // Clean up old caches
+// Activate event - cleanup old caches
+self.addEventListener('activate', event => {
+  const currentCaches = [STATIC_CACHE, DYNAMIC_CACHE, QURAN_CACHE];
+  
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME && cacheName !== DYNAMIC_CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(cacheNames => {
+        return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
+      })
+      .then(cachesToDelete => {
+        return Promise.all(cachesToDelete.map(cacheToDelete => {
+          console.log('Deleting old cache:', cacheToDelete);
+          return caches.delete(cacheToDelete);
+        }));
+      })
+      .then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') {
-    return;
-  }
+// Helper function for determining if a request is for a Quran surah data
+const isQuranRequest = (url) => {
+  return url.includes('/api/quran') || url.includes('/api/surah');
+};
 
-  // Handle navigation requests separately - attempt to serve from cache first for specific pages
-  if (event.request.mode === 'navigate') {
-    const url = new URL(event.request.url);
-    const pathname = url.pathname;
+// Helper for network-first with fallback strategy
+const networkFirstWithFallback = async (request, cacheName) => {
+  try {
+    // Try network first
+    const networkResponse = await fetch(request);
     
-    // Special handling for contact and privacy policy pages
-    if (pathname === '/kontak' || pathname === '/kebijakan-privasi') {
-      event.respondWith(
-        caches.match(event.request)
-          .then(cachedResponse => {
-            return cachedResponse || fetch(event.request)
-              .catch(() => caches.match('/offline'));
-          })
-      );
-      return;
+    // Cache the response if successful
+    if (networkResponse && networkResponse.ok) {
+      const cache = await caches.open(cacheName);
+      cache.put(request, networkResponse.clone());
     }
     
-    // Default navigation handling
+    return networkResponse;
+  } catch (error) {
+    // If network fails, try from cache
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // If it's a page request, return offline page
+    if (request.mode === 'navigate') {
+      return caches.match('/offline');
+    }
+    
+    // Otherwise just throw
+    throw error;
+  }
+};
+
+// Fetch event handler with different strategies
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+
+  // Don't cache browser-sync and socket.io requests during development
+  if (url.hostname === 'localhost' && 
+    (url.pathname.includes('browser-sync') || url.pathname.includes('socket.io'))) {
+    return;
+  }
+
+  // Strategy for Quran data - cache with long TTL, but update in background
+  if (isQuranRequest(url.pathname)) {
+    event.respondWith(networkFirstWithFallback(request, QURAN_CACHE));
+    return;
+  }
+
+  // Strategy for API requests - network first, fallback to cache
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(networkFirstWithFallback(request, DYNAMIC_CACHE));
+    return;
+  }
+
+  // Static assets strategy - cache first, fallback to network
+  if (STATIC_ASSETS.includes(url.pathname) || 
+      url.pathname.startsWith('/fonts/') || 
+      url.pathname.startsWith('/icons/')) {
     event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match('/offline');
-        })
+      caches.match(request)
+        .then(cachedResponse => cachedResponse || fetch(request)
+          .then(networkResponse => {
+            return caches.open(STATIC_CACHE)
+              .then(cache => {
+                cache.put(request, networkResponse.clone());
+                return networkResponse;
+              });
+          })
+        )
     );
     return;
   }
-  
-  // For API requests, prefer network first, fallback to cache
-  if (event.request.url.includes('/api/')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          // Only cache valid responses
-          if (!response || response.status !== 200) {
-            return response;
-          }
-          
-          // Clone the response before returning it
-          const responseToCache = response.clone();
-          caches.open(DYNAMIC_CACHE_NAME)
-            .then(cache => {
-              // Store response in cache but don't wait for it
-              cache.put(event.request, responseToCache);
-            });
-            
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request);
-        })
-    );
-  } 
-  // For Quran content and static pages, use cache first strategy with background refresh
-  else if (event.request.url.includes('/surah/') || 
-           event.request.url.includes('/juz/') || 
-           event.request.url.includes('/quran/') ||
-           event.request.url.includes('/kontak') ||
-           event.request.url.includes('/kebijakan-privasi')) {
-    event.respondWith(
-      caches.match(event.request)
-        .then(cachedResponse => {
-          // Return cached response immediately if available
-          const fetchPromise = fetch(event.request)
-            .then(networkResponse => {
-              if (networkResponse && networkResponse.status === 200) {
-                // Update the cache with the new response
-                caches.open(DYNAMIC_CACHE_NAME)
-                  .then(cache => {
-                    cache.put(event.request, networkResponse.clone());
-                  });
-              }
-              return networkResponse;
-            })
-            .catch(error => {
-              console.log('Fetch failed for Quran content:', error);
-              // If both cache and network fail, return nothing
-              return new Response(JSON.stringify({
-                error: 'Network request failed and no cached data available'
-              }), {
-                headers: { 'Content-Type': 'application/json' }
-              });
-            });
-            
-          return cachedResponse || fetchPromise;
-        })
-    );
-  } 
-  // For static assets (fonts, images, css, js, etc.), use cache first with network fallback
-  else if (
-    event.request.url.match(/\.(js|css|png|jpeg|jpg|gif|svg|ttf|woff|woff2)$/) ||
-    event.request.url.includes('/fonts/') ||
-    event.request.url.includes('/icons/')
-  ) {
-    event.respondWith(
-      caches.match(event.request)
-        .then(cachedResponse => {
-          if (cachedResponse) {
-            // Return cached response and refresh cache in background
-            fetch(event.request)
-              .then(networkResponse => {
-                if (networkResponse && networkResponse.status === 200) {
-                  caches.open(CACHE_NAME).then(cache => {
-                    cache.put(event.request, networkResponse);
-                  });
-                }
-              })
-              .catch(error => console.log('Background refresh failed:', error));
-              
-            return cachedResponse;
-          }
-          
-          // Not in cache, try network
-          return fetch(event.request)
-            .then(response => {
-              if (!response || response.status !== 200) {
-                return response;
-              }
-              
-              // Clone and cache the fresh response
-              const responseToCache = response.clone();
-              caches.open(CACHE_NAME)
-                .then(cache => {
-                  cache.put(event.request, responseToCache);
-                });
-                
-              return response;
-            });
-        })
-    );
-  }
-  // For all other requests, use network first with cache fallback
-  else {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          // Only cache valid responses
-          if (!response || response.status !== 200) {
-            return response;
-          }
-          
-          // Clone the response before returning it
-          const responseToCache = response.clone();
-          caches.open(DYNAMIC_CACHE_NAME)
-            .then(cache => {
-              cache.put(event.request, responseToCache);
-            });
-            
-          return response;
-        })
-        .catch(() => {
-          return caches.match(event.request);
-        })
-    );
-  }
-});
 
-// Log when service worker is installed
-console.log('Service Worker installed - Offline caching enabled');
+  // Default strategy for everything else - try cache first, then network
+  event.respondWith(
+    caches.match(request)
+      .then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        
+        // If not in cache, fetch from network
+        return fetch(request).then(networkResponse => {
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            return networkResponse;
+          }
+          
+          // Clone the response
+          const responseToCache = networkResponse.clone();
+          
+          // Cache the fetched response
+          caches.open(DYNAMIC_CACHE)
+            .then(cache => {
+              cache.put(request, responseToCache);
+            });
+          
+          return networkResponse;
+        })
+        .catch(() => {
+          // If it's a HTML request, return the offline page
+          if (request.headers.get('Accept').includes('text/html')) {
+            return caches.match('/offline');
+          }
+        });
+      })
+  );
+});

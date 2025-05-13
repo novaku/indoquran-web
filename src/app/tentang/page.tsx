@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
 export default function AboutPage() {
-  const [activeTab, setActiveTab] = useState<'tentang' | 'fitur' | 'pengembangan'>('tentang');
+  const [activeTab, setActiveTab] = useState<'tentang' | 'fitur' | 'pengembangan' | 'perubahan'>('tentang');
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -57,10 +57,10 @@ export default function AboutPage() {
           </h1>
           
           <div className="border-b border-amber-200 mb-6">
-            <nav className="flex space-x-2">
+            <nav className="flex flex-wrap gap-1">
               <button
                 onClick={() => setActiveTab('tentang')}
-                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
+                className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'tentang' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
@@ -69,11 +69,11 @@ export default function AboutPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                 </svg>
-                Tentang Aplikasi
+                Tentang Kami
               </button>
               <button
                 onClick={() => setActiveTab('fitur')}
-                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
+                className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'fitur' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
@@ -82,11 +82,11 @@ export default function AboutPage() {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
                 </svg>
-                Fitur Utama
+                Fitur
               </button>
               <button
                 onClick={() => setActiveTab('pengembangan')}
-                className={`px-4 py-2 font-medium rounded-t-lg flex items-center ${
+                className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                   activeTab === 'pengembangan' 
                     ? 'text-amber-900 border-b-2 border-amber-600' 
                     : 'text-amber-600 hover:text-amber-800'
@@ -97,6 +97,19 @@ export default function AboutPage() {
                 </svg>
                 Pengembangan
               </button>
+              <button
+                onClick={() => setActiveTab('perubahan')}
+                className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
+                  activeTab === 'perubahan' 
+                    ? 'text-amber-900 border-b-2 border-amber-600' 
+                    : 'text-amber-600 hover:text-amber-800'
+                }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                Pembaruan
+              </button>
             </nav>
           </div>
           
@@ -105,28 +118,32 @@ export default function AboutPage() {
               <div className="animate-fadeIn">
                 <h2>Latar Belakang</h2>
                 <p>
-                  <strong>Al-Quran Indonesia</strong> adalah aplikasi web yang dikembangkan untuk memudahkan 
-                  Muslim Indonesia dalam membaca, memahami, dan mempelajari Al-Quran. Aplikasi ini hadir 
-                  untuk mengatasi beberapa kendala dalam membaca Al-Quran digital, seperti kesulitan 
-                  dalam mencari ayat tertentu, memahami terjemahan, dan mengakses tafsir dalam Bahasa Indonesia.
+                  <strong>Al-Quran Indonesia</strong> adalah aplikasi web modern yang dikembangkan untuk memudahkan 
+                  Muslim Indonesia dalam membaca, memahami, dan mempelajari Al-Quran kapan saja dan di mana saja. Aplikasi ini hadir 
+                  untuk mengatasi berbagai kendala dalam membaca Al-Quran digital, seperti kesulitan 
+                  dalam pencarian ayat tertentu, akses terjemahan yang akurat, visualisasi yang kurang optimal,
+                  dan kesulitan mengakses tafsir lengkap dalam Bahasa Indonesia.
                 </p>
                 
                 <p>
-                  Misi utama kami adalah menyediakan pengalaman membaca Al-Quran yang mudah diakses, 
-                  intuitif, dan diperkaya dengan fitur-fitur yang membantu pemahaman lebih mendalam 
-                  terhadap kitab suci umat Islam ini.
+                  Misi utama IndoQuran adalah menyediakan pengalaman membaca Al-Quran yang inklusif, 
+                  intuitif, dan diperkaya dengan berbagai fitur yang membantu pemahaman lebih mendalam 
+                  terhadap kitab suci umat Islam. Kami berkomitmen untuk terus mengembangkan aplikasi ini
+                  dengan teknologi terkini dan fitur-fitur yang bermanfaat bagi pengguna.
                 </p>
                 
                 <h2>Tujuan</h2>
                 <p>
-                  Al-Quran Indonesia bertujuan untuk:
+                  IndoQuran bertujuan untuk:
                 </p>
                 <ul>
-                  <li>Memudahkan akses terhadap Al-Quran dalam format digital</li>
-                  <li>Menyediakan terjemahan akurat dalam Bahasa Indonesia</li>
-                  <li>Menyediakan tafsir untuk memperdalam pemahaman</li>
-                  <li>Menghadirkan fitur pencarian terjemahan untuk memudahkan pencarian kata atau tema tertentu</li>
-                  <li>Menyediakan audio murattal dari qari ternama untuk membantu dalam mempelajari bacaan</li>
+                  <li>Menghadirkan Al-Quran digital yang mudah diakses oleh semua kalangan masyarakat</li>
+                  <li>Menyediakan terjemahan akurat dan kontekstual dalam Bahasa Indonesia</li>
+                  <li>Mengintegrasikan tafsir komprehensif untuk memperdalam pemahaman ayat</li>
+                  <li>Menghadirkan fitur pencarian terjemahan yang cepat dan akurat untuk menemukan ayat berdasarkan kata kunci atau tema</li>
+                  <li>Menyediakan audio murottal berkualitas tinggi dari qari internasional terpercaya</li>
+                  <li>Memberikan pengalaman yang menyenangkan dan mudah digunakan, bahkan untuk pengguna awam</li>
+                  <li>Membangun komunitas belajar Al-Quran yang inklusif dan suportif</li>
                 </ul>
                 
                 <h2>Permasalahan yang Diselesaikan</h2>
@@ -218,6 +235,34 @@ export default function AboutPage() {
                     pagination untuk surah panjang dan fitur "jump to ayat".
                   </p>
                 </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">9. Tafsir Tematik (Maudhu'i)</h3>
+                  <p className="text-amber-800">
+                    Fitur Tafsir Tematik menyediakan kumpulan ayat-ayat Al-Quran yang berkaitan dengan tema-tema tertentu. 
+                    Pengguna dapat dengan mudah menemukan dan memahami ayat-ayat yang berkaitan dengan tema spesifik seperti 
+                    kesabaran, syukur, taubat, dan banyak lainnya. Fitur ini membantu pengguna untuk mempelajari Al-Quran 
+                    berdasarkan topik yang diminati secara sistematis dan komprehensif.
+                  </p>
+                </div>
+
+                <div className="mt-10 border-t border-amber-200 pt-6">
+                  <h3 className="text-lg font-bold text-amber-900 mb-4">Informasi Footer</h3>
+                  <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                    <h4 className="font-medium text-amber-800 mb-2">Jadwal Sholat dengan Deteksi Lokasi Otomatis</h4>
+                    <p className="text-amber-800 mb-3">
+                      Fitur jadwal sholat juga tersedia di bagian footer pada setiap halaman aplikasi untuk kemudahan akses. 
+                      Fitur ini dilengkapi dengan:
+                    </p>
+                    <ul className="list-disc pl-5 space-y-1 text-amber-800">
+                      <li>Deteksi lokasi otomatis menggunakan Geolocation API untuk jadwal sholat yang akurat sesuai posisi pengguna</li>
+                      <li>Opsi untuk mengatur lokasi secara manual jika pengguna tidak ingin berbagi lokasi</li>
+                      <li>Penghitungan waktu sholat yang tepat dengan metode perhitungan standar internasional</li>
+                      <li>Tampilan visual yang jelas untuk waktu sholat berikutnya dan perhitungan countdown otomatis</li>
+                      <li>Mode compact yang dapat diperluas untuk menghemat ruang pada layar perangkat</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             )}
             
@@ -236,7 +281,6 @@ export default function AboutPage() {
                   <li><strong>TypeScript</strong> - Untuk keamanan tipe, integritas kode, dan pemeliharaan yang lebih baik</li>
                   <li><strong>TailwindCSS</strong> - Framework CSS modern untuk styling yang konsisten, responsif, dan efisien</li>
                   <li><strong>React Query</strong> - Manajemen state dan data fetching dengan caching yang optimal</li>
-                  <li><strong>PWA Support</strong> - Mendukung Progressive Web App untuk pengalaman seperti aplikasi native dan akses offline</li>
                 </ul>
                 
                 <h3 className="mt-6">Roadmap Pengembangan</h3>
@@ -254,6 +298,7 @@ export default function AboutPage() {
                     <li><span className="line-through text-amber-600">Fitur catatan pribadi untuk ayat-ayat tertentu</span> ✓</li>
                     <li><span className="line-through text-amber-600">Jadwal waktu sholat terintegrasi dengan deteksi lokasi</span> ✓</li>
                     <li><span className="line-through text-amber-600">Notifikasi pengingat waktu sholat</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Tafsir Tematik (Maudhu'i) dengan indeks ayat per tema</span> ✓</li>
                   </ol>
                 </div>
                 
@@ -264,24 +309,30 @@ export default function AboutPage() {
                     <li>Pencarian lanjutan dengan filter berdasarkan tema, juz, dan kategori</li>
                     <li>Lebih banyak integrasi dengan media sosial untuk berbagi ayat</li>
                     <li>Mode pembelajaran Al-Quran dengan pelacakan kemajuan</li>
-                    <li>Peningkatan fitur offline dengan sinkronisasi data yang lebih baik</li>
                   </ol>
                 </div>
                 
                 <div className="bg-green-50 border-l-4 border-green-500 p-4 my-6 rounded-r">
                   <p className="text-green-800 font-medium">Update Terbaru - Mei 2025</p>
                   <p className="text-green-700 mt-1">
-                    Kami telah berhasil mengimplementasikan fitur jadwal waktu sholat dengan deteksi lokasi otomatis
-                    dan kemampuan untuk mengatur notifikasi. Fitur ini dapat diakses dari halaman utama dan menyediakan
-                    waktu sholat yang akurat berdasarkan lokasi pengguna.
+                    Kami dengan gembira mengumumkan peluncuran fitur jadwal waktu sholat terintegrasi dengan deteksi lokasi otomatis
+                    dan sistem pengingat yang dapat disesuaikan. Fitur ini dapat diakses langsung dari halaman utama aplikasi dan menyediakan
+                    jadwal sholat yang akurat berdasarkan lokasi pengguna saat ini. 
+                  </p>
+                  <p className="text-green-700 mt-2">
+                    Selain itu, kami juga meluncurkan fitur baru Tafsir Tematik (Maudhu'i) yang memungkinkan pengguna menemukan
+                    dan mempelajari ayat-ayat Al-Quran berdasarkan tema-tema tertentu. Fitur ini mengumpulkan ayat-ayat yang berkaitan
+                    dengan tema spesifik dari berbagai surah, sehingga memudahkan pengguna untuk mempelajari Al-Quran secara tematik dan komprehensif.
+                    Kami juga telah menyempurnakan UX/UI aplikasi untuk memberikan pengalaman yang lebih menyenangkan.
                   </p>
                 </div>
                 
                 <h3 className="mt-6">Kontribusi</h3>
                 <p>
-                  Al-Quran Indonesia adalah proyek open source yang menerima kontribusi dari komunitas pengembang. 
-                  Kontribusi dapat berupa pelaporan bug, saran fitur, dokumentasi, atau pengembangan kode.
-                  Kami juga mengundang pengujian UX dan feedback dari pengguna untuk terus meningkatkan pengalaman pengguna.
+                  IndoQuran adalah proyek open source yang secara aktif menerima kontribusi dari komunitas pengembang. 
+                  Kami menghargai berbagai bentuk kontribusi, termasuk pelaporan bug, saran fitur, perbaikan dokumentasi, terjemahan, 
+                  dan pengembangan kode baru. Kami juga mengundang pengujian UX dan feedback dari pengguna 
+                  untuk terus meningkatkan pengalaman membaca Al-Quran digital.
                 </p>
                 
                 <h3 className="mt-6">Kontak dan Dukungan</h3>
@@ -291,9 +342,107 @@ export default function AboutPage() {
                 </p>
                 <ul>
                   <li>Email: <a href="mailto:contact@indoquran.id" className="text-amber-700 hover:underline">contact@indoquran.id</a></li>
-                  <li>Github: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">github.com/indoquran-web</a></li>
+                  <li>GitHub: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">github.com/indoquran-web</a></li>
                   <li>Formulir Kontak: <Link href="/kontak" className="text-amber-700 hover:underline">Halaman Kontak</Link></li>
                 </ul>
+              </div>
+            )}
+            
+            {activeTab === 'perubahan' && (
+              <div className="animate-fadeIn">
+                <h2>Riwayat Perubahan (Changelog)</h2>
+                <p className="mb-6">
+                  Kami berkomitmen untuk terus mengembangkan dan menyempurnakan IndoQuran. 
+                  Berikut adalah riwayat perubahan dan pembaruan yang telah kami lakukan pada aplikasi:
+                </p>
+                
+                <div className="space-y-8">
+                  <div className="border-l-4 border-amber-500 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.0 (13 Mei 2025)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Pembaruan Utama - Fitur Jadwal Sholat & Tafsir Tematik</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Menambahkan widget jadwal waktu sholat di halaman utama</li>
+                      <li>Implementasi deteksi lokasi otomatis untuk jadwal sholat yang akurat</li>
+                      <li>Peluncuran fitur Tafsir Tematik (Maudhu'i) untuk pencarian ayat berdasarkan tema</li>
+                      <li>Penambahan 50+ tema tafsir dengan indeks ayat yang komprehensif</li>
+                      <li>Penambahan sistem notifikasi pengingat waktu sholat</li>
+                      <li>Peningkatan performa pencarian ayat dengan teknologi Redis</li>
+                      <li>Perbaikan bug pada bookmarking ayat dan fitur catatan</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.4.2 (27 Maret 2025)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Perbaikan dan Optimasi</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Memperbaiki masalah pada penampilan tafsir ayat</li>
+                      <li>Mengoptimalkan kecepatan loading audio murottal</li>
+                      <li>Memperbaiki tampilan responsif pada perangkat kecil</li>
+                      <li>Mengubah format penyimpanan bookmark untuk performa lebih baik</li>
+                      <li>Perbaikan minor pada UI dan pengalaman pengguna</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.4.0 (8 Februari 2025)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Penambahan Fitur Catatan dan Tema</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Implementasi fitur catatan pribadi untuk setiap ayat</li>
+                      <li>Penambahan mode gelap (dark mode) dengan tema yang dioptimalkan</li>
+                      <li>Peningkatan sistem bookmark dan favorit ayat</li>
+                      <li>Penambahan 3 qari baru untuk audio murottal</li>
+                      <li>Peningkatan dukungan untuk aksesibilitas</li>
+                      <li>Integrasi backend dengan API yang lebih cepat dan handal</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.3.1 (15 Desember 2024)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Perbaikan Stabilitas</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Memperbaiki bug sinkronisasi pada fitur posisi membaca terakhir</li>
+                      <li>Optimasi performa dan loading time di perangkat mobile</li>
+                      <li>Perbaikan tampilan pada browser Safari dan Firefox</li>
+                      <li>Peningkatan keamanan autentikasi pengguna</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.3.0 (28 Oktober 2024)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Peluncuran Next.js 15</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Migrasi ke Next.js 15 untuk performa lebih baik</li>
+                      <li>Implementasi fitur bookmark dan favorit ayat</li>
+                      <li>Penambahan tampilan posisi membaca terakhir</li>
+                      <li>Peningkatan desain UI/UX untuk semua halaman</li>
+                      <li>Optimasi server-side rendering dan static generation</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.0.0 (15 Juli 2024)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Peluncuran Ulang</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Desain ulang lengkap dengan antarmuka yang lebih modern</li>
+                      <li>Implementasi arsitektur baru dengan Next.js dan TypeScript</li>
+                      <li>Penambahan audio murottal untuk semua surah</li>
+                      <li>Fitur pencarian terjemahan yang ditingkatkan</li>
+                      <li>Dukungan PWA untuk penggunaan offline</li>
+                      <li>Sistem autentikasi pengguna untuk fitur personalisasi</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 1.0.0 (10 Januari 2024)</h3>
+                    <p className="text-sm text-gray-500 mb-3">Peluncuran Awal</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Rilis pertama aplikasi IndoQuran</li>
+                      <li>Fitur dasar membaca Al-Quran dengan terjemahan Bahasa Indonesia</li>
+                      <li>Navigasi daftar surah dan ayat</li>
+                      <li>Pencarian terjemahan sederhana</li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             )}
           </div>

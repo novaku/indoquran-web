@@ -8,11 +8,14 @@ import {
   getSurahDetail, 
   getTafsir, 
   checkAllSurahsInCache,
+  checkAllTafsirsInCache,
   searchAyatText, 
-  AyatSearchResult 
+  AyatSearchResult,
+  SearchParams,
+  SearchResponse
 } from "./quranService";
 
-export const quranClient = {
+const quranClient = {
   // Client-side wrappers for API calls
   getAllSurah: async (): Promise<Surah[]> => {
     // Direct call to the server action
@@ -42,10 +45,29 @@ export const quranClient = {
     }
   },
 
-  // New function to search for text across all surah ayats
-  searchAyatText: async (query: string): Promise<AyatSearchResult[]> => {
-    return searchAyatText(query);
+  // Search with pagination using POST-style params
+  searchAyatText: async (params: SearchParams | string): Promise<SearchResponse> => {
+    // Handle backward compatibility by converting string to SearchParams
+    const searchParams = typeof params === 'string' 
+      ? { query: params, page: 1, itemsPerPage: 10 } 
+      : params;
+      
+    return searchAyatText(searchParams);
+  },
+
+  // Check if all tafsirs are cached in Redis and return missing ones
+  checkAllTafsirsInCache: async (): Promise<{ isCached: boolean; missingTafsirs: number[] }> => {
+    return checkAllTafsirsInCache();
+  },
+
+  // Fetch and cache any missing tafsirs
+  fetchAndCacheMissingTafsirs: async (surahIds: number[]): Promise<void> => {
+    // We'll process these one by one to avoid overwhelming the API
+    for (const surahId of surahIds) {
+      await getTafsir(surahId);
+    }
   }
 };
 
+// Only export as default to avoid import confusion
 export default quranClient;

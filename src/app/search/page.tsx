@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
-import { quranClient } from '@/services/quranClient';
+import quranClient from '@/services/quranClient';
 import { ErrorMessage } from '@/components/ErrorMessage';
 import SurahList, { SurahIndexItem } from '@/components/SurahList';
-import SearchInput from '@/components/SearchInput';
+import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
 import Link from 'next/link';
 
 export default function SearchPage() {

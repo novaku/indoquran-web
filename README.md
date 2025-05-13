@@ -20,6 +20,16 @@ DATABASE_URL=mysql://root:password@localhost:3306/indoquran_db
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
+DB_PASSWORD=root
+DB_NAME=indoquran_db
+
+# Logging Configuration
+LOG_LEVEL=INFO           # Options: DEBUG, INFO, WARN, ERROR
+LOG_TO_CONSOLE=true      # Set to 'false' to disable console logging
+LOG_TO_FILE=false        # Set to 'true' to enable file logging
+LOG_FILE_PATH=./logs     # Directory for log files
+LOG_FILENAME=indoquran.log
+DB_USER=root
 DB_PASSWORD=password
 DB_NAME=indoquran_db
 
