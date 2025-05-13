@@ -167,16 +167,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">1. Daftar Surah yang Lengkap</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/surah-list.png" 
                       alt="Daftar Surah Al-Quran" 
-                      width={1024} 
-                      height={423} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      width={800} 
+                      height={371} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan daftar 114 surah Al-Quran dengan informasi lengkap</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Memuat 114 surah Al-Quran lengkap dengan informasi nama, arti, jumlah ayat, dan tempat turun. 
                     Tampilan dioptimalkan untuk kemudahan navigasi dan pencarian surah tertentu dengan desain yang responsif 
@@ -196,16 +196,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">2. Jadwal Waktu Sholat</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/prayer-times.png" 
                       alt="Jadwal Waktu Sholat" 
-                      width={1024} 
-                      height={188} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      width={800} 
+                      height={187} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal waktu sholat dengan deteksi lokasi dan penghitungan countdown</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Fitur jadwal waktu sholat terintegrasi yang dapat secara otomatis mendeteksi lokasi pengguna atau 
                     menggunakan lokasi default (Jakarta Pusat). Menampilkan waktu sholat harian dengan notifikasi pengingat 
@@ -226,16 +226,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">3. Pencarian Terjemahan</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/search-translation.jpg" 
+                      src="/images/features/search-translation.png" 
                       alt="Pencarian Terjemahan Al-Quran" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={460} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Hasil pencarian terjemahan dengan highlight pada kata kunci</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Fitur pencarian terjemahan yang canggih memungkinkan pengguna untuk mencari kata, frasa, atau tema tertentu 
                     dalam terjemahan Al-Quran. Hasil pencarian ditampilkan dengan highlight pada kata kunci 
@@ -256,16 +256,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">4. Tampilan Ayat yang Optimal</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/ayat-display.jpg" 
+                      src="/images/features/ayat-display.png" 
                       alt="Tampilan Ayat Al-Quran" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={258} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan ayat dengan teks Arab, Latin dan terjemahan yang optimal</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Setiap ayat ditampilkan dengan format yang mudah dibaca, meliputi teks Arab dengan font Uthmani yang jelas, 
                     teks Latin (transliterasi), dan terjemahan Bahasa Indonesia yang akurat. Tersedia juga pengaturan ukuran teks 
@@ -287,16 +287,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">5. Tafsir Komprehensif</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/tafsir-view.jpg" 
+                      src="/images/features/tafsir-view.png" 
                       alt="Tampilan Tafsir Ayat" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={189} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan tafsir lengkap dengan penjelasan kontekstual dan asbabun nuzul</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Tafsir lengkap untuk setiap ayat tersedia untuk memperdalam pemahaman kontekstual dan makna. 
                     Pengguna dapat dengan mudah menampilkan atau menyembunyikan tafsir sesuai kebutuhan, 
@@ -317,16 +317,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">6. Audio Murattal Berkualitas</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/audio-player.jpg" 
+                      src="/images/features/audio-player.png" 
                       alt="Audio Murattal Player" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={104} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Player audio murattal dengan pilihan qari dan kontrol pemutaran</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Audio murattal berkualitas tinggi dari 5+ qari ternama tersedia untuk setiap surah dan ayat. 
                     Pengguna dapat memilih qari favorit mereka dan mendengarkan bacaan dengan kontrol pemutaran 
@@ -348,16 +348,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">7. Fitur Personalisasi</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/personalization.jpg" 
+                      src="/images/features/personalization.png" 
                       alt="Fitur Personalisasi" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={495} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Fitur bookmark, catatan pribadi dan posisi terakhir membaca</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Pengguna dapat membuat bookmark, menandai ayat favorit, dan membuat catatan pribadi untuk ayat tertentu. 
                     Aplikasi juga mengingat posisi terakhir membaca untuk memberikan pengalaman yang berkesinambungan.
@@ -377,16 +377,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">8. Berbagi dan Interaktivitas</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/sharing-feature.jpg" 
+                      src="/images/features/sharing-feature.png" 
                       alt="Fitur Berbagi Ayat" 
-                      width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      width={650} 
+                      height={394} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Opsi berbagi ayat melalui berbagai platform media sosial</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Fitur berbagi ayat memudahkan pengguna untuk membagikan ayat tertentu melalui berbagai platform media sosial 
                     beserta terjemahan dan tautan yang dapat dibuka. Aplikasi juga mendukung navigasi yang mudah dengan 
@@ -407,16 +407,16 @@ export default function AboutPage() {
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">9. Tafsir Tematik (Maudhu'i)</h3>
-                  <div className="mb-4">
+                  <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
-                      src="/images/features/tafsir-maudhui.jpg" 
+                      src="/images/features/tafsir-maudhui.png" 
                       alt="Tafsir Tematik (Maudhu'i)" 
                       width={800} 
-                      height={450} 
-                      className="rounded-lg border border-amber-200 shadow-md w-full"
+                      height={425} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
+                    </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan tafsir tematik dengan indeks ayat berdasarkan tema</p>
-                  </div>
                   <p className="text-amber-800 mb-4">
                     Fitur Tafsir Tematik menyediakan kumpulan ayat-ayat Al-Quran yang berkaitan dengan tema-tema tertentu. 
                     Pengguna dapat dengan mudah menemukan dan memahami ayat-ayat yang berkaitan dengan tema spesifik seperti 
@@ -440,16 +440,16 @@ export default function AboutPage() {
                 <div className="mt-10 border-t border-amber-200 pt-6">
                   <h3 className="text-lg font-bold text-amber-900 mb-4">Informasi Footer</h3>
                   <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                    <div className="mb-4">
+                    <div className="mb-4 flex justify-center">
                       <LazyLoadImage 
-                        src="/images/features/footer-prayer-times.jpg" 
+                        src="/images/features/footer-prayer-times.png" 
                         alt="Jadwal Sholat di Footer" 
-                        width={800} 
-                        height={220} 
-                        className="rounded-lg border border-amber-200 shadow-md w-full"
+                        width={618} 
+                        height={206} 
+                        className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                       />
+                      </div>
                       <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal sholat terintegrasi di footer pada semua halaman</p>
-                    </div>
                     <h4 className="font-medium text-amber-800 mb-2">Jadwal Sholat dengan Deteksi Lokasi Otomatis</h4>
                     <p className="text-amber-800 mb-3">
                       Fitur jadwal sholat juga tersedia di bagian footer pada setiap halaman aplikasi untuk kemudahan akses. 

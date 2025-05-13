@@ -92,23 +92,25 @@ export default function ProfilePage() {
     }
   };
 
-  // Fetch data only for the active tab when it changes or when user authenticates
+  // Fetch initial data when component mounts
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Only fetch data for the active tab and mark as initialized
-      if (activeTab === 'bookmarks' && !tabsInitialized.bookmarks) {
-        fetchBookmarks();
+      // Load initial data for the active tab
+      if (activeTab === 'bookmarks') {
+        fetchBookmarks(true);
         setTabsInitialized(prev => ({ ...prev, bookmarks: true }));
-      } else if (activeTab === 'favorites' && !tabsInitialized.favorites) {
-        fetchFavorites();
+      } else if (activeTab === 'favorites') {
+        fetchFavorites(true);
         setTabsInitialized(prev => ({ ...prev, favorites: true }));
-      } else if (activeTab === 'notes' && !tabsInitialized.notes) {
-        fetchUserNotes();
+      } else if (activeTab === 'notes') {
+        fetchUserNotes(true);
         setTabsInitialized(prev => ({ ...prev, notes: true }));
+      } else if (activeTab === 'history') {
+        setTabsInitialized(prev => ({ ...prev, history: true }));
       }
       // Reading history is handled internally by LastReadingPosition component
     }
-  }, [isAuthenticated, user, activeTab, fetchBookmarks, fetchFavorites, fetchUserNotes, tabsInitialized]);
+  }, [isAuthenticated, user]);
 
   // Get unique surah IDs only for the active tab data
   const getNeededSurahIds = () => {
@@ -253,10 +255,8 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setActiveTab('bookmarks');
-                      if (!tabsInitialized.bookmarks) {
-                        fetchBookmarks(true);
-                        setTabsInitialized(prev => ({ ...prev, bookmarks: true }));
-                      }
+                      fetchBookmarks(true);
+                      setTabsInitialized(prev => ({ ...prev, bookmarks: true }));
                     }}
                     className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                       activeTab === 'bookmarks' 
@@ -272,10 +272,8 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setActiveTab('favorites');
-                      if (!tabsInitialized.favorites) {
-                        fetchFavorites(true);
-                        setTabsInitialized(prev => ({ ...prev, favorites: true }));
-                      }
+                      fetchFavorites(true);
+                      setTabsInitialized(prev => ({ ...prev, favorites: true }));
                     }}
                     className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                       activeTab === 'favorites' 
@@ -291,6 +289,7 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setActiveTab('history');
+                      // History is handled by LastReadingPosition component
                       setTabsInitialized(prev => ({ ...prev, history: true }));
                     }}
                     className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
@@ -307,10 +306,8 @@ export default function ProfilePage() {
                   <button
                     onClick={() => {
                       setActiveTab('notes');
-                      if (!tabsInitialized.notes) {
-                        fetchUserNotes(true);
-                        setTabsInitialized(prev => ({ ...prev, notes: true }));
-                      }
+                      fetchUserNotes(true);
+                      setTabsInitialized(prev => ({ ...prev, notes: true }));
                     }}
                     className={`px-3 py-2 font-medium rounded-t-lg flex items-center ${
                       activeTab === 'notes' 
@@ -370,7 +367,10 @@ export default function ProfilePage() {
                             
                             return (
                               <div key={`surah-${surahId}`} className="bg-amber-50 rounded-lg border border-amber-200 overflow-hidden">
-                                <div className="bg-amber-100 p-3 border-b border-amber-200">
+                                <div 
+                                  onClick={() => toggleBookmarkExpansion(surahId)} 
+                                  className="bg-amber-100 p-3 border-b border-amber-200 cursor-pointer hover:bg-amber-200 transition-colors"
+                                >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
                                       <h3 className="font-bold text-amber-900">
@@ -383,10 +383,10 @@ export default function ProfilePage() {
                                         <p className="text-sm text-gray-600">{surah.arti}</p>
                                       )}
                                     </div>
-                                    <button 
-                                      onClick={() => toggleBookmarkExpansion(surahId)}
-                                      className="p-2 bg-amber-100 rounded-full hover:bg-amber-200 text-amber-700 transition-colors"
+                                    <div 
+                                      className="p-2 bg-amber-100 rounded-full hover:bg-amber-300 text-amber-700 transition-colors"
                                       aria-label={expandedBookmarkSurahs[surahId] === true ? "Sembunyikan ayat" : "Tampilkan ayat"}
+                                      onClick={(e) => e.stopPropagation()} // Prevent double toggle when clicking the icon
                                     >
                                       {expandedBookmarkSurahs[surahId] === true ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                         </svg>
                                       )}
-                                    </button>
+                                    </div>
                                   </div>
                                 </div>
                                 
@@ -515,7 +515,10 @@ export default function ProfilePage() {
                             
                             return (
                               <div key={`surah-${surahId}`} className="bg-rose-50 rounded-lg border border-rose-200 overflow-hidden">
-                                <div className="bg-rose-100 p-3 border-b border-rose-200">
+                                <div 
+                                  onClick={() => toggleSurahExpansion(surahId)}
+                                  className="bg-rose-100 p-3 border-b border-rose-200 cursor-pointer hover:bg-rose-200 transition-colors"
+                                >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
                                       <h3 className="font-bold text-rose-900">
@@ -528,10 +531,10 @@ export default function ProfilePage() {
                                         <p className="text-sm text-gray-600">{surah.arti}</p>
                                       )}
                                     </div>
-                                    <button 
-                                      onClick={() => toggleSurahExpansion(surahId)}
-                                      className="p-2 bg-rose-100 rounded-full hover:bg-rose-200 text-rose-700 transition-colors"
+                                    <div 
+                                      className="p-2 bg-rose-100 rounded-full hover:bg-rose-300 text-rose-700 transition-colors"
                                       aria-label={isExpanded ? "Sembunyikan ayat" : "Tampilkan ayat"}
+                                      onClick={(e) => e.stopPropagation()} // Prevent double toggle when clicking the icon
                                     >
                                       {isExpanded ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -542,7 +545,7 @@ export default function ProfilePage() {
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                         </svg>
                                       )}
-                                    </button>
+                                    </div>
                                   </div>
                                 </div>
                                 
@@ -670,7 +673,10 @@ export default function ProfilePage() {
                             
                             return (
                               <div key={`surah-${surahId}`} className="bg-green-50 rounded-lg border border-green-200 overflow-hidden">
-                                <div className="bg-green-100 p-3 border-b border-green-200">
+                                <div 
+                                  onClick={() => toggleNoteExpansion(surahId)}
+                                  className="bg-green-100 p-3 border-b border-green-200 cursor-pointer hover:bg-green-200 transition-colors"
+                                >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
                                       <h3 className="font-bold text-green-900">
@@ -683,10 +689,10 @@ export default function ProfilePage() {
                                         <p className="text-sm text-gray-600">{surah.arti}</p>
                                       )}
                                     </div>
-                                    <button 
-                                      onClick={() => toggleNoteExpansion(surahId)}
-                                      className="p-2 bg-green-100 rounded-full hover:bg-green-200 text-green-700 transition-colors"
+                                    <div 
+                                      className="p-2 bg-green-100 rounded-full hover:bg-green-300 text-green-700 transition-colors"
                                       aria-label={expandedNoteSurahs[surahId] === true ? "Sembunyikan catatan" : "Tampilkan catatan"}
+                                      onClick={(e) => e.stopPropagation()} // Prevent double toggle when clicking the icon
                                     >
                                       {expandedNoteSurahs[surahId] === true ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -697,7 +703,7 @@ export default function ProfilePage() {
                                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                         </svg>
                                       )}
-                                    </button>
+                                    </div>
                                   </div>
                                 </div>
                                 
