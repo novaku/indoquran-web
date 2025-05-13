@@ -6512,3 +6512,796 @@
 [2025-05-13T07:36:03.552Z] [DEBUG] Query completed in 0ms
 [2025-05-13T07:36:03.553Z] [DEBUG] Query completed in 1ms
 [2025-05-13T07:36:03.553Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:33.987Z] [DEBUG] Query completed in 61ms
+[2025-05-13T07:36:33.990Z] [DEBUG] Query completed in 64ms
+[2025-05-13T07:36:33.992Z] [DEBUG] Query completed in 64ms
+[2025-05-13T07:36:33.995Z] [DEBUG] Query completed in 69ms
+[2025-05-13T07:36:33.997Z] [DEBUG] Query completed in 71ms
+[2025-05-13T07:36:33.999Z] [DEBUG] Query completed in 74ms
+[2025-05-13T07:36:34.055Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:34.056Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:34.058Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:34.059Z] [DEBUG] Query completed in 0ms
+[2025-05-13T07:36:42.903Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:43.021Z] [DEBUG] Query completed in 132ms
+[2025-05-13T07:36:43.024Z] [DEBUG] Query completed in 133ms
+[2025-05-13T07:36:43.045Z] [DEBUG] Query completed in 155ms
+[2025-05-13T07:36:43.089Z] [DEBUG] Query completed in 204ms
+[2025-05-13T07:36:43.168Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:43.188Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.204Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:43.207Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:43.254Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.342Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.399Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.417Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:43.429Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.446Z] [DEBUG] Query completed in 7ms
+[2025-05-13T07:36:43.451Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.470Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:36:43.505Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.536Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:43.541Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.545Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:43.558Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.563Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.604Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:43.643Z] [DEBUG] Query completed in 7ms
+[2025-05-13T07:36:43.649Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:43.672Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:43.685Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.698Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.773Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.824Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.829Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:43.852Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.890Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:43.898Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:43.997Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.029Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.034Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.056Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.068Z] [DEBUG] Query completed in 13ms
+[2025-05-13T07:36:44.091Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.130Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.139Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:36:44.174Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.189Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.198Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.203Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.211Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.266Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.453Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:36:44.496Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.518Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.533Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.546Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.563Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:44.598Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.625Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.639Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.658Z] [DEBUG] Query completed in 6ms
+[2025-05-13T07:36:44.664Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.678Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.723Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:44.763Z] [DEBUG] Query completed in 19ms
+[2025-05-13T07:36:44.765Z] [DEBUG] Query completed in 7ms
+[2025-05-13T07:36:44.771Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 1
+}
+[2025-05-13T07:36:44.779Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 1
+}
+[2025-05-13T07:36:44.781Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.793Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:36:44.793Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  1,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.795Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:44.799Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.806Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:36:44.806Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  1,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.824Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:44.828Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.828Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:44.831Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:44.834Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:44.845Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:36:44.872Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.873Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.893Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.914Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.917Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.918Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.934Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.936Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:44.952Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:44.972Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.975Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:44.993Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.004Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:36:45.016Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.018Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.039Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.057Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.058Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.078Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.091Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.095Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.222Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.237Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.239Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.259Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.312Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:45.314Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:45.340Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.357Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.361Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.388Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.402Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.403Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.430Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.441Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.443Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.479Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.490Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.495Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.534Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.536Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.537Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:36:45.572Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.574Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.579Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.613Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.614Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.619Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.654Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:36:45.655Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.662Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.689Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.691Z] [DEBUG] Query completed in 0ms
+[2025-05-13T07:36:45.698Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.726Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:36:45.727Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:36:45.734Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:45.755Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 1
+}
+[2025-05-13T07:36:55.849Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 4
+}
+[2025-05-13T07:36:55.852Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 4
+}
+[2025-05-13T07:36:55.857Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.857Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.859Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:36:55.859Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  4,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.859Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:36:55.860Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  4,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.872Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.872Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:36:55.873Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:36:55.875Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:05.316Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:05.366Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:05.398Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:05.431Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:08.305Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:09.090Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:37:09.678Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:45.904Z] [DEBUG] Query completed in 822ms
+[2025-05-13T07:40:45.911Z] [DEBUG] Query completed in 826ms
+[2025-05-13T07:40:45.989Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:40:47.183Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:47.227Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:47.255Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:47.298Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:50.369Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:52.491Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:40:53.835Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:53.869Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:53.894Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:53.920Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:56.672Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:40:56.697Z] [DEBUG] Query completed in 5ms
+[2025-05-13T07:40:57.927Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:57.957Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:57.996Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:40:58.017Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:01.099Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:16.399Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:16.427Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:16.446Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:16.472Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:20.208Z] [DEBUG] Query completed in 5ms
+[2025-05-13T07:41:20.211Z] [DEBUG] Query completed in 7ms
+[2025-05-13T07:41:20.212Z] [DEBUG] Query completed in 6ms
+[2025-05-13T07:41:20.246Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:20.268Z] [DEBUG] Query completed in 61ms
+[2025-05-13T07:41:20.288Z] [DEBUG] Query completed in 83ms
+[2025-05-13T07:41:20.375Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.381Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.495Z] [DEBUG] Query completed in 24ms
+[2025-05-13T07:41:20.496Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.500Z] [DEBUG] Query completed in 25ms
+[2025-05-13T07:41:20.516Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.529Z] [DEBUG] Query completed in 52ms
+[2025-05-13T07:41:20.537Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.608Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.609Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.621Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.629Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.648Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.657Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.742Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.743Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.752Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:20.758Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.844Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.847Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.850Z] [DEBUG] Query completed in 64ms
+[2025-05-13T07:41:20.851Z] [DEBUG] Query completed in 10ms
+[2025-05-13T07:41:20.852Z] [DEBUG] Query completed in 67ms
+[2025-05-13T07:41:20.845Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:41:20.865Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:20.921Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.924Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:41:20.927Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:20.929Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.934Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:20.946Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.015Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.017Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.023Z] [DEBUG] Query completed in 6ms
+[2025-05-13T07:41:21.025Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.027Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.035Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.126Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.128Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.130Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.132Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.139Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.144Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.150Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:41:21.218Z] [DEBUG] Query completed in 6ms
+[2025-05-13T07:41:21.220Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.223Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:41:21.229Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.232Z] [DEBUG] Query completed in 3ms
+[2025-05-13T07:41:21.242Z] [DEBUG] Query completed in 8ms
+[2025-05-13T07:41:21.402Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:41:21.419Z] [DEBUG] Query completed in 0ms
+[2025-05-13T07:41:21.420Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.425Z] [DEBUG] Query completed in 1ms
+[2025-05-13T07:41:21.430Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.433Z] [DEBUG] Query completed in 4ms
+[2025-05-13T07:41:21.436Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.487Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.488Z] [DEBUG] Query completed in 0ms
+[2025-05-13T07:41:21.490Z] [DEBUG] Query completed in 2ms
+[2025-05-13T07:41:21.493Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.517Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.540Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.563Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.584Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.592Z] [INFO] MySQL connection pool created {
+  "connectionLimit": 10
+}
+[2025-05-13T07:41:21.608Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.627Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.649Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.669Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.692Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.714Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.736Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.763Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.782Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.813Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.836Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:21.858Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 4
+}
+[2025-05-13T07:41:26.575Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 7
+}
+[2025-05-13T07:41:26.577Z] [INFO] Reading position update request received {
+  "user_id": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surah_id": 11,
+  "ayat_number": 7
+}
+[2025-05-13T07:41:26.580Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.580Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.582Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:41:26.582Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  7,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.582Z] [INFO] Updating existing reading position for user {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af"
+}
+[2025-05-13T07:41:26.582Z] [DEBUG] UPDATE reading_positions SET 
+         surah_id = ?, 
+         ayat_number = ?, 
+         last_read = CURRENT_TIMESTAMP 
+         WHERE user_id = ? [
+  11,
+  7,
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.599Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.599Z] [DEBUG] SELECT * FROM reading_positions WHERE user_id = ? [
+  "eb76c390-5811-42d8-b816-9df631e297af"
+]
+[2025-05-13T07:41:26.600Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:26.602Z] [INFO] Reading position updated successfully {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:30.647Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:30.671Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:30.692Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:30.710Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 7
+}
+[2025-05-13T07:41:33.945Z] [INFO] Reading position fetched {
+  "userId": "eb76c390-5811-42d8-b816-9df631e297af",
+  "found": true,
+  "surahId": 11,
+  "ayatNumber": 7
+}

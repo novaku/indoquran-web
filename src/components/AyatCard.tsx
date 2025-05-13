@@ -186,38 +186,32 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
   useEffect(() => {
     if (!ayatCardRef.current || !isAuthenticated || !user) return;
     
-    // Use ref to store the timeout ID to properly clear it
+    console.log("Setting up observer for ayat", ayat.nomorAyat);
     let savePositionTimeout: NodeJS.Timeout | null = null;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // When ayat is visible in viewport for more than 70%
-          if (entry.isIntersecting && entry.intersectionRatio > 0.7) {
-            // Clear any existing timeout to avoid duplicate saves
+          if (entry.isIntersecting) {
+            console.log("Ayat visible:", ayat.nomorAyat);
+            savePositionTimeout = setTimeout(() => {
+              console.log("Saving position for ayat:", ayat.nomorAyat);
+              saveReadingPosition(surahId, ayat.nomorAyat);
+            }, 3000);
+          } else {
             if (savePositionTimeout) {
+              console.log("Clearing timeout for ayat:", ayat.nomorAyat);
               clearTimeout(savePositionTimeout);
             }
-            
-            // Set a new timeout to save the position after the user has viewed the ayat for a second
-            savePositionTimeout = setTimeout(() => {
-              saveReadingPosition(surahId, ayat.nomorAyat);
-              console.log(`Reading position saved: Surah ${surahId}, Ayat ${ayat.nomorAyat}`);
-            }, 1000);
-          } 
-          // When ayat is no longer in view, clear the timeout
-          else if (savePositionTimeout) {
-            clearTimeout(savePositionTimeout);
           }
         });
       },
-      { threshold: [0.7] } // 70% visibility threshold
+      { threshold: 0.5 }
     );
 
     observer.observe(ayatCardRef.current);
-
+    
     return () => {
-      // Clean up - clear timeout and disconnect observer when component unmounts
       if (savePositionTimeout) {
         clearTimeout(savePositionTimeout);
       }
