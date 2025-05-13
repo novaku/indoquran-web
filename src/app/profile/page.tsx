@@ -25,6 +25,10 @@ export default function ProfilePage() {
     history: false,
     notes: false
   });
+  // Add state to track expanded surah groups in different tabs (default to collapsed/hidden)
+  const [expandedFavoriteSurahs, setExpandedFavoriteSurahs] = useState<Record<string, boolean>>({});
+  const [expandedBookmarkSurahs, setExpandedBookmarkSurahs] = useState<Record<string, boolean>>({});
+  const [expandedNoteSurahs, setExpandedNoteSurahs] = useState<Record<string, boolean>>({}); 
   const { showToast } = useToast();
 
   // If not authenticated and not loading, redirect to login page
@@ -135,6 +139,28 @@ export default function ProfilePage() {
 
   const navigateToSurah = (surahId: number, ayatNumber: number) => {
     router.push(`/surah/${surahId}?ayat=${ayatNumber}`);
+  };
+
+  // Functions to toggle expansion of a surah's list in different tabs
+  const toggleSurahExpansion = (surahId: string) => {
+    setExpandedFavoriteSurahs(prev => ({
+      ...prev,
+      [surahId]: !prev[surahId]
+    }));
+  };
+
+  const toggleBookmarkExpansion = (surahId: string) => {
+    setExpandedBookmarkSurahs(prev => ({
+      ...prev,
+      [surahId]: !prev[surahId]
+    }));
+  };
+
+  const toggleNoteExpansion = (surahId: string) => {
+    setExpandedNoteSurahs(prev => ({
+      ...prev,
+      [surahId]: !prev[surahId]
+    }));
   };
 
   if (authLoading) {
@@ -315,23 +341,43 @@ export default function ProfilePage() {
                           return (
                             <div key={`surah-${surahId}`} className="bg-amber-50 rounded-lg border border-amber-200 overflow-hidden">
                               <div className="bg-amber-100 p-3 border-b border-amber-200">
-                                <h3 className="font-bold text-amber-900">
-                                  {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
-                                  <span className="ml-2 bg-amber-200 text-amber-800 text-xs py-0.5 px-1.5 rounded-full">
-                                    {surahBookmarks.length} ayat
-                                  </span>
-                                </h3>
-                                {surah && (
-                                  <p className="text-sm text-gray-600">{surah.arti}</p>
-                                )}
+                                <div className="flex justify-between items-center">
+                                  <div className="flex-1">
+                                    <h3 className="font-bold text-amber-900">
+                                      {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
+                                      <span className="ml-2 bg-amber-200 text-amber-800 text-xs py-0.5 px-1.5 rounded-full">
+                                        {surahBookmarks.length} ayat
+                                      </span>
+                                    </h3>
+                                    {surah && (
+                                      <p className="text-sm text-gray-600">{surah.arti}</p>
+                                    )}
+                                  </div>
+                                  <button 
+                                    onClick={() => toggleBookmarkExpansion(surahId)}
+                                    className="p-2 bg-amber-100 rounded-full hover:bg-amber-200 text-amber-700 transition-colors"
+                                    aria-label={expandedBookmarkSurahs[surahId] === true ? "Sembunyikan ayat" : "Tampilkan ayat"}
+                                  >
+                                    {expandedBookmarkSurahs[surahId] === true ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                      </svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                      </svg>
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                               
-                              <div className="divide-y divide-amber-100">
-                                {sortedBookmarks.map((bookmark) => (
-                                  <div 
-                                    key={`${bookmark.surah_id}-${bookmark.ayat_number}`}
-                                    className="p-3 hover:bg-amber-100/50 transition-colors"
-                                  >
+                              {expandedBookmarkSurahs[surahId] === true && (
+                                <div className="divide-y divide-amber-100">
+                                  {sortedBookmarks.map((bookmark) => (
+                                    <div 
+                                      key={`${bookmark.surah_id}-${bookmark.ayat_number}`}
+                                      className="p-3 hover:bg-amber-100/50 transition-colors"
+                                    >
                                     <div className="flex justify-between items-start">
                                       <div>
                                         <h4 className="font-medium text-amber-900">
@@ -373,6 +419,7 @@ export default function ProfilePage() {
                                   </div>
                                 ))}
                               </div>
+                            )}
                             </div>
                           );
                         })
@@ -431,67 +478,91 @@ export default function ProfilePage() {
                           // Sort favorites by ayat number
                           const sortedFavorites = [...surahFavorites].sort((a, b) => a.ayat_number - b.ayat_number);
                           
+                          // Determine if this surah is expanded, default to false if not set
+                          const isExpanded = expandedFavoriteSurahs[surahId] === true; // Default to collapsed
+                          
                           return (
                             <div key={`surah-${surahId}`} className="bg-rose-50 rounded-lg border border-rose-200 overflow-hidden">
                               <div className="bg-rose-100 p-3 border-b border-rose-200">
-                                <h3 className="font-bold text-rose-900">
-                                  {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
-                                  <span className="ml-2 bg-rose-200 text-rose-800 text-xs py-0.5 px-1.5 rounded-full">
-                                    {surahFavorites.length} ayat
-                                  </span>
-                                </h3>
-                                {surah && (
-                                  <p className="text-sm text-gray-600">{surah.arti}</p>
-                                )}
+                                <div className="flex justify-between items-center">
+                                  <div className="flex-1">
+                                    <h3 className="font-bold text-rose-900">
+                                      {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
+                                      <span className="ml-2 bg-rose-200 text-rose-800 text-xs py-0.5 px-1.5 rounded-full">
+                                        {surahFavorites.length} ayat
+                                      </span>
+                                    </h3>
+                                    {surah && (
+                                      <p className="text-sm text-gray-600">{surah.arti}</p>
+                                    )}
+                                  </div>
+                                  <button 
+                                    onClick={() => toggleSurahExpansion(surahId)}
+                                    className="p-2 bg-rose-100 rounded-full hover:bg-rose-200 text-rose-700 transition-colors"
+                                    aria-label={isExpanded ? "Sembunyikan ayat" : "Tampilkan ayat"}
+                                  >
+                                    {isExpanded ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                      </svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                      </svg>
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                               
-                              <div className="divide-y divide-rose-100">
-                                {sortedFavorites.map((favorite) => (
-                                  <div 
-                                    key={`${favorite.surah_id}-${favorite.ayat_number}`}
-                                    className="p-3 hover:bg-rose-100/50 transition-colors"
-                                  >
-                                    <div className="flex justify-between items-start">
-                                      <div>
-                                        <h4 className="font-medium text-rose-900">
-                                          Ayat {favorite.ayat_number}
-                                        </h4>
-                                        <p className="text-rose-800 text-sm">{favorite.created_at ? new Date(favorite.created_at).toLocaleString('id-ID') : 'Tanggal tidak tersedia'}</p>
-                                      </div>
-                                      
-                                      <div className="flex space-x-2">
-                                        <button 
-                                          onClick={() => navigateToSurah(favorite.surah_id, favorite.ayat_number)} 
-                                          className="p-2 bg-rose-100 rounded hover:bg-rose-200 text-rose-700"
-                                          aria-label="Buka ayat"
-                                        >
-                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                          </svg>
-                                        </button>
+                              {isExpanded && (
+                                <div className="divide-y divide-rose-100">
+                                  {sortedFavorites.map((favorite) => (
+                                    <div 
+                                      key={`${favorite.surah_id}-${favorite.ayat_number}`}
+                                      className="p-3 hover:bg-rose-100/50 transition-colors"
+                                    >
+                                      <div className="flex justify-between items-start">
+                                        <div>
+                                          <h4 className="font-medium text-rose-900">
+                                            Ayat {favorite.ayat_number}
+                                          </h4>
+                                          <p className="text-rose-800 text-sm">{favorite.created_at ? new Date(favorite.created_at).toLocaleString('id-ID') : 'Tanggal tidak tersedia'}</p>
+                                        </div>
                                         
-                                        <button 
-                                          onClick={async () => {
-                                            try {
-                                              await removeFavorite(favorite.surah_id, favorite.ayat_number);
-                                              showToast('Ayat favorit berhasil dihapus', 'success');
-                                            } catch (error) {
-                                              console.error('Error removing favorite:', error);
-                                              showToast('Gagal menghapus ayat favorit', 'error');
-                                            }
-                                          }} 
-                                          className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-700"
-                                          aria-label="Hapus favorit"
-                                        >
-                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                          </svg>
-                                        </button>
+                                        <div className="flex space-x-2">
+                                          <button 
+                                            onClick={() => navigateToSurah(favorite.surah_id, favorite.ayat_number)} 
+                                            className="p-2 bg-rose-100 rounded hover:bg-rose-200 text-rose-700"
+                                            aria-label="Buka ayat"
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                            </svg>
+                                          </button>
+                                          
+                                          <button 
+                                            onClick={async () => {
+                                              try {
+                                                await removeFavorite(favorite.surah_id, favorite.ayat_number);
+                                                showToast('Ayat favorit berhasil dihapus', 'success');
+                                              } catch (error) {
+                                                console.error('Error removing favorite:', error);
+                                                showToast('Gagal menghapus ayat favorit', 'error');
+                                              }
+                                            }} 
+                                            className="p-2 bg-red-100 rounded hover:bg-red-200 text-red-700"
+                                            aria-label="Hapus favorit"
+                                          >
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                            </svg>
+                                          </button>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                ))}
-                              </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                           );
                         })
@@ -572,23 +643,43 @@ export default function ProfilePage() {
                           return (
                             <div key={`surah-${surahId}`} className="bg-green-50 rounded-lg border border-green-200 overflow-hidden">
                               <div className="bg-green-100 p-3 border-b border-green-200">
-                                <h3 className="font-bold text-green-900">
-                                  {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
-                                  <span className="ml-2 bg-green-200 text-green-800 text-xs py-0.5 px-1.5 rounded-full">
-                                    {surahNotes.length} catatan
-                                  </span>
-                                </h3>
-                                {surah && (
-                                  <p className="text-sm text-gray-600">{surah.arti}</p>
-                                )}
+                                <div className="flex justify-between items-center">
+                                  <div className="flex-1">
+                                    <h3 className="font-bold text-green-900">
+                                      {surah ? `${surah.namaLatin} (${surahId})` : `Surah ${surahId}`}
+                                      <span className="ml-2 bg-green-200 text-green-800 text-xs py-0.5 px-1.5 rounded-full">
+                                        {surahNotes.length} catatan
+                                      </span>
+                                    </h3>
+                                    {surah && (
+                                      <p className="text-sm text-gray-600">{surah.arti}</p>
+                                    )}
+                                  </div>
+                                  <button 
+                                    onClick={() => toggleNoteExpansion(surahId)}
+                                    className="p-2 bg-green-100 rounded-full hover:bg-green-200 text-green-700 transition-colors"
+                                    aria-label={expandedNoteSurahs[surahId] === true ? "Sembunyikan catatan" : "Tampilkan catatan"}
+                                  >
+                                    {expandedNoteSurahs[surahId] === true ? (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                                      </svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                      </svg>
+                                    )}
+                                  </button>
+                                </div>
                               </div>
                               
-                              <div className="divide-y divide-green-100">
-                                {sortedNotes.map((note) => (
-                                  <div 
-                                    key={`note-${note.note_id}`}
-                                    className="p-3 hover:bg-green-100/50 transition-colors"
-                                  >
+                              {expandedNoteSurahs[surahId] === true && (
+                                <div className="divide-y divide-green-100">
+                                  {sortedNotes.map((note) => (
+                                    <div 
+                                      key={`note-${note.note_id}`}
+                                      className="p-3 hover:bg-green-100/50 transition-colors"
+                                    >
                                     <div className="space-y-2">
                                       <div className="flex justify-between items-start">
                                         <h4 className="font-medium text-green-900">
@@ -637,6 +728,7 @@ export default function ProfilePage() {
                                   </div>
                                 ))}
                               </div>
+                            )}
                             </div>
                           );
                         })
