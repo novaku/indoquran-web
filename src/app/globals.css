@@ -105,3 +105,93 @@
   border-radius: 0.5rem;
   background-color: rgba(245, 158, 11, 0.08);
 }
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 255, 251, 235; /* amber-50 */
+  --background-end-rgb: 255, 255, 255;
+  --font-arabic: var(--font-arabic);
+  --font-amiri: var(--font-amiri);
+}
+
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 17, 24, 39; /* gray-900 */
+  --background-end-rgb: 31, 41, 55; /* gray-800 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      rgb(var(--background-start-rgb)),
+      rgb(var(--background-end-rgb))
+    );
+}
+
+/* Arabic text */
+.ar {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  line-height: 1.8;
+  word-spacing: 0.3em;
+  font-feature-settings: "tnum" on;
+}
+
+.ar-amiri {
+  font-family: var(--font-amiri);
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes slideFromRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-slideFromRight {
+  animation: slideFromRight 0.3s ease-in-out forwards;
+}
+
+/* Sidebar transition styles */
+.sidebar-overlay {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar {
+  transition: transform 0.3s ease-in-out;
+}
+
+.main-content {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* When sidebar is open, adjust the main content */
+.sidebar-open .main-content {
+  margin-left: 16rem; /* 64px or 16rem for sidebar width */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar-open .main-content {
+    margin-left: 0; /* Don't push content on mobile, just overlay */
+  }
+}
+
+/* Content fade-in animation */
+.content-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}

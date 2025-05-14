@@ -96,3 +96,47 @@
 [2025-05-13T19:58:50.419Z] [INFO] MySQL connection pool created {
   "connectionLimit": 10
 }
+[2025-05-13T23:56:06.567Z] [INFO] MySQL connection pool created with query logging enabled {
+  "connectionLimit": 10
+}
+[2025-05-13T23:56:06.585Z] [DEBUG] MySQL Query {
+  "query": "\n      SELECT \n        p.id, \n        p.author_name AS authorName, \n        p.content, \n        p.user_id AS userId, \n        p.created_at AS createdAt, \n        p.updated_at AS updatedAt,\n        COALESCE(ps.amiin_count, 0) AS amiinCount, \n        COALESCE(ps.comment_count, 0) AS commentCount\n      FROM prayers p\n      LEFT JOIN prayer_stats ps ON p.id = ps.prayer_id\n      ORDER BY p.created_at DESC\n      LIMIT 10 OFFSET 0\n    ",
+  "params": []
+}
+[2025-05-13T23:56:06.941Z] [DEBUG] MySQL Query {
+  "query": "SELECT COUNT(*) AS total FROM prayers",
+  "params": []
+}
+[2025-05-13T23:56:10.082Z] [INFO] MySQL connection pool created with query logging enabled {
+  "connectionLimit": 10
+}
+[2025-05-13T23:56:10.088Z] [DEBUG] MySQL Query {
+  "query": "SELECT \n        p.id, p.author_name as authorName, p.content, p.user_id as userId, \n        p.created_at as createdAt, p.updated_at as updatedAt,\n        ps.amiin_count as amiinCount, ps.comment_count as commentCount\n      FROM prayers p\n      LEFT JOIN prayer_stats ps ON p.id = ps.prayer_id\n      WHERE p.id = ?",
+  "params": [
+    2
+  ]
+}
+[2025-05-13T23:56:10.111Z] [DEBUG] MySQL Query {
+  "query": "SELECT id FROM prayer_responses WHERE prayer_id = ? AND user_id = ? AND response_type = 'amiin'",
+  "params": [
+    2,
+    "eb76c390-5811-42d8-b816-9df631e297af"
+  ]
+}
+[2025-05-13T23:56:10.118Z] [DEBUG] MySQL Query {
+  "query": "SELECT \n        c.id, c.content, c.user_id as userId, c.author_name as authorName,\n        c.created_at as createdAt, c.updated_at as updatedAt\n      FROM prayer_responses c\n      WHERE c.prayer_id = ? AND c.response_type = 'comment'\n      ORDER BY c.created_at DESC",
+  "params": [
+    2
+  ]
+}
+[2025-05-13T23:56:10.726Z] [INFO] MySQL connection pool created with query logging enabled {
+  "connectionLimit": 10
+}
+[2025-05-13T23:57:41.453Z] [DEBUG] MySQL Query {
+  "query": "\n      SELECT \n        p.id, \n        p.author_name AS authorName, \n        p.content, \n        p.user_id AS userId, \n        p.created_at AS createdAt, \n        p.updated_at AS updatedAt,\n        COALESCE(ps.amiin_count, 0) AS amiinCount, \n        COALESCE(ps.comment_count, 0) AS commentCount\n      FROM prayers p\n      LEFT JOIN prayer_stats ps ON p.id = ps.prayer_id\n      ORDER BY p.created_at DESC\n      LIMIT 5 OFFSET 0\n    ",
+  "params": []
+}
+[2025-05-13T23:57:41.646Z] [DEBUG] MySQL Query {
+  "query": "SELECT COUNT(*) AS total FROM prayers",
+  "params": []
+}

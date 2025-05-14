@@ -21,13 +21,13 @@ export async function GET(request: NextRequest) {
         orderClause = 'p.created_at ASC';
         break;
       case 'most_amiin':
-        orderClause = 'COALESCE(ps.amiin_count, 0) DESC, p.created_at DESC';
+        orderClause = '(SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = "amiin") DESC, p.created_at DESC';
         break;
       case 'most_comments':
-        orderClause = 'COALESCE(ps.comment_count, 0) DESC, p.created_at DESC';
+        orderClause = '(SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = "comment") DESC, p.created_at DESC';
         break;
       case 'recent_activity':
-        orderClause = 'COALESCE(ps.last_activity_at, p.created_at) DESC';
+        orderClause = '(SELECT MAX(created_at) FROM prayer_responses WHERE prayer_id = p.id) DESC, p.created_at DESC';
         break;
       default: // 'newest' is default
         orderClause = 'p.created_at DESC';
@@ -44,10 +44,9 @@ export async function GET(request: NextRequest) {
         p.user_id AS userId, 
         p.created_at AS createdAt, 
         p.updated_at AS updatedAt,
-        COALESCE(ps.amiin_count, 0) AS amiinCount, 
-        COALESCE(ps.comment_count, 0) AS commentCount
+        COALESCE((SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = 'amiin'), 0) AS amiinCount,
+        COALESCE((SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = 'comment'), 0) AS commentCount
       FROM prayers p
-      LEFT JOIN prayer_stats ps ON p.id = ps.prayer_id
       ORDER BY ${orderClause}
       LIMIT ${limit} OFFSET ${offset}
     `;
@@ -138,13 +137,7 @@ export async function POST(request: NextRequest) {
     const insertResult = result as any;
     const prayerId = insertResult.insertId;
 
-    // Initialize stats for the new prayer
-    const statsQuery = `INSERT INTO prayer_stats (prayer_id, amiin_count, comment_count, last_activity_at)
-       VALUES (?, 0, 0, NOW())`;
-       
-    console.log('SQL Stats Query:', statsQuery.replace('?', prayerId.toString()));
-    
-    await db.execute(statsQuery, [prayerId]);
+    // No need to initialize stats since we're counting directly from prayer_responses
 
     return NextResponse.json({
       success: true,

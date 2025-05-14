@@ -339,7 +339,7 @@ function HomeContent() {
 
       {/* Tab Navigation */}
       <div className="mb-6">
-        <div role="tablist" aria-label="Konten Al-Quran" className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-hidden w-full sm:w-auto">
+        <div role="tablist" aria-label="Konten Al-Quran" className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-hidden w-full sm:max-w-xl mx-auto">
           <button
             role="tab"
             id="tab-surah"

@@ -35,55 +35,10 @@ CREATE TABLE IF NOT EXISTS `prayer_responses` (
     REFERENCES `prayer_responses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create prayer_stats table to track metrics
-CREATE TABLE IF NOT EXISTS `prayer_stats` (
-  `prayer_id` INT PRIMARY KEY,
-  `amiin_count` INT DEFAULT 0,
-  `comment_count` INT DEFAULT 0,
-  `last_activity_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT `fk_stats_prayer` FOREIGN KEY (`prayer_id`)
-    REFERENCES `prayers` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Add index on response_type for faster counting
+ALTER TABLE `prayer_responses` 
+ADD INDEX `idx_prayer_response_type` (`prayer_id`, `response_type`);
 
--- Triggers to update prayer_stats
-DELIMITER //
-
--- Trigger for new responses
-CREATE TRIGGER IF NOT EXISTS `after_prayer_response_insert`
-AFTER INSERT ON `prayer_responses`
-FOR EACH ROW
-BEGIN
-    IF NEW.response_type = 'amiin' THEN
-        INSERT INTO `prayer_stats` (`prayer_id`, `amiin_count`, `last_activity_at`) 
-        VALUES (NEW.prayer_id, 1, NOW())
-        ON DUPLICATE KEY UPDATE 
-            `amiin_count` = `amiin_count` + 1,
-            `last_activity_at` = NOW();
-    ELSE
-        INSERT INTO `prayer_stats` (`prayer_id`, `comment_count`, `last_activity_at`) 
-        VALUES (NEW.prayer_id, 1, NOW())
-        ON DUPLICATE KEY UPDATE 
-            `comment_count` = `comment_count` + 1,
-            `last_activity_at` = NOW();
-    END IF;
-END//
-
--- Trigger for deleted responses
-CREATE TRIGGER IF NOT EXISTS `after_prayer_response_delete`
-AFTER DELETE ON `prayer_responses`
-FOR EACH ROW
-BEGIN
-    IF OLD.response_type = 'amiin' THEN
-        UPDATE `prayer_stats` 
-        SET `amiin_count` = GREATEST(0, `amiin_count` - 1),
-            `last_activity_at` = NOW()
-        WHERE `prayer_id` = OLD.prayer_id;
-    ELSE
-        UPDATE `prayer_stats` 
-        SET `comment_count` = GREATEST(0, `comment_count` - 1),
-            `last_activity_at` = NOW()
-        WHERE `prayer_id` = OLD.prayer_id;
-    END IF;
-END//
-
-DELIMITER ;
+-- Note: We've removed the prayer_stats table and triggers.
+-- Instead of using a separate stats table, we now count responses directly 
+-- from the prayer_responses table using queries.

@@ -25,11 +25,11 @@ export const PrayerCard: React.FC<PrayerCardProps> = ({ prayer, onViewDetails })
       <div className="flex justify-between items-center pt-2 border-t border-amber-100">
         <div className="flex items-center space-x-3 text-sm">
           <div className="flex items-center space-x-1">
-            <span className="text-amber-600">{prayer.stats?.amiinCount || 0}</span>
+            <span className="text-amber-600">{prayer.amiinCount || 0}</span>
             <span className="text-gray-600">Amiin</span>
           </div>
           <div className="flex items-center space-x-1">
-            <span className="text-amber-600">{prayer.stats?.commentCount || 0}</span>
+            <span className="text-amber-600">{prayer.commentCount || 0}</span>
             <span className="text-gray-600">Komentar</span>
           </div>
         </div>

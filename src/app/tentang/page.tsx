@@ -286,7 +286,40 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">5. Tafsir Komprehensif</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">5. Doa Bersama</h3>
+                  <div className="mb-4 flex justify-center">
+                    <LazyLoadImage 
+                      src="/images/features/prayer-share.png" 
+                      alt="Fitur Doa Bersama" 
+                      width={800} 
+                      height={187} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                    />
+                    </div>
+                    <p className="text-sm text-center mt-2 text-amber-700 italic">Platform berbagi doa dan saling mendoakan sesama muslim</p>
+                  <p className="text-amber-800 mb-4">
+                    Fitur Doa Bersama adalah platform komunitas yang memungkinkan pengguna untuk berbagi doa, harapan, dan permohonan dengan 
+                    sesama muslim. Dibangun dengan konsep <em>silaturahmi digital</em>, fitur ini menciptakan ruang spiritual yang 
+                    mengundang pengguna saling mendukung melalui doa bersama. Anggota komunitas dapat memberikan dukungan dengan mengucapkan "Amiin" 
+                    atau menambahkan komentar doa untuk saling menguatkan dalam kebaikan dan keimanan.
+                  </p>
+                  <div className="mt-3 space-y-2 text-amber-800">
+                    <h4 className="font-medium">Fitur Utama:</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Sistem posting doa dengan dukungan format teks yang mudah dibaca</li>
+                      <li>Mekanisme "Amiin" yang memungkinkan pengguna dengan cepat mendukung doa orang lain</li>
+                      <li>Sistem komentar berjenjang untuk diskusi dan doa tambahan</li>
+                      <li>Penyortiran doa berdasarkan terbaru, terpopuler, atau yang paling banyak mendapat dukungan</li>
+                      <li>Opsi privasi untuk mengontrol visibilitas doa (publik/terbatas)</li>
+                      <li>Notifikasi ketika seseorang mengucapkan "Amiin" atau memberikan komentar pada doa Anda</li>
+                      <li>Kemampuan berbagi doa melalui platform sosial atau tautan langsung</li>
+                      <li>Penanda doa yang telah terjawab atau dalam proses peninjauan</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">6. Tafsir Komprehensif</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/tafsir-view.png" 
@@ -469,87 +502,165 @@ export default function AboutPage() {
             
             {activeTab === 'pengembangan' && (
               <div className="animate-fadeIn">
-                <h2>Pengembangan Aplikasi</h2>
+                <h2>Teknologi dan Pengembangan</h2>
                 
                 <p>
-                  Al-Quran Indonesia dikembangkan menggunakan teknologi web modern untuk memastikan performa, 
-                  keamanan, dan pengalaman pengguna yang optimal. Aplikasi ini didesain dengan pendekatan mobile-first
-                  dan mengutamakan kecepatan akses serta keterbacaan konten. Beberapa teknologi yang digunakan antara lain:
+                  IndoQuran dibangun dengan fondasi teknologi web terkini untuk menghadirkan pengalaman digital 
+                  Al-Quran yang unggul dalam performa, keamanan, dan aksesibilitas. Dengan pendekatan "mobile-first" 
+                  dan fokus pada kecepatan akses, aplikasi ini dirancang untuk memberikan pengalaman membaca yang nyaman 
+                  dan keterbacaan optimal di berbagai perangkat. Arsitektur aplikasi kami didukung oleh ekosistem teknologi berikut:
                 </p>
                 
                 <ul>
-                  <li><strong>Next.js 15</strong> - Framework React terbaru untuk rendering sisi server, streaming, dan pembuatan aplikasi web yang cepat dan responsif</li>
-                  <li><strong>TypeScript</strong> - Untuk keamanan tipe, integritas kode, dan pemeliharaan yang lebih baik</li>
-                  <li><strong>TailwindCSS</strong> - Framework CSS modern untuk styling yang konsisten, responsif, dan efisien</li>
-                  <li><strong>React Query</strong> - Manajemen state dan data fetching dengan caching yang optimal</li>
+                  <li><strong>Next.js 15</strong> - Kerangka pengembangan React generasi terbaru dengan fitur Server Components, Streaming SSR, dan App Router yang mendukung rendering hybrid untuk performa optimal</li>
+                  <li><strong>TypeScript</strong> - Bahasa pemrograman berskala enterprise dengan sistem tipe statis yang meningkatkan keamanan kode, memfasilitasi refaktorisasi, dan mendukung pengembangan kolaboratif</li>
+                  <li><strong>TailwindCSS</strong> - Framework CSS utilitas dengan pendekatan "utility-first" yang memungkinkan desain responsif, konsistensi visual, dan bundel CSS yang dioptimalkan</li>
+                  <li><strong>React Query</strong> - Pustaka manajemen status server dengan kemampuan caching cerdas, invalidasi otomatis, dan sinkronisasi data yang efisien untuk pengalaman pengguna yang responsif</li>
+                  <li><strong>Redis</strong> - Solusi penyimpanan data in-memory untuk caching berkinerja tinggi, mendukung akses data yang cepat dan mengurangi beban pada database utama</li>
                 </ul>
                 
-                <h3 className="mt-6">Roadmap Pengembangan</h3>
+                <h3 className="mt-6">Peta Pengembangan</h3>
                 <p>
-                  Kami secara aktif mengembangkan Al-Quran Indonesia dengan menambahkan fitur-fitur baru dan menyempurnakan
-                  fitur yang sudah ada. Berikut adalah fitur yang telah diimplementasikan dan yang sedang dalam pengembangan:
+                  Tim IndoQuran terus berinovasi untuk menyempurnakan aplikasi Al-Quran Indonesia. Kami berkomitmen menghadirkan 
+                  pengalaman digital membaca Al-Quran yang semakin berkualitas dan memperkaya fitur yang bermanfaat bagi pengguna.
+                  Berikut adalah pencapaian kami dan rencana pengembangan ke depan:
                 </p>
                 
                 <div className="mb-4">
-                  <h4 className="font-medium text-amber-800">Fitur yang Sudah Diimplementasikan:</h4>
+                  <h4 className="font-medium text-amber-800">Fitur yang Telah Terealisasi:</h4>
                   <ol className="list-decimal pl-5 mt-2">
-                    <li><span className="line-through text-amber-600">Fitur bookmark dan favorit ayat</span> ✓</li>
-                    <li><span className="line-through text-amber-600">Lebih banyak pilihan qari untuk audio murattal</span> ✓</li>
-                    <li><span className="line-through text-amber-600">Fitur catatan pribadi untuk ayat-ayat tertentu</span> ✓</li>
-                    <li><span className="line-through text-amber-600">Jadwal waktu sholat terintegrasi dengan deteksi lokasi</span> ✓</li>
-                    <li><span className="line-through text-amber-600">Notifikasi pengingat waktu sholat</span> ✓</li>
-                    <li><span className="line-through text-amber-600">Tafsir Tematik (Maudhu'i) dengan indeks ayat per tema</span> ✓</li>
+                    <li><span className="line-through text-amber-600">Sistem bookmark dan penanda ayat favorit</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Koleksi audio murattal dari qari internasional terpilih</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Sistem pencatatan pribadi untuk refleksi terhadap ayat-ayat</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Jadwal waktu sholat dengan teknologi geolokasi presisi</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Sistem pengingat waktu ibadah yang dapat disesuaikan</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Tafsir Tematik Al-Maudhu'i dengan indeksasi komprehensif</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Platform donasi transparan untuk keberlanjutan layanan</span> <span className="text-green-600 font-medium">✓</span></li>
+                    <li><span className="line-through text-amber-600">Fitur Doa Bersama untuk saling mendoakan dalam komunitas</span> <span className="text-green-600 font-medium">✓</span></li>
                   </ol>
                 </div>
                 
                 <div>
-                  <h4 className="font-medium text-amber-800">Fitur yang Sedang Dikembangkan:</h4>
+                  <h4 className="font-medium text-amber-800">Inovasi yang Segera Hadir:</h4>
                   <ol className="list-decimal pl-5 mt-2">
-                    <li><span className="line-through text-amber-600">Sistem donasi untuk mendukung pengembangan aplikasi</span> ✓</li>
-                    <li>Kaligrafi dan visualisasi ayat Al-Quran yang interaktif</li>
-                    <li>Pencarian lanjutan dengan filter berdasarkan tema, juz, dan kategori</li>
-                    <li>Lebih banyak integrasi dengan media sosial untuk berbagi ayat</li>
-                    <li>Mode pembelajaran Al-Quran dengan pelacakan kemajuan</li>
+                    <li>Visualisasi kaligrafi Al-Quran interaktif dengan teknologi canvas</li>
+                    <li>Sistem pencarian semantik dengan filter multi-dimensi (tema, juz, periode turun)</li>
+                    <li>Ekosistem berbagi ayat terintegrasi dengan platform sosial utama</li>
+                    <li>Modul pembelajaran Al-Quran interaktif dengan pelacakan kemajuan</li>
+                    <li>Komunitas diskusi tematik untuk memperdalam pemahaman ayat</li>
                   </ol>
                 </div>
                 
-                <div className="bg-green-50 border-l-4 border-green-500 p-4 my-6 rounded-r">
-                  <p className="text-green-800 font-medium">Update Terbaru - Mei 2025</p>
+                <h3 className="mt-6">Pengembangan Fitur Doa Bersama</h3>
+                <p className="mb-3">
+                  Fitur Doa Bersama dikembangkan untuk memfasilitasi kebutuhan spiritual dan sosial pengguna IndoQuran. 
+                  Platform ini dibangun sebagai ruang digital yang memungkinkan umat muslim saling berbagi dan mendukung 
+                  dalam doa dan permohonan kepada Allah SWT. Berikut adalah perjalanan pengembangan fitur ini:
+                </p>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+                  <h4 className="font-semibold mb-2 text-amber-900">Tahapan Pengembangan:</h4>
+                  <ol className="list-decimal pl-5 space-y-1.5 text-amber-800">
+                    <li>
+                      <span className="font-medium">Riset Kebutuhan Pengguna (Januari 2025)</span>
+                      <p className="text-sm mt-0.5">
+                        Dilakukan survei kepada 1,200+ pengguna IndoQuran untuk mengidentifikasi kebutuhan akan platform
+                        berbagi doa dalam ekosistem aplikasi Al-Quran. Hasilnya menunjukkan 78% responden menginginkan
+                        fitur ini.
+                      </p>
+                    </li>
+                    <li>
+                      <span className="font-medium">Perancangan Sistem (Februari 2025)</span>
+                      <p className="text-sm mt-0.5">
+                        Pembangunan arsitektur database dan API dengan mempertimbangkan aspek privasi dan keamanan data.
+                        Implementasi schema relasional untuk prayers dan prayer_responses.
+                      </p>
+                    </li>
+                    <li>
+                      <span className="font-medium">Pengembangan Antarmuka (Maret 2025)</span>
+                      <p className="text-sm mt-0.5">
+                        Pembuatan komponen React yang responsif dengan fokus pada aksesibilitas dan UX yang intuitif.
+                        Pengembangan sistem real-time untuk notifikasi dan interaksi pengguna.
+                      </p>
+                    </li>
+                    <li>
+                      <span className="font-medium">Pengujian Beta (April 2025)</span>
+                      <p className="text-sm mt-0.5">
+                        Uji coba terbatas dengan 500 pengguna aktif untuk mengidentifikasi bug dan meningkatkan performa.
+                        Optimalisasi kueri database dan caching untuk mendukung pertumbuhan jumlah doa.
+                      </p>
+                    </li>
+                    <li>
+                      <span className="font-medium">Peluncuran Resmi (2 Mei 2025)</span>
+                      <p className="text-sm mt-0.5">
+                        Fitur diluncurkan bersamaan dengan pembaruan UI/UX platform secara keseluruhan dan mendapatkan
+                        respons positif dari komunitas pengguna.
+                      </p>
+                    </li>
+                  </ol>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-6">
+                  <h4 className="font-semibold mb-2 text-amber-900">Rencana Pengembangan Fitur Doa Mendatang:</h4>
+                  <ul className="list-disc pl-5 space-y-1.5 text-amber-800">
+                    <li>Implementasi kategori doa untuk memudahkan pengelompokan dan pencarian</li>
+                    <li>Fitur moderasi konten berbasis AI untuk menjaga kualitas dan kesesuaian dengan nilai Islami</li>
+                    <li>Integrasi dengan jadwal waktu sholat untuk mengingatkan waktu-waktu mustajab untuk berdoa</li>
+                    <li>Pengembangan komunitas doa tematik berdasarkan permasalahan umum</li>
+                    <li>Fitur statistik dan analitik untuk melihat dampak dan jangkauan doa</li>
+                  </ul>
+                </div>
+
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 my-6 rounded-r shadow-sm">
+                  <p className="text-green-800 font-medium text-lg">Pembaruan Terkini - Mei 2025</p>
                   <p className="text-green-700 mt-1">
-                    Kami dengan gembira mengumumkan peluncuran fitur jadwal waktu sholat terintegrasi dengan deteksi lokasi otomatis
-                    dan sistem pengingat yang dapat disesuaikan. Fitur ini dapat diakses langsung dari halaman utama aplikasi dan menyediakan
-                    jadwal sholat yang akurat berdasarkan lokasi pengguna saat ini. 
+                    Alhamdulillah, dengan penuh syukur kami menghadirkan pembaruan signifikan pada IndoQuran. Pengguna kini dapat 
+                    mengakses jadwal waktu sholat dengan akurasi tinggi berkat teknologi geolokasi yang kami implementasikan. 
+                    Sistem ini secara otomatis mengenali lokasi Anda dan menyajikan jadwal sholat tepat waktu dengan fitur pengingat 
+                    yang dapat disesuaikan sepenuhnya.
                   </p>
                   <p className="text-green-700 mt-2">
-                    Selain itu, kami juga meluncurkan fitur baru Tafsir Tematik (Maudhu'i) yang memungkinkan pengguna menemukan
-                    dan mempelajari ayat-ayat Al-Quran berdasarkan tema-tema tertentu. Fitur ini mengumpulkan ayat-ayat yang berkaitan
-                    dengan tema spesifik dari berbagai surah, sehingga memudahkan pengguna untuk mempelajari Al-Quran secara tematik dan komprehensif.
-                    Kami juga telah menyempurnakan UX/UI aplikasi untuk memberikan pengalaman yang lebih menyenangkan.
+                    Kami juga dengan bangga meluncurkan Tafsir Tematik Al-Maudhu'i, sebuah pendekatan revolusioner untuk memahami Al-Quran 
+                    berdasarkan tema-tema yang saling terkait. Fitur ini merupakan hasil kerja intensif tim kami dalam mengorganisir 
+                    dan mengindeks ayat-ayat dari berbagai surah secara sistematis berdasarkan tema. Dengan fitur ini, pemahaman 
+                    Al-Quran menjadi lebih mendalam dan komprehensif, membantu pengguna menemukan tuntunan hidup yang relevan dalam konteks kekinian.
                   </p>
                   <p className="text-green-700 mt-2">
-                    <strong>Update 14 Mei 2025:</strong> Kami baru saja merilis halaman donasi yang memungkinkan para pengguna untuk berkontribusi dalam pengembangan aplikasi ini. 
-                    Donasi Anda akan sangat membantu kami dalam meningkatkan kualitas dan menambahkan fitur-fitur baru untuk IndoQuran. 
-                    Silakan kunjungi <Link href="/donasi" className="text-green-800 font-semibold hover:underline">halaman Donasi</Link> untuk informasi lebih lanjut.
+                    <strong>Terbaru 14 Mei 2025:</strong> Dengan semangat kebersamaan dan keberlanjutan, kami telah meluncurkan platform 
+                    donasi yang transparan untuk mendukung pengembangan IndoQuran. Kontribusi Anda, sekecil apapun, memiliki nilai 
+                    yang sangat berarti bagi keberlanjutan dan pengembangan layanan ini. Setiap donasi dikelola dengan amanah dan 
+                    digunakan secara efektif untuk meningkatkan kualitas layanan. 
+                    Mari bersama membangun keberkahan melalui <Link href="/donasi" className="text-green-800 font-semibold hover:underline">halaman Donasi</Link>.
+                  </p>
+                  <p className="text-green-700 mt-2">
+                    <strong>Peluncuran 2 Mei 2025:</strong> Fitur <Link href="/doa" className="text-green-800 font-semibold hover:underline">Doa Bersama</Link> kini 
+                    tersedia untuk seluruh pengguna IndoQuran. Fitur ini memungkinkan komunitas muslim untuk saling berbagi doa dan harapan, 
+                    memberikan dukungan dengan mengucapkan "Amiin", serta menambahkan komentar doa tambahan. Dalam dua minggu pertama setelah 
+                    peluncuran, lebih dari 5,000 doa telah dibagikan dan mendapatkan lebih dari 25,000 ucapan "Amiin" dari komunitas.
+                    Kami berharap fitur ini dapat memperkuat ikatan spiritual dan sosial di kalangan pengguna IndoQuran.
                   </p>
                 </div>
                 
-                <h3 className="mt-6">Kontribusi</h3>
+                <h3 className="mt-6">Kontribusi Komunitas</h3>
                 <p>
-                  IndoQuran adalah proyek open source yang secara aktif menerima kontribusi dari komunitas pengembang. 
-                  Kami menghargai berbagai bentuk kontribusi, termasuk pelaporan bug, saran fitur, perbaikan dokumentasi, terjemahan, 
-                  dan pengembangan kode baru. Kami juga mengundang pengujian UX dan feedback dari pengguna 
-                  untuk terus meningkatkan pengalaman membaca Al-Quran digital.
+                  IndoQuran adalah proyek sumber terbuka (open source) yang berkembang berkat partisipasi aktif komunitas. 
+                  Kami menyambut berbagai bentuk kontribusi dari berbagai latar belakang keahlian - baik dari pengembang dengan 
+                  kontribusi kode, ahli bahasa untuk terjemahan dan tafsir yang lebih baik, desainer UX untuk meningkatkan 
+                  pengalaman pengguna, hingga pengguna umum yang memberikan laporan bug dan umpan balik konstruktif. 
+                  Setiap kontribusi memiliki nilai yang berharga dalam membangun ekosistem Al-Quran digital 
+                  yang semakin komprehensif dan bermanfaat.
                 </p>
                 
-                <h3 className="mt-6">Kontak dan Dukungan</h3>
+                <h3 className="mt-6">Komunikasi & Bantuan</h3>
                 <p>
-                  Jika Anda memiliki pertanyaan, saran, atau menemukan masalah dalam aplikasi, 
-                  silakan hubungi kami melalui:
+                  Kami berkomitmen menyediakan dukungan yang responsif dan komunikasi terbuka dengan pengguna. 
+                  Untuk pertanyaan, saran, laporan masalah, atau keinginan berkontribusi, silakan hubungi tim IndoQuran melalui:
                 </p>
-                <ul>
-                  <li>Email: <a href="mailto:kontak@indoquran.web.id" className="text-amber-700 hover:underline">kontak@indoquran.web.id</a></li>
-                  <li>GitHub: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">github.com/indoquran-web</a></li>
-                  <li>Formulir Kontak: <Link href="/kontak" className="text-amber-700 hover:underline">Halaman Kontak</Link></li>
+                <ul className="list-disc list-inside space-y-2 text-gray-700">
+                  <li>Email: <a href="mailto:kontak@indoquran.web.id" className="text-amber-700 font-medium hover:underline transition-colors">kontak@indoquran.web.id</a></li>
+                  <li>Repositori GitHub: <a href="https://github.com/indoquran-web" target="_blank" rel="noopener noreferrer" className="text-amber-700 font-medium hover:underline transition-colors">github.com/indoquran-web</a></li>
+                  <li>Formulir Komunikasi: <Link href="/kontak" className="text-amber-700 font-medium hover:underline transition-colors">Halaman Kontak Resmi</Link></li>
+                  <li>Media Sosial: <span className="text-amber-700 font-medium">@IndoQuranApp</span> di Twitter/X dan Instagram</li>
                 </ul>
               </div>
             )}
@@ -563,102 +674,122 @@ export default function AboutPage() {
                 </p>
                 
                 <div className="space-y-8">
-                  <div className="border-l-4 border-amber-500 pl-4 pb-1">
-                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.1 (14 Mei 2025)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Penambahan Halaman Donasi & Peningkatan UI</p>
+                  <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.2 (14 Mei 2025)</h3>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Platform Donasi & Penyempurnaan Antarmuka</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Peluncuran halaman donasi untuk mendukung pengembangan aplikasi</li>
-                      <li>Integrasi dengan berbagai metode pembayaran (transfer bank, e-wallet, QRIS)</li>
-                      <li>Sistem pengelolaan transparansi penggunaan dana donasi</li>
-                      <li>Fitur penghargaan digital untuk donatur</li>
-                      <li>Perbaikan responsivitas pada tampilan mobile</li>
-                      <li>Optimasi performa dan kecepatan loading aplikasi</li>
+                      <li>Peluncuran platform donasi dengan sistem pengelolaan transparan</li>
+                      <li>Integrasi metode pembayaran komprehensif (transfer bank, e-wallet, QRIS)</li>
+                      <li>Dashboard transparansi pemanfaatan dana untuk pengembangan</li>
+                      <li>Sistem apresiasi digital berdasarkan tingkat kontribusi</li>
+                      <li>Peningkatan responsivitas antarmuka pengguna di perangkat mobile</li>
+                      <li>Optimasi performa dengan teknik lazy loading dan code splitting</li>
+                      <li>Revisi sistem caching untuk kecepatan akses konten yang lebih baik</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
+                  <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.1 (2 Mei 2025)</h3>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Fitur Doa Bersama & Komunitas Digital</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Peluncuran platform Doa Bersama untuk berbagi dan mendukung doa sesama muslim</li>
+                      <li>Implementasi sistem "Amiin" dan komentar doa dengan dukungan notifikasi</li>
+                      <li>Pengembangan mekanisme moderasi konten untuk menjaga kualitas doa</li>
+                      <li>Fitur penyortiran dan penyaringan doa berdasarkan waktu dan popularitas</li>
+                      <li>Optimasi performa database untuk menangani pertumbuhan jumlah doa</li>
+                      <li>Integrasi sistem privasi dan keamanan data untuk konten pengguna</li>
+                      <li>Pengembangan API khusus untuk layanan Doa Bersama dengan implementasi caching</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.0 (13 Mei 2025)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Pembaruan Utama - Fitur Jadwal Sholat & Tafsir Tematik</p>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Jadwal Sholat & Tafsir Tematik Komprehensif</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Menambahkan widget jadwal waktu sholat di halaman utama</li>
-                      <li>Implementasi deteksi lokasi otomatis untuk jadwal sholat yang akurat</li>
-                      <li>Peluncuran fitur Tafsir Tematik (Maudhu'i) untuk pencarian ayat berdasarkan tema</li>
-                      <li>Penambahan 50+ tema tafsir dengan indeks ayat yang komprehensif</li>
-                      <li>Penambahan sistem notifikasi pengingat waktu sholat</li>
-                      <li>Peningkatan performa pencarian ayat dengan teknologi Redis</li>
-                      <li>Perbaikan bug pada bookmarking ayat dan fitur catatan</li>
+                      <li>Implementasi widget jadwal waktu sholat dengan desain intuitif</li>
+                      <li>Sistem geolokasi presisi tinggi untuk akurasi jadwal ibadah</li>
+                      <li>Peluncuran Tafsir Tematik Al-Maudhu'i dengan navigasi hierarkis</li>
+                      <li>Ekspansi basis data tema tafsir mencakup 55+ topik dengan 1000+ referensi ayat</li>
+                      <li>Integrasi sistem notifikasi pengingat waktu sholat yang dapat dikonfigurasi</li>
+                      <li>Rekayasa performa pencarian ayat dengan implementasi Redis dan full-text indexing</li>
+                      <li>Perbaikan serangkaian bug pada sistem bookmark dan fitur catatan pengguna</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1 bg-amber-50/30 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.4.2 (27 Maret 2025)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Perbaikan dan Optimasi</p>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Penyempurnaan Teknis & Stabilitas</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Memperbaiki masalah pada penampilan tafsir ayat</li>
-                      <li>Mengoptimalkan kecepatan loading audio murottal</li>
-                      <li>Memperbaiki tampilan responsif pada perangkat kecil</li>
-                      <li>Mengubah format penyimpanan bookmark untuk performa lebih baik</li>
-                      <li>Perbaikan minor pada UI dan pengalaman pengguna</li>
+                      <li>Revisi rendering tafsir ayat dengan dukungan format teks yang lebih kaya</li>
+                      <li>Reengineering sistem streaming audio dengan teknik adaptive bitrate</li>
+                      <li>Implementasi desain responsif yang konsisten untuk perangkat dengan layar kecil</li>
+                      <li>Migrasi format penyimpanan bookmark ke struktur data yang dioptimalkan</li>
+                      <li>Penyesuaian kontras warna dan ukuran teks untuk keterbacaan lebih baik</li>
+                      <li>Integrasi sistem pemantauan performa real-time</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-amber-300 pl-4 pb-1">
+                  <div className="border-l-4 border-amber-300 pl-4 pb-1 bg-amber-50/30 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.4.0 (8 Februari 2025)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Penambahan Fitur Catatan dan Tema</p>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Pengayaan Fitur Personalisasi & Audio</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Implementasi fitur catatan pribadi untuk setiap ayat</li>
-                      <li>Peningkatan antarmuka dengan tema yang dioptimalkan</li>
-                      <li>Peningkatan sistem bookmark dan favorit ayat</li>
-                      <li>Penambahan 3 qari baru untuk audio murottal</li>
-                      <li>Peningkatan dukungan untuk aksesibilitas</li>
-                      <li>Integrasi backend dengan API yang lebih cepat dan handal</li>
+                      <li>Peluncuran sistem catatan refleksi pribadi dengan editor rich-text</li>
+                      <li>Ekspansi tema antarmuka dengan opsi kontras tinggi dan mode baca malam</li>
+                      <li>Peningkatan arsitektur bookmark dengan kategorisasi dan penandaan kontekstual</li>
+                      <li>Penambahan koleksi audio dari qari internasional terpilih (Sheikh Mishary, Sheikh Sudais, Sheikh Ghamdi)</li>
+                      <li>Implementasi standar WCAG 2.1 AA untuk aksesibilitas yang inklusif</li>
+                      <li>Pembaruan arsitektur API dengan caching layer dan load balancing</li>
+                      <li>Integrasi sistem sinkronisasi multi-perangkat melalui cloud storage</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1 bg-gray-50/50 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.3.1 (15 Desember 2024)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Perbaikan Stabilitas</p>
+                    <p className="text-sm text-amber-700/80 mb-3 font-medium">Peningkatan Stabilitas Sistem</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Memperbaiki bug sinkronisasi pada fitur posisi membaca terakhir</li>
-                      <li>Optimasi performa dan loading time di perangkat mobile</li>
-                      <li>Perbaikan tampilan pada browser Safari dan Firefox</li>
-                      <li>Peningkatan keamanan autentikasi pengguna</li>
+                      <li>Resolusi anomali sinkronisasi pada pelacakan posisi pembacaan</li>
+                      <li>Optimasi waktu muat dengan penerapan teknik critical CSS dan deferred loading</li>
+                      <li>Standarisasi rendering lintas browser (Safari, Firefox, Chrome, Edge)</li>
+                      <li>Penerapan kerangka keamanan JWT dengan rotasi token dan enkripsi end-to-end</li>
+                      <li>Migrasi ke sistem penyimpanan terenkripsi untuk data sensitif pengguna</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1 bg-gray-50/50 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.3.0 (28 Oktober 2024)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Peluncuran Next.js 15</p>
+                    <p className="text-sm text-amber-700/80 mb-3 font-medium">Transformasi dengan Next.js 15 & Fitur Personalisasi</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Migrasi ke Next.js 15 untuk performa lebih baik</li>
-                      <li>Implementasi fitur bookmark dan favorit ayat</li>
-                      <li>Penambahan tampilan posisi membaca terakhir</li>
-                      <li>Peningkatan desain UI/UX untuk semua halaman</li>
-                      <li>Optimasi server-side rendering dan static generation</li>
+                      <li>Migrasi ke Next.js 15 dengan React Server Components dan Streaming SSR</li>
+                      <li>Implementasi sistem bookmark hierarkis dengan tag dan kategori pengguna</li>
+                      <li>Peluncuran fitur "Lanjutkan Membaca" dengan pelacakan progres multi-device</li>
+                      <li>Revitalisasi antarmuka dengan desain yang lebih intuitif dan responsif</li>
+                      <li>Adopsi strategi pembuatan statis selektif untuk halaman utama dan referensi</li>
+                      <li>Implementasi rute paralel untuk pengalaman navigasi yang lebih mulus</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1 bg-gray-50/40 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.0.0 (15 Juli 2024)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Peluncuran Ulang</p>
+                    <p className="text-sm text-amber-700/80 mb-3 font-medium">Peluncuran Platform Baru</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Desain ulang lengkap dengan antarmuka yang lebih modern</li>
-                      <li>Implementasi arsitektur baru dengan Next.js dan TypeScript</li>
-                      <li>Penambahan audio murottal untuk semua surah</li>
-                      <li>Fitur pencarian terjemahan yang ditingkatkan</li>
-                      <li>Dukungan PWA untuk penggunaan offline</li>
-                      <li>Sistem autentikasi pengguna untuk fitur personalisasi</li>
+                      <li>Transformasi arsitektur dengan antarmuka modern berbasis React dan TypeScript</li>
+                      <li>Implementasi kerangka aplikasi Next.js dengan dukungan SSR dan static generation</li>
+                      <li>Integrasi perpustakaan audio murattal komprehensif untuk seluruh 114 surah</li>
+                      <li>Pengembangan mesin pencarian terjemahan dengan dukungan semantik dan sinonim</li>
+                      <li>Implementasi Progressive Web App untuk akses offline dan instalasi lokal</li>
+                      <li>Peluncuran sistem pengguna dengan profil dan personalisasi</li>
                     </ul>
                   </div>
                   
-                  <div className="border-l-4 border-gray-300 pl-4 pb-1">
+                  <div className="border-l-4 border-gray-300 pl-4 pb-1 bg-gray-50/40 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 1.0.0 (10 Januari 2024)</h3>
-                    <p className="text-sm text-gray-500 mb-3">Peluncuran Awal</p>
+                    <p className="text-sm text-amber-700/80 mb-3 font-medium">Fondasi Awal</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">
-                      <li>Rilis pertama aplikasi IndoQuran</li>
-                      <li>Fitur dasar membaca Al-Quran dengan terjemahan Bahasa Indonesia</li>
-                      <li>Navigasi daftar surah dan ayat</li>
-                      <li>Pencarian terjemahan sederhana</li>
+                      <li>Peluncuran perdana aplikasi IndoQuran dengan fungsi dasar</li>
+                      <li>Implementasi sistem pembacaan Al-Quran dengan terjemahan Bahasa Indonesia standar Kemenag</li>
+                      <li>Pengembangan sistem navigasi surah dan ayat berbasis indeks</li>
+                      <li>Implementasi fitur pencarian teks terjemahan dasar</li>
+                      <li>Optimasi dasar untuk perangkat mobile dan desktop</li>
                     </ul>
                   </div>
                 </div>

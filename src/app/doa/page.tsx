@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { PrayerCard, PrayerDetail, CreatePrayerForm } from '@/components/PrayerComponents';
+import PrayerPopup from '@/components/PrayerPopup';
 import { Prayer, PrayerResponse, PaginatedPrayerResponse } from '@/types/prayer';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 
@@ -16,6 +17,13 @@ export default function PrayerPage() {
   const [selectedPrayer, setSelectedPrayer] = useState<Prayer | null>(null);
   const [prayerResponses, setPrayerResponses] = useState<PrayerResponse[]>([]);
   const [loadingPrayerDetail, setLoadingPrayerDetail] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [paginationData, setPaginationData] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalComments: 0,
+    commentsPerPage: 10
+  });
 
   const fetchPrayers = async () => {
     setLoading(true);
@@ -24,6 +32,7 @@ export default function PrayerPage() {
       const data = await res.json();
       
       if (data.success && Array.isArray(data.prayers)) {
+        console.log('Prayers data:', data.prayers);
         setPrayers(data.prayers);
         setTotalPages(data.totalPages || 1);
       } else {
@@ -40,13 +49,31 @@ export default function PrayerPage() {
     }
   };
 
-  const fetchPrayerDetail = async (id: number) => {
+  const fetchPrayerDetail = async (id: number, commentPage: number = 1) => {
     setLoadingPrayerDetail(true);
     try {
-      const res = await fetch(`/api/prayers/${id}`);
+      const res = await fetch(`/api/prayers/${id}?commentPage=${commentPage}&commentsPerPage=10`);
+      
+      if (!res.ok) {
+        console.error(`Error fetching prayer detail: Server responded with ${res.status} ${res.statusText}`);
+        return;
+      }
+      
       const data = await res.json();
-      setSelectedPrayer(data.prayer);
-      setPrayerResponses(data.responses);
+      
+      if (data && data.success === true && data.data) {
+        setSelectedPrayer(data.data.prayer);
+        setPrayerResponses(data.data.comments || []);
+        setPaginationData(data.data.pagination || {
+          currentPage: 1,
+          totalPages: 1,
+          totalComments: 0,
+          commentsPerPage: 10
+        });
+        setShowPopup(true); // Show the popup after data is loaded
+      } else {
+        console.error('Error fetching prayer detail: Invalid response format', data);
+      }
     } catch (error) {
       console.error('Error fetching prayer detail:', error);
     } finally {
@@ -95,8 +122,8 @@ export default function PrayerPage() {
         }),
       });
 
-      // Refresh the prayer detail
-      fetchPrayerDetail(selectedPrayer.id);
+      // Refresh the prayer detail, preserving current comment page
+      fetchPrayerDetail(selectedPrayer.id, paginationData.currentPage);
     } catch (error) {
       console.error('Error submitting amiin:', error);
     }
@@ -120,11 +147,16 @@ export default function PrayerPage() {
         }),
       });
 
-      // Refresh the prayer detail
-      fetchPrayerDetail(selectedPrayer.id);
+      // Refresh the prayer detail - go to first page after new comment
+      fetchPrayerDetail(selectedPrayer.id, 1);
     } catch (error) {
       console.error('Error submitting comment:', error);
     }
+  };
+  
+  const handleCommentPageChange = (prayerId: number, page: number) => {
+    console.log(`Changing to comment page ${page} for prayer ${prayerId}`);
+    fetchPrayerDetail(prayerId, page);
   };
 
   const handleViewPrayer = (id: number) => {
@@ -136,7 +168,8 @@ export default function PrayerPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBackToList = () => {
+  const handleClosePopup = () => {
+    setShowPopup(false);
     setSelectedPrayer(null);
     setPrayerResponses([]);
     fetchPrayers(); // Refresh the list to get updated counts
@@ -203,79 +236,74 @@ export default function PrayerPage() {
               Mari mendoakan satu sama lain dan mengucapkan &quot;Amiin&quot; untuk doa-doa yang telah dibagikan.
             </p>
 
-            {selectedPrayer ? (
-              loadingPrayerDetail ? (
-                <div className="flex justify-center py-8">
-                  <LoadingSpinner />
-                </div>
-              ) : (
-                <PrayerDetail
-                  prayer={selectedPrayer}
-                  responses={prayerResponses}
-                  onSubmitAmiin={handleSubmitAmiin}
-                  onSubmitComment={handleSubmitComment}
-                  currentUserName={session?.user?.name || ''}
-                  onBack={handleBackToList}
-                />
-              )
+            <CreatePrayerForm
+              onSubmit={handleCreatePrayer}
+              currentUserName={session?.user?.name || ''}
+            />
+
+            <div className="mb-6 flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-amber-800">
+                Doa dari Jamaah
+              </h2>
+              
+              <div className="flex items-center">
+                <label htmlFor="sortBy" className="text-sm text-gray-600 mr-2">
+                  Urutkan:
+                </label>
+                <select
+                  id="sortBy"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="border border-amber-200 rounded px-2 py-1 text-sm"
+                >
+                  <option value="newest">Terbaru</option>
+                  <option value="oldest">Terlama</option>
+                  <option value="most_amiin">Terbanyak Amiin</option>
+                  <option value="most_comments">Terbanyak Komentar</option>
+                  <option value="recent_activity">Aktivitas Terbaru</option>
+                </select>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner />
+              </div>
+            ) : prayers && prayers.length > 0 ? (
+              <div className="space-y-4">
+                {prayers.map((prayer) => (
+                  <PrayerCard
+                    key={prayer.id}
+                    prayer={prayer}
+                    onViewDetails={handleViewPrayer}
+                  />
+                ))}
+
+                {totalPages > 1 && renderPagination()}
+              </div>
             ) : (
-              <>
-                <CreatePrayerForm
-                  onSubmit={handleCreatePrayer}
-                  currentUserName={session?.user?.name || ''}
-                />
-
-                <div className="mb-6 flex justify-between items-center">
-                  <h2 className="text-xl font-semibold text-amber-800">
-                    Doa dari Jamaah
-                  </h2>
-                  
-                  <div className="flex items-center">
-                    <label htmlFor="sortBy" className="text-sm text-gray-600 mr-2">
-                      Urutkan:
-                    </label>
-                    <select
-                      id="sortBy"
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="border border-amber-200 rounded px-2 py-1 text-sm"
-                    >
-                      <option value="newest">Terbaru</option>
-                      <option value="oldest">Terlama</option>
-                      <option value="most_amiin">Terbanyak Amiin</option>
-                      <option value="most_comments">Terbanyak Komentar</option>
-                      <option value="recent_activity">Aktivitas Terbaru</option>
-                    </select>
-                  </div>
-                </div>
-
-                {loading ? (
-                  <div className="flex justify-center py-8">
-                    <LoadingSpinner />
-                  </div>
-                ) : prayers && prayers.length > 0 ? (
-                  <div className="space-y-4">
-                    {prayers.map((prayer) => (
-                      <PrayerCard
-                        key={prayer.id}
-                        prayer={prayer}
-                        onViewDetails={handleViewPrayer}
-                      />
-                    ))}
-
-                    {totalPages > 1 && renderPagination()}
-                  </div>
-                ) : (
-                  <div className="text-center py-10 text-gray-500">
-                    <p>Belum ada doa yang dibagikan.</p>
-                    <p>Jadilah yang pertama berbagi doa Anda!</p>
-                  </div>
-                )}
-              </>
+              <div className="text-center py-10 text-gray-500">
+                <p>Belum ada doa yang dibagikan.</p>
+                <p>Jadilah yang pertama berbagi doa Anda!</p>
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Prayer Popup */}
+      <PrayerPopup
+        isOpen={showPopup}
+        onClose={handleClosePopup}
+        prayer={selectedPrayer}
+        responses={prayerResponses}
+        isLoading={loadingPrayerDetail}
+        onSubmitAmiin={handleSubmitAmiin}
+        onSubmitComment={handleSubmitComment}
+        currentUserName={session?.user?.name || ''}
+        pagination={paginationData}
+        onCommentPageChange={handleCommentPageChange}
+      />
     </main>
   );
 }

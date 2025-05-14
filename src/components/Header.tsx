@@ -7,10 +7,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import Tooltip from '@/components/Tooltip';
+import Sidebar from '@/components/Sidebar';
 
 export default function Header() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, logout, loading, user } = useAuthContext();
@@ -20,25 +21,19 @@ export default function Header() {
   const isReadingPage = pathname.includes('/surah/') || pathname.includes('/ayat/');
 
   useEffect(() => {
-    // Close both dropdowns when route changes
+    // Close dropdowns when route changes
     setIsMenuOpen(false);
-    setIsDropdownOpen(false);
   }, [pathname]);
   
-  // Create refs for both dropdown menus
-  const mainMenuRef = useRef<HTMLDivElement>(null);
+  // Create ref for user dropdown menu
+  const userMenuRef = useRef<HTMLDivElement>(null);
   
-  // Close dropdowns when clicking outside
+  // Close user dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Close user menu if clicking outside the dropdown
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
-      }
-      
-      // Close main menu if clicking outside the dropdown
-      if (mainMenuRef.current && !mainMenuRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
       }
     };
     
@@ -97,115 +92,118 @@ export default function Header() {
   ];
 
   return (
-    <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${
-      isReadingPage 
-        ? 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6]' 
-        : 'bg-white text-gray-800 shadow-md'
-    }`}>
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-            </svg>
-            <span className={`text-2xl font-bold ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
-              IndoQuran
-            </span>
-          </Link>
-          
-          <div className="flex items-center space-x-2">
-            {/* Main navigation dropdown menu */}            <div className="relative" ref={mainMenuRef}>
-              <Tooltip text="Menu Navigasi">
-                <button 
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className={`flex items-center px-3 py-2 rounded-md transition-colors ${
-                    isReadingPage
-                      ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
-                      : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
-                  }`}
-                  aria-expanded={isDropdownOpen}
-                  aria-label="Toggle menu"
-                >
-                  <span className="mr-1">Menu</span>
-                  {isDropdownOpen ? (
-                    <ChevronUpIcon className="h-4 w-4" />
-                  ) : (
-                    <ChevronDownIcon className="h-4 w-4" />
-                  )}
-                </button>
-              </Tooltip>
+    <>
+      {/* Sidebar Component */}
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)} 
+        menuItems={menuItems} 
+      />
+      
+      <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${
+        isReadingPage 
+          ? 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6]' 
+          : 'bg-white text-gray-800 shadow-md'
+      }`}>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                className={`mr-2 p-2 rounded-md ${
+                  isReadingPage
+                    ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
+                    : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
+                }`}
+                aria-label="Open sidebar menu"
+              >
+                <MenuIcon className="h-6 w-6" />
+              </button>
               
-              {isDropdownOpen && (
-                <div className={`absolute right-0 mt-2 w-64 sm:w-56 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
-                  isReadingPage ? 'bg-[#f8f4e5] border border-[#d3c6a6]' : 'bg-white border border-gray-200'
-                }`}>
-                  <div className="py-1">
-                    {menuItems.map((item, index) => (
-                      <Link
-                        key={index}
-                        href={item.href}
-                        className={`flex items-center px-4 py-2 text-sm rounded-md ${
-                          isReadingPage 
-                            ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
-                            : 'text-gray-700 hover:bg-amber-50'
-                        }`}
-                        onClick={() => setIsDropdownOpen(false)}
-                      >
-                        {item.icon}
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <Link href="/" className="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+                </svg>
+                <span className={`text-2xl font-bold ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
+                  IndoQuran
+                </span>
+              </Link>
             </div>
             
-            {/* User management dropdown menu */}
-            <div className="relative" ref={dropdownRef}>
-              <Tooltip text="Menu Akun Pengguna">
-                <button 
-                  onClick={() => {
-                    // Only toggle user menu when the main menu is closed
-                    if (isDropdownOpen) setIsDropdownOpen(false);
-                    setIsMenuOpen(!isMenuOpen);
-                  }}
-                  className={`flex items-center px-3 py-2 rounded-md transition-colors ${
-                    isReadingPage 
-                      ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
-                      : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
-                  }`}
-                  aria-expanded={isMenuOpen}
-                  aria-label="Toggle user menu"
-                >
-                  <UserIcon className="h-5 w-5 mr-1 flex-shrink-0" />
-                  {isAuthenticated && !loading && user ? (
-                    <span className="mr-1 truncate max-w-[120px] hidden sm:inline-block">{user.email}</span>
-                  ) : (
-                    <span className="mr-1">Akun</span>
-                  )}
-                  {isMenuOpen ? (
-                    <ChevronUpIcon className="h-4 w-4" />
-                  ) : (
-                    <ChevronDownIcon className="h-4 w-4" />
-                  )}
-                </button>
-              </Tooltip>
-              
-              {isMenuOpen && (
-                <div className={`absolute right-0 mt-2 w-64 sm:w-72 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
-                  isReadingPage ? 'bg-[#f8f4e5] border border-[#d3c6a6]' : 'bg-white border border-gray-200'
-                }`}>
-                  <div className="py-1">
-                    {!loading && (isAuthenticated && user ? (
-                      <>
-                        {/* Display user email in dropdown */}
-                        <div className={`px-4 py-2 mb-1 text-sm font-medium border-b ${
-                          isReadingPage ? 'border-[#d3c6a6] text-[#5D4037]' : 'border-gray-100 text-gray-700'
-                        }`}>
-                          <div className="truncate">{user.email}</div>
-                        </div>
+            <div className="flex items-center space-x-2">            
+              {/* User management dropdown menu */}
+              <div className="relative" ref={dropdownRef}>
+                <Tooltip text="Menu Akun Pengguna">
+                  <button 
+                    onClick={() => {
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
+                    className={`flex items-center px-3 py-2 rounded-md transition-colors ${
+                      isReadingPage 
+                        ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
+                        : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
+                    }`}
+                    aria-expanded={isMenuOpen}
+                    aria-label="Toggle user menu"
+                  >
+                    <UserIcon className="h-5 w-5 mr-1 flex-shrink-0" />
+                    {isAuthenticated && !loading && user ? (
+                      <span className="mr-1 truncate max-w-[120px] hidden sm:inline-block">{user.email}</span>
+                    ) : (
+                      <span className="mr-1">Akun</span>
+                    )}
+                    {isMenuOpen ? (
+                      <ChevronUpIcon className="h-4 w-4" />
+                    ) : (
+                      <ChevronDownIcon className="h-4 w-4" />
+                    )}
+                  </button>
+                </Tooltip>
+                
+                {isMenuOpen && (
+                  <div className={`absolute right-0 mt-2 w-64 sm:w-72 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
+                    isReadingPage ? 'bg-[#f8f4e5] border border-[#d3c6a6]' : 'bg-white border border-gray-200'
+                  }`}>
+                    <div className="py-1">
+                      {!loading && (isAuthenticated && user ? (
+                        <>
+                          {/* Display user email in dropdown */}
+                          <div className={`px-4 py-2 mb-1 text-sm font-medium border-b ${
+                            isReadingPage ? 'border-[#d3c6a6] text-[#5D4037]' : 'border-gray-100 text-gray-700'
+                          }`}>
+                            <div className="truncate">{user.email}</div>
+                          </div>
+                          <Link
+                            href="/profile"
+                            className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                              isReadingPage 
+                                ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
+                                : 'text-gray-700 hover:bg-amber-50'
+                            }`}
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <UserIcon className="w-5 h-5 mr-2" />
+                            Profil
+                          </Link>
+                          <button
+                            onClick={() => {
+                              logout();
+                              setIsMenuOpen(false);
+                            }}
+                            className={`flex items-center px-4 py-2 text-sm rounded-md w-full text-left ${
+                              isReadingPage 
+                                ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
+                                : 'text-gray-700 hover:bg-amber-50'
+                            }`}
+                          >
+                            <LogOutIcon className="w-5 h-5 mr-2" />
+                            Keluar
+                          </button>
+                        </>
+                      ) : (
                         <Link
-                          href="/profile"
+                          href="/login"
                           className={`flex items-center px-4 py-2 text-sm rounded-md ${
                             isReadingPage 
                               ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
@@ -213,47 +211,18 @@ export default function Header() {
                           }`}
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <UserIcon className="w-5 h-5 mr-2" />
-                          Profil
+                          <LogInIcon className="w-5 h-5 mr-2" />
+                          Masuk
                         </Link>
-                        <button
-                          onClick={() => {
-                            logout();
-                            setIsMenuOpen(false);
-                          }}
-                          className={`flex items-center px-4 py-2 text-sm rounded-md w-full text-left ${
-                            isReadingPage 
-                              ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
-                              : 'text-gray-700 hover:bg-amber-50'
-                          }`}
-                        >
-                          <LogOutIcon className="w-5 h-5 mr-2" />
-                          Keluar
-                        </button>
-                      </>
-                    ) : (
-                      <Link
-                        href="/login"
-                        className={`flex items-center px-4 py-2 text-sm rounded-md ${
-                          isReadingPage 
-                            ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
-                            : 'text-gray-700 hover:bg-amber-50'
-                        }`}
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <LogInIcon className="w-5 h-5 mr-2" />
-                        Masuk
-                      </Link>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-          
-          {/* We can remove the mobile menu button since we now have a dropdown menu that works on all screen sizes */}
         </div>
-      </div>
-    </header>
+      </header>
+    </>
   );
 }

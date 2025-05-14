@@ -11,15 +11,20 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const prayerId = parseInt(resolvedParams.id);
+    
+    // Parse pagination parameters from query string
+    const url = new URL(request.url);
+    const commentPage = Math.max(1, parseInt(url.searchParams.get('commentPage') || '1', 10));
+    const commentsPerPage = Math.max(1, Math.min(50, parseInt(url.searchParams.get('commentsPerPage') || '10', 10)));
 
-    // Get prayer details
+    // Get prayer details with counts directly from prayer_responses
     const [prayers] = await db.execute(
       `SELECT 
         p.id, p.author_name as authorName, p.content, p.user_id as userId, 
         p.created_at as createdAt, p.updated_at as updatedAt,
-        ps.amiin_count as amiinCount, ps.comment_count as commentCount
+        COALESCE((SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = 'amiin'), 0) as amiinCount,
+        COALESCE((SELECT COUNT(*) FROM prayer_responses WHERE prayer_id = p.id AND response_type = 'comment'), 0) as commentCount
       FROM prayers p
-      LEFT JOIN prayer_stats ps ON p.id = ps.prayer_id
       WHERE p.id = ?`,
       [prayerId]
     );
@@ -47,33 +52,78 @@ export async function GET(
       currentUserSaidAmiin = amiinRows.length > 0;
     }
 
-    // Get the prayer comments
-    const [comments] = await db.execute(
-      `SELECT 
+    // Get the comment count for pagination
+    const [countResult] = await db.execute(
+      `SELECT COUNT(*) AS total FROM prayer_responses 
+       WHERE prayer_id = ? AND response_type = 'comment'`,
+      [prayerId]
+    );
+    
+    const countRows = countResult as any[];
+    const totalComments = parseInt(countRows[0]?.total?.toString() || '0', 10);
+    const totalCommentPages = Math.max(1, Math.ceil(totalComments / commentsPerPage));
+    
+    // Calculate offset for pagination
+    const offset = (commentPage - 1) * commentsPerPage;
+
+    // Get the prayer comments with pagination
+    // MySQL prepared statements don't support parameter placeholders for LIMIT and OFFSET
+    // We need to explicitly include these values in the query
+    const commentQuery = `
+      SELECT 
         c.id, c.content, c.user_id as userId, c.author_name as authorName,
-        c.created_at as createdAt, c.updated_at as updatedAt
+        c.created_at as createdAt, c.updated_at as updatedAt, 
+        c.parent_id as parentId, c.response_type as responseType,
+        c.prayer_id as prayerId
       FROM prayer_responses c
       WHERE c.prayer_id = ? AND c.response_type = 'comment'
-      ORDER BY c.created_at DESC`,
+      ORDER BY c.created_at DESC
+      LIMIT ${commentsPerPage} OFFSET ${offset}
+    `;
+    
+    console.log('Fetching comments with query:', commentQuery.replace('${commentsPerPage}', commentsPerPage.toString()).replace('${offset}', offset.toString()), [prayerId]);
+    
+    const [comments] = await db.execute(
+      commentQuery, 
       [prayerId]
     );
 
-    return NextResponse.json({
+    const commentsArray = Array.isArray(comments) ? comments : [];
+    
+    const response = {
       success: true,
       data: {
         prayer: {
           ...prayer,
           currentUserSaidAmiin
         },
-        comments: comments || []
+        comments: commentsArray,
+        pagination: {
+          currentPage: commentPage,
+          totalPages: totalCommentPages,
+          totalComments,
+          commentsPerPage
+        }
       }
-    });
+    };
+    
+    console.log('API Response structure:', JSON.stringify({
+      success: response.success,
+      data: {
+        prayerIsPresent: !!response.data.prayer,
+        commentCount: commentsArray.length,
+        paginationIsPresent: !!response.data.pagination
+      }
+    }));
+    
+    return NextResponse.json(response);
 
   } catch (error) {
-    console.error('Error fetching prayer:', error);
+    console.error('Error fetching prayer:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json({
       success: false,
-      message: 'Failed to fetch prayer'
+      message: 'Failed to fetch prayer',
+      error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
@@ -90,12 +140,9 @@ export async function POST(
     // Get user session
     const session = await auth();
     
-    if (!session?.user) {
-      return NextResponse.json({
-        success: false,
-        message: 'Authentication required'
-      }, { status: 401 });
-    }
+    // For prayers responses (amiin/comments), we'll allow guest users
+    // but still use the session if available
+    const userId = session?.user?.id || null;
 
     // Determine response type (amiin or comment)
     const responseType = body.responseType === 'amiin' ? 'amiin' : 'comment';
@@ -134,7 +181,7 @@ export async function POST(
     // Determine author name
     let authorName = body.authorName || 'Anonymous';
     // Check if user has a name and no author name was provided (implicit use of display name)
-    if (!body.authorName && session.user.name) {
+    if (!body.authorName && session?.user?.name) {
       authorName = session.user.name;
     }
 
@@ -146,28 +193,11 @@ export async function POST(
     const [result] = await db.execute(
       `INSERT INTO prayer_responses (prayer_id, user_id, author_name, content, response_type, parent_id, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [prayerId, session.user.id, authorName, content, responseType, parentId, now, now]
+      [prayerId, userId, authorName, content, responseType, parentId, now, now]
     );
     
     const insertResult = result as any;
     const responseId = insertResult.insertId;
-
-    // Update the appropriate count based on response type
-    if (responseType === 'amiin') {
-      await db.execute(
-        `INSERT INTO prayer_stats (prayer_id, amiin_count, comment_count)
-        VALUES (?, 1, 0)
-        ON DUPLICATE KEY UPDATE amiin_count = amiin_count + 1`,
-        [prayerId]
-      );
-    } else {
-      await db.execute(
-        `INSERT INTO prayer_stats (prayer_id, comment_count, amiin_count)
-        VALUES (?, 1, 0)
-        ON DUPLICATE KEY UPDATE comment_count = comment_count + 1`,
-        [prayerId]
-      );
-    }
 
     // Return the created response
     return NextResponse.json({
@@ -176,7 +206,7 @@ export async function POST(
       data: {
         id: responseId,
         prayerId,
-        userId: session.user.id,
+        userId,
         authorName,
         content,
         responseType,
