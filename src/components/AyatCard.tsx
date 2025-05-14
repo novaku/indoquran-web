@@ -493,14 +493,15 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
     <div 
       ref={ayatCardRef} 
       id={`ayat-${ayat.nomorAyat}`}
-      className={`mb-6 pb-6 border-b border-[#d3c6a6] transition-all duration-500 
-        ${isBookmarked ? 'bg-[#e8e0ce]' : ''} 
-        hover:bg-[#f3efe0] rounded-lg p-4`}
+      className={`mb-8 transition-all duration-300 
+        ${isBookmarked ? 'bg-[#e8e0ce]' : 'bg-white'} 
+        hover:bg-[#f3efe0] rounded-xl p-5 shadow-md border border-[#d3c6a6]
+        hover:shadow-lg transform hover:-translate-y-1`}
     >
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-5 pb-3 border-b border-[#d3c6a6]">
         <div className="flex items-center">
-          <div className="relative flex items-center justify-center w-10 h-10 rounded-full bg-[#8D6E63] text-white font-medium shadow-sm">
-            <span className="text-sm">{ayat.nomorAyat}</span>
+          <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#8D6E63] text-white font-semibold shadow-lg">
+            <span className="text-base">{ayat.nomorAyat}</span>
           </div>
         </div>
         
@@ -571,32 +572,43 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
         </div>
       </div>
       
-      <div className="space-y-4">
-        <div className="flex justify-end gap-2 mb-1">
+      <div className="space-y-6">
+        <div className="flex justify-end gap-2 mb-2">
           <Tooltip text="Perkecil Teks Arab">
             <button
               type="button"
               onClick={handleZoomOut}
-              className="px-2 py-1 rounded bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border"
+              className="px-2 py-1 rounded-md bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border shadow-sm hover:shadow"
               aria-label="Perkecil Teks Arab"
             >
-              A-
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
             </button>
           </Tooltip>
           <Tooltip text="Perbesar Teks Arab">
             <button
               type="button"
               onClick={handleZoomIn}
-              className="px-2 py-1 rounded bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border"
+              className="px-2 py-1 rounded-md bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border shadow-sm hover:shadow"
               aria-label="Perbesar Teks Arab"
             >
-              A+
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
             </button>
           </Tooltip>
         </div>
-        <p className="text-right leading-loose font-arabic text-book-text" style={{ fontSize: arabicFontSize + 'rem' }}>
-          {ayat.teksArab}
-        </p>
+
+        <div className="bg-[#f8f4e5] p-5 rounded-lg shadow-inner">
+          <p 
+            className={`font-quran font-normal text-book-primary text-right leading-loose`}
+            style={{ fontSize: `${arabicFontSize}rem` }}
+            dir="rtl"
+          >
+            {ayat.teksArab}
+          </p>
+        </div>
         <p className="text-lg text-book-secondary font-arabic-translation text-left">
           {ayat.teksLatin}
         </p>

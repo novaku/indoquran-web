@@ -105,7 +105,7 @@ export default function RootLayout({
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 main-content">
-                <div className="max-w-6xl mx-auto content-fade-in">
+                <div className="w-full mx-auto content-fade-in">
                   <header className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-amber-900 dark:text-amber-300 mb-2">Al-Quran Indonesia</h1>
                     <p className="text-amber-700 dark:text-amber-400">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>

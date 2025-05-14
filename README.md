@@ -4,7 +4,7 @@
 
 ### Environment Setup
 
-This application requires several environment variables to work correctly. Environment files are stored in the `deploy` directory. Create a `.env.local` file in the `deploy` directory with the following variables:
+This application requires several environment variables to work correctly. Create a `.env.local` file in the root directory with the following variables:
 
 ```bash
 # API Configuration
@@ -175,115 +175,90 @@ When deploying to Vercel, make sure to:
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-### Docker Deployment
+### Server Deployment
 
-The application supports Docker deployment with persistent storage for MySQL and Redis. All Docker-related files are organized in the `deploy` directory.
+The application can be deployed on various server environments. An automated deployment script is provided for streamlined production deployment.
 
-#### Docker Management Script
+#### Automated Production Deployment
 
-Use the central management script for all Docker-related operations (now located in the deploy directory):
+For quick and consistent deployment to production:
 
-```bash
-./deploy/docker.sh [command]
-```
-
-Available commands:
-- `dev`: Start the application in development mode
-- `deploy`: Deploy the application in production mode
-- `backup`: Back up the MySQL database
-- `monitor`: Monitor the running containers
-- `volumes`: Manage Docker volumes
-- `scan`: Scan Docker image for security vulnerabilities
-- `setup-env`: Create environment files from examples
-- `help`: Show help information
-
-#### Environment Setup for Docker
-
-To set up the environment files for Docker deployment:
-
-1. Run the setup-env command:
+1. Create a `.env.production` file in the root directory:
 
 ```bash
-./deploy/docker.sh setup-env
-```
-
-This will create the `.env.local` file in the `deploy` directory if it doesn't exist, using the `.env.local.example` as a template. 
-Edit this file to adjust your local development settings.
-
-For production, create a `.env.production` file in the `deploy` directory:
-
-```bash
-cp deploy/.env.production.example deploy/.env.production
+cp .env.production.example .env.production
 # Edit the file with your production settings
 ```
 
-#### Development Environment
+2. Update OAuth redirect URIs in your OAuth provider dashboards to include your production domain.
 
-To run the application in a local development environment using Docker:
-
-1. Make sure Docker and Docker Compose are installed on your machine
-2. Ensure the environment is set up (as described above)
-3. Run the development command:
+3. Run the automated deployment script:
 
 ```bash
-./deploy/docker.sh dev
+# Deploy the application
+./deploy-production.sh
+
+# Or deploy with database setup/updates
+./deploy-production.sh --with-db
 ```
 
-This will start the application in development mode with hot-reloading enabled.
+This script will:
+- Set up the environment
+- Install dependencies
+- Build the application
+- Optionally run database initialization scripts
+- Start the application using PM2
 
-#### Production Deployment
+#### Prerequisites
 
-For production deployment with Docker:
+The automated deployment script requires:
+- Node.js (v20 or later recommended)
+- npm
+- MySQL server
+- PM2 (`npm install -g pm2`)
 
-1. Make sure your `deploy/.env.production` file is configured with your production settings
-2. Update OAuth redirect URIs in your OAuth provider dashboards to include your production domain
-3. Run the deployment command:
+#### Manual Database Setup
+
+If you prefer to set up the database manually:
+
+1. Use the schema initialization scripts located in the `mysql-init/` directory:
 
 ```bash
-./deploy/docker.sh deploy
+mysql -u username -p database_name < mysql-init/01-schema.sql
+# Repeat for each script in numerical order
 ```
 
-This will build the application and deploy it with optimized settings for production. The application will run with environment variables from your `.env.production` file.
-
-#### Persistent Storage
-
-MySQL and Redis data are stored in Docker volumes to ensure data persistence:
-
-- MySQL data: Docker volume `mysql-data`
-- Redis data: Docker volume `redis-data`
-
-These volumes are automatically created during deployment and stored outside the Docker containers.
-
-To manage volumes (list, backup, restore), use:
-
-```bash
-./deploy/docker.sh volumes
-```
+2. These scripts should be run in sequence to properly set up the database schema.
 
 #### Database Backup
 
-To back up your MySQL database:
+Regular database backups are recommended for data safety:
+
+1. Set up a cron job or scheduled task to create database backups:
 
 ```bash
-./deploy/docker.sh backup
+# Example cron job for daily backups at 2 AM
+0 2 * * * mysqldump -u username -ppassword database_name | gzip > /path/to/backups/db-backup-$(date +\%Y\%m\%d).sql.gz
 ```
 
-This creates a compressed SQL backup in the `backups` directory.
+2. Store backups in a secure off-server location.
 
-#### Monitoring
+#### Application Monitoring
 
-To monitor the running containers, check health, and view logs:
+For production deployments:
 
-```bash
-./deploy/docker.sh monitor
-```
+- Use PM2 for application process management:
+  ```bash
+  # View application status
+  pm2 status
+  
+  # View logs
+  pm2 logs indoquran-web
+  ```
 
-#### Security Scanning
+- Consider implementing:
+  - Error logging and alerting
+  - System resource monitoring
+  - Performance tracking
 
-The Docker image can be scanned for security vulnerabilities using:
-
-```bash
-./deploy/docker.sh scan
-```
-
-This will build the image and scan it for security vulnerabilities using Docker Scout. The scan will identify any critical or high vulnerabilities that need to be addressed.
+Various third-party services or self-hosted solutions can provide these capabilities.

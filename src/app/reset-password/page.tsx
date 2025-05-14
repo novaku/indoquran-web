@@ -103,7 +103,7 @@ function ResetPasswordForm() {
   // Show loading state while token is being checked
   if (tokenValid === null) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-md">
+      <div className="w-full px-4 py-8 mx-auto">
         <div className="bg-[#f8f4e5] p-6 rounded-lg shadow-md border border-[#d3c6a6] flex justify-center">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#8D6E63]"></div>
         </div>
@@ -112,7 +112,7 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-md">
+    <div className="w-full px-4 py-8 mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-[#5D4037] text-center flex items-center justify-center">
         <svg className="w-7 h-7 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="#5D4037">
           <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />

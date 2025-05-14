@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
       success: true,
       prayers,
       totalPages,
+      totalPrayers: total,
       currentPage: page
     });
     

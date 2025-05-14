@@ -217,9 +217,9 @@ function HomeContent() {
 
   if (showLoading) {
     return (
-      <div className="w-full mx-auto p-4">
+      <div className="w-full p-4">
         {!isRedisCacheInitializing && isLoading && (
-          <div className="flex flex-col items-center justify-center p-8">
+          <div className="flex flex-col items-center justify-center p-8 w-full">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500 mb-4"></div>
             <p className="text-gray-600">Memuat daftar surah...</p>
           </div>
@@ -230,7 +230,7 @@ function HomeContent() {
 
   if (error && !isRedisCacheInitializing) {
     return (
-      <div className="w-full mx-auto mt-8 px-4">
+      <div className="w-full mt-8 px-4">
         <ErrorMessage 
           message="Gagal memuat daftar surah. Silakan coba lagi." 
           retry={() => {
@@ -246,7 +246,7 @@ function HomeContent() {
   }
 
   return (
-    <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
+    <main className="w-full px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
       <Helmet>
         <title>Al-Quran Indonesia | Baca Al-Quran Online dengan Terjemahan & Tafsir Tematik</title>
         <meta name="description" content="Baca Al-Quran online lengkap dengan terjemahan Bahasa Indonesia, tafsir tematik (Al-Maudhu'i), audio murottal. Tersedia 114 surah dengan navigasi mudah." />
@@ -303,43 +303,39 @@ function HomeContent() {
           `}
         </script>
       </Helmet>      
-      {/* Prayer Times Widget - Full Width (Now positioned above search) */}
+      {/* Prayer Times Widget - Full Width */}
       <div className="w-full mb-4 sm:mb-6">
         <PrayerTimesWidget />
       </div>
       
       {/* Enhanced Search Section */}
-      <div className="mb-6 sm:mb-8">
-        <div className="text-center mb-2">
-          <h2 className="text-lg sm:text-xl font-bold text-amber-800 dark:text-amber-300">
-            Temukan Ayat Al-Qur'an
-          </h2>
+      <div className="mb-6 sm:mb-8 w-full">
+        <div className="w-full">
+          <SearchInput
+            value={searchQuery}
+            onChange={(newQuery: string) => {
+              setSearchQuery(newQuery);
+              
+              // If query is cleared, refresh the surah list data
+              if (!newQuery && searchQuery) {
+                // Only trigger a refetch if we're clearing an existing query
+                refetch();
+              }
+            }}
+            onSearch={(query: string) => {
+              // Redirect to ayat search page with query
+              if (query && query.trim().length >= 3) {
+                router.push(`/search/ayat?q=${encodeURIComponent(query)}`);
+              }
+            }}
+            placeholder="Cari ayat Al-Qur'an..."
+          />
         </div>
-        
-        <SearchInput
-          value={searchQuery}
-          onChange={(newQuery: string) => {
-            setSearchQuery(newQuery);
-            
-            // If query is cleared, refresh the surah list data
-            if (!newQuery && searchQuery) {
-              // Only trigger a refetch if we're clearing an existing query
-              refetch();
-            }
-          }}
-          onSearch={(query: string) => {
-            // Redirect to ayat search page with query
-            if (query && query.trim().length >= 3) {
-              router.push(`/search/ayat?q=${encodeURIComponent(query)}`);
-            }
-          }}
-          placeholder="Cari ayat Al-Qur'an..."
-        />
       </div>
 
       {/* Tab Navigation */}
-      <div className="mb-6">
-        <div role="tablist" aria-label="Konten Al-Quran" className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-hidden w-full sm:max-w-xl mx-auto">
+      <div className="mb-6 w-full">
+        <div role="tablist" aria-label="Konten Al-Quran" className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-hidden w-full">
           <button
             role="tab"
             id="tab-surah"
@@ -354,7 +350,7 @@ function HomeContent() {
                 history.pushState("", document.title, window.location.pathname + window.location.search);
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center flex-1 sm:flex-initial
+            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/2
               ${activeTab === 'surah' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
                 : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
@@ -381,7 +377,7 @@ function HomeContent() {
                 window.location.hash = 'tafsir-tematik';
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center flex-1 sm:flex-initial
+            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/2
               ${activeTab === 'tafsir' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
                 : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
@@ -401,15 +397,15 @@ function HomeContent() {
       </div>
 
       {/* Tab Content */}
-      <div className="mt-4">
+      <div className="mt-4 w-full">
         {/* Surah List Tab */}
         {activeTab === 'surah' && (
           <div 
             role="tabpanel"
             id="panel-surah"
             aria-labelledby="tab-surah"
-            className="animate-fadeIn">
-            <div className="mb-3 sm:mb-4">
+            className="animate-fadeIn w-full">
+            <div className="mb-3 sm:mb-4 w-full">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
                 <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={28} height={28} className="w-6 h-6 sm:w-7 sm:h-7 mr-2" />
                 Daftar Surah
@@ -432,7 +428,7 @@ function HomeContent() {
             role="tabpanel"
             id="panel-tafsir"
             aria-labelledby="tab-tafsir"
-            className="animate-fadeIn">
+            className="animate-fadeIn w-full">
             <header className="mb-4">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 sm:w-7 sm:h-7 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -456,8 +452,10 @@ function HomeContent() {
 // Export default component with Suspense boundary
 export default function HomePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
-      <HomeContent />
+    <Suspense fallback={<div className="min-h-screen w-full flex items-center justify-center">Loading...</div>}>
+      <div className="w-full max-w-none">
+        <HomeContent />
+      </div>
     </Suspense>
   );
 }

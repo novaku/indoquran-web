@@ -234,8 +234,8 @@ export function SimpleSearchInput({
 
   return (
     <div className="w-full mb-6">
-      <form onSubmit={handleSubmit} className="relative">
-        <div className="relative">
+      <form onSubmit={handleSubmit} className="relative w-full">
+        <div className="relative w-full">
           <input
             ref={inputRef}
             type="text"

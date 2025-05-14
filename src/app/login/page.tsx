@@ -72,7 +72,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-md">
+    <div className="w-full px-4 py-8 max-w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-[#5D4037] text-center flex items-center justify-center">
         <LazyLoadImage src="/icons/login-icon.svg" alt="Login" width={28} height={28} className="w-7 h-7 mr-2" />
         {showForgotPassword ? 'Reset Password' : 'Masuk ke Akun Anda'}

@@ -43,7 +43,7 @@ function SearchContent() {
   };
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main className="w-full px-4 py-8">
       <Helmet>
         <title>Cari Surah: {query} | Al-Quran Indonesia</title>
         <meta name="description" content={`Hasil pencarian untuk "${query}" di Al-Quran Indonesia. Cari surah berdasarkan nama atau terjemahan.`} />

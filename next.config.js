@@ -3,13 +3,18 @@ const path = require('path');
 const fs = require('fs');
 const dotenv = require('dotenv');
 
-// Try to load environment variables from deploy directory
-const envPath = path.resolve(process.cwd(), 'deploy', '.env.local');
-if (fs.existsSync(envPath)) {
-  console.log(`Loading environment from: ${envPath}`);
-  dotenv.config({ path: envPath });
+// Try to load environment variables from root directory first, then deploy directory
+const rootEnvPath = path.resolve(process.cwd(), '.env.local');
+const deployEnvPath = path.resolve(process.cwd(), 'deploy', '.env.local');
+
+if (fs.existsSync(rootEnvPath)) {
+  console.log(`Loading environment from root: ${rootEnvPath}`);
+  dotenv.config({ path: rootEnvPath });
+} else if (fs.existsSync(deployEnvPath)) {
+  console.log(`Loading environment from deploy directory: ${deployEnvPath}`);
+  dotenv.config({ path: deployEnvPath });
 } else {
-  console.warn('No .env.local found in deploy directory');
+  console.warn('No .env.local found in root or deploy directory');
 }
 
 /** @type {import('next').NextConfig} */

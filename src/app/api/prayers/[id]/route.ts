@@ -218,9 +218,23 @@ export async function POST(
 
   } catch (error) {
     console.error('Error adding prayer response:', error);
+    
+    // Check for specific database error about prayer_stats table
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('prayer_stats') || errorMessage.includes('Table') && errorMessage.includes('doesn\'t exist')) {
+      console.error('Database schema error: The prayer_stats table no longer exists. This is likely due to cached queries or outdated build.');
+      return NextResponse.json({
+        success: false,
+        message: 'Database schema error. Please contact the administrator.',
+        error: 'prayer_stats_table_removed',
+        details: errorMessage
+      }, { status: 500 });
+    }
+    
     return NextResponse.json({
       success: false,
-      message: 'Failed to add response to prayer'
+      message: 'Failed to add response to prayer',
+      error: errorMessage
     }, { status: 500 });
   }
 }

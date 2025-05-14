@@ -199,17 +199,25 @@ const TafsirMaudhuiTree = () => {
   };
 
   const toggleTopic = (topicName: string) => {
-    const newExpandedTopics = new Set(expandedTopics);
-    if (newExpandedTopics.has(topicName)) {
-      newExpandedTopics.delete(topicName);
+    // Check if we're clicking the same topic that's already selected
+    const isClickingSameTopic = selectedTopic?.topic === topicName;
+    
+    if (isClickingSameTopic) {
+      // Clicking the same topic again, deselect it
+      setSelectedTopic(null);
     } else {
+      // Find and set the selected topic
+      const topic = tafsirData.topics.find(t => t.topic === topicName) || null;
+      setSelectedTopic(topic);
+    }
+    
+    // Keep track of topic expansion state for content display
+    const newExpandedTopics = new Set(expandedTopics);
+    if (!isClickingSameTopic) {
+      // If selecting a new topic, set it as expanded
       newExpandedTopics.add(topicName);
     }
     setExpandedTopics(newExpandedTopics);
-
-    // Find and set the selected topic
-    const topic = tafsirData.topics.find(t => t.topic === topicName) || null;
-    setSelectedTopic(topic);
     
     // Auto-scroll to topic details on mobile
     if (window.innerWidth < 768) {
@@ -272,7 +280,7 @@ const TafsirMaudhuiTree = () => {
   }, [groupedTopics]);
 
   return (
-    <div className="bg-[#f8f9fa] rounded-lg p-4 shadow-md">
+    <div className="w-full bg-[#f8f9fa] rounded-lg p-4 shadow-md">
       <h2 className="text-xl font-bold mb-2 text-[#5D4037]">Tafsir Al-Maudhu'i (Tafsir Tematik)</h2>
       <div className="flex flex-wrap gap-2 mb-3">
         <div className="bg-amber-100 text-amber-800 rounded-full px-3 py-1 text-sm font-medium flex items-center">
@@ -326,7 +334,7 @@ const TafsirMaudhuiTree = () => {
       
       <div className="flex flex-col md:flex-row gap-6">
         {/* Topics Tree */}
-        <div className="md:w-1/2 lg:w-2/5 overflow-auto max-h-[50vh] md:max-h-[70vh] border border-amber-100 rounded-md bg-white p-2">
+        <div className="md:w-1/2 overflow-auto max-h-[50vh] md:max-h-[70vh] border border-amber-100 rounded-md bg-white p-2">
           {alphabeticalGroups.length > 0 ? (
             alphabeticalGroups.map((letter) => (
               <div key={letter} className="mb-3">
@@ -343,7 +351,7 @@ const TafsirMaudhuiTree = () => {
                         }`}
                       >
                         <span className="mr-2">
-                          {expandedTopics.has(topic.topic) || selectedTopic?.topic === topic.topic 
+                          {selectedTopic?.topic === topic.topic
                             ? '▼' 
                             : '►'}
                         </span>
@@ -374,7 +382,7 @@ const TafsirMaudhuiTree = () => {
         </div>
 
         {/* Topic Details */}
-        <div id="topic-details" className="md:w-1/2 lg:w-3/5">
+        <div id="topic-details" className="md:w-1/2">
           {selectedTopic ? (
             <div className="bg-white p-4 rounded-md shadow-sm animate-fadeIn">
               <h3 className="text-lg font-bold text-amber-800 mb-2">{selectedTopic.topic}</h3>

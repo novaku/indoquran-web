@@ -9,7 +9,7 @@ if [ -z "$MYSQL_HOST" ] || [ -z "$MYSQL_USER" ] || [ -z "$MYSQL_PASSWORD" ] || [
 fi
 
 echo "Running migration to remove prayer_stats table..."
-mysql -h "$MYSQL_HOST" -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < ./deploy/mysql-init/05-remove-prayer-stats.sql
+mysql -h "$MYSQL_HOST" -u "$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" < ./mysql-init/05-remove-prayer-stats.sql
 STATUS=$?
 
 if [ $STATUS -eq 0 ]; then

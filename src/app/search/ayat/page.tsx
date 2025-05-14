@@ -116,7 +116,7 @@ function AyatSearch() {
   // Debounce function now handled by SearchInput component
   
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="w-full py-8 px-4">
       <DynamicHead 
         title={debouncedQuery ? `Hasil Pencarian: ${debouncedQuery} | IndoQuran` : 'Pencarian Ayat | IndoQuran'}
         description="Cari ayat dalam Al-Quran berdasarkan kata kunci"

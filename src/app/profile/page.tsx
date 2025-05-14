@@ -325,7 +325,7 @@ export default function ProfilePage() {
 
               {activeTab === 'bookmarks' && (
                 <Suspense fallback={<BookmarkSkeleton count={3} />}>
-                  <div className="animate-fadeIn">
+                  <div className="animate-fadeIn w-full">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-semibold text-amber-800">Bookmark Saya</h2>
                       <button 
@@ -343,11 +343,11 @@ export default function ProfilePage() {
                     {bookmarksLoading || (bookmarks && bookmarks.length > 0 && surahResults.isLoading) ? (
                       <BookmarkSkeleton count={3} />
                     ) : bookmarksError ? (
-                      <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <div className="bg-red-50 text-red-700 p-4 rounded-lg w-full">
                         <p>Gagal memuat bookmark. Silakan coba lagi.</p>
                       </div>
                     ) : bookmarks && bookmarks.length > 0 ? (
-                      <div className="space-y-3 animate-fadeIn">
+                      <div className="space-y-3 animate-fadeIn w-full">
                         {Object.entries(
                           bookmarks.reduce((acc: Record<string, any[]>, bookmark: any) => {
                             const surahId = bookmark.surah_id;
@@ -366,10 +366,10 @@ export default function ProfilePage() {
                             const sortedBookmarks = [...(surahBookmarks as any[])].sort((a, b) => a.ayat_number - b.ayat_number);
                             
                             return (
-                              <div key={`surah-${surahId}`} className="bg-amber-50 rounded-lg border border-amber-200 overflow-hidden">
+                              <div key={`surah-${surahId}`} className="bg-amber-50 rounded-lg border border-amber-200 overflow-hidden w-full">
                                 <div 
                                   onClick={() => toggleBookmarkExpansion(surahId)} 
-                                  className="bg-amber-100 p-3 border-b border-amber-200 cursor-pointer hover:bg-amber-200 transition-colors"
+                                  className="bg-amber-100 p-3 border-b border-amber-200 cursor-pointer hover:bg-amber-200 transition-colors w-full"
                                 >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
@@ -402,7 +402,7 @@ export default function ProfilePage() {
                                 </div>
                                 
                                 {expandedBookmarkSurahs[surahId] === true && (
-                                  <div className="divide-y divide-amber-100">
+                                  <div className="divide-y divide-amber-100 w-full">
                                     {sortedBookmarks.map((bookmark) => (
                                       <div 
                                         key={`${bookmark.surah_id}-${bookmark.ayat_number}`}
@@ -456,7 +456,7 @@ export default function ProfilePage() {
                         }
                       </div>
                     ) : (
-                      <div className="text-center py-6">
+                      <div className="text-center py-6 w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-amber-300 mb-2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                         </svg>
@@ -470,7 +470,7 @@ export default function ProfilePage() {
 
               {activeTab === 'favorites' && (
                 <Suspense fallback={<FavoriteSkeleton count={3} />}>
-                  <div className="animate-fadeIn">
+                  <div className="animate-fadeIn w-full">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-semibold text-rose-800">Ayat Favorit Saya</h2>
                       <button 
@@ -488,11 +488,11 @@ export default function ProfilePage() {
                     {favoritesLoading || (favorites && favorites.length > 0 && surahResults.isLoading) ? (
                       <FavoriteSkeleton count={3} />
                     ) : favoritesError ? (
-                      <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <div className="bg-red-50 text-red-700 p-4 rounded-lg w-full">
                         <p>Gagal memuat ayat favorit. Silakan coba lagi.</p>
                       </div>
                     ) : favorites && favorites.length > 0 ? (
-                      <div className="space-y-3 animate-fadeIn">
+                      <div className="space-y-3 animate-fadeIn w-full">
                         {Object.entries(
                           favorites.reduce((acc: Record<string, any[]>, favorite: any) => {
                             const surahId = favorite.surah_id;
@@ -514,10 +514,10 @@ export default function ProfilePage() {
                             const isExpanded = expandedFavoriteSurahs[surahId] === true; // Default to collapsed
                             
                             return (
-                              <div key={`surah-${surahId}`} className="bg-rose-50 rounded-lg border border-rose-200 overflow-hidden">
+                              <div key={`surah-${surahId}`} className="bg-rose-50 rounded-lg border border-rose-200 overflow-hidden w-full">
                                 <div 
                                   onClick={() => toggleSurahExpansion(surahId)}
-                                  className="bg-rose-100 p-3 border-b border-rose-200 cursor-pointer hover:bg-rose-200 transition-colors"
+                                  className="bg-rose-100 p-3 border-b border-rose-200 cursor-pointer hover:bg-rose-200 transition-colors w-full"
                                 >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
@@ -550,7 +550,7 @@ export default function ProfilePage() {
                                 </div>
                                 
                                 {isExpanded && (
-                                  <div className="divide-y divide-rose-100">
+                                  <div className="divide-y divide-rose-100 w-full">
                                     {sortedFavorites.map((favorite) => (
                                       <div 
                                         key={`${favorite.surah_id}-${favorite.ayat_number}`}
@@ -604,7 +604,7 @@ export default function ProfilePage() {
                         }
                       </div>
                     ) : (
-                      <div className="text-center py-6">
+                      <div className="text-center py-6 w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-rose-300 mb-2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
@@ -618,7 +618,7 @@ export default function ProfilePage() {
 
               {activeTab === 'history' && (
                 <Suspense fallback={<ReadingHistorySkeleton />}>
-                  <div className="animate-fadeIn">
+                  <div className="animate-fadeIn w-full">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-semibold text-amber-800">Riwayat Membaca</h2>
                     </div>
@@ -630,7 +630,7 @@ export default function ProfilePage() {
 
               {activeTab === 'notes' && (
                 <Suspense fallback={<NoteSkeleton count={3} />}>
-                  <div className="animate-fadeIn">
+                  <div className="animate-fadeIn w-full">
                     <div className="flex justify-between items-center mb-4">
                       <h2 className="text-xl font-semibold text-green-800">Catatan Saya</h2>
                       <button 
@@ -648,11 +648,11 @@ export default function ProfilePage() {
                     {notesLoading || (userNotes && userNotes.length > 0 && surahResults.isLoading) ? (
                       <NoteSkeleton count={3} />
                     ) : notesError ? (
-                      <div className="bg-red-50 text-red-700 p-4 rounded-lg">
+                      <div className="bg-red-50 text-red-700 p-4 rounded-lg w-full">
                         <p>Gagal memuat catatan. Silakan coba lagi.</p>
                       </div>
                     ) : userNotes && userNotes.length > 0 ? (
-                      <div className="space-y-6 animate-fadeIn">
+                      <div className="space-y-6 animate-fadeIn w-full">
                         {/* Group notes by surah */}
                         {Object.entries(
                           userNotes.reduce((acc, note) => {
@@ -672,10 +672,10 @@ export default function ProfilePage() {
                             const sortedNotes = [...surahNotes].sort((a, b) => a.ayat_number - b.ayat_number);
                             
                             return (
-                              <div key={`surah-${surahId}`} className="bg-green-50 rounded-lg border border-green-200 overflow-hidden">
+                              <div key={`surah-${surahId}`} className="bg-green-50 rounded-lg border border-green-200 overflow-hidden w-full">
                                 <div 
                                   onClick={() => toggleNoteExpansion(surahId)}
-                                  className="bg-green-100 p-3 border-b border-green-200 cursor-pointer hover:bg-green-200 transition-colors"
+                                  className="bg-green-100 p-3 border-b border-green-200 cursor-pointer hover:bg-green-200 transition-colors w-full"
                                 >
                                   <div className="flex justify-between items-center">
                                     <div className="flex-1">
@@ -708,7 +708,7 @@ export default function ProfilePage() {
                                 </div>
                                 
                                 {expandedNoteSurahs[surahId] === true && (
-                                  <div className="divide-y divide-green-100">
+                                  <div className="divide-y divide-green-100 w-full">
                                     {sortedNotes.map((note) => (
                                       <div 
                                         key={`note-${note.note_id}`}
@@ -769,7 +769,7 @@ export default function ProfilePage() {
                         }
                       </div>
                     ) : (
-                      <div className="text-center py-6">
+                      <div className="text-center py-6 w-full">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-green-300 mb-2">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                         </svg>

@@ -4,7 +4,7 @@ import LazyLoadImage from '@/components/LazyLoadImage';
 
 export default function DonasiPage() {
   return (
-    <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
+    <main className="w-full px-3 sm:px-4 py-4 sm:py-8 bg-[#f8f4e5] text-[#5D4037]">
       <div className="bg-white rounded-xl overflow-hidden border border-amber-200 shadow-lg mb-8">
         <div className="p-6 sm:p-8">
           <h1 className="text-3xl font-bold text-amber-900 mb-6 flex items-center">
@@ -12,7 +12,7 @@ export default function DonasiPage() {
             Donasi untuk Al-Quran Indonesia
           </h1>
           
-          <div className="prose prose-amber max-w-none">
+          <div className="prose prose-amber w-full max-w-full">
             <div className="animate-fadeIn">
               <p className="text-lg mb-6">
                 Assalamu'alaikum Warahmatullahi Wabarakatuh, 
