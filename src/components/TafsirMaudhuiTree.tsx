@@ -174,6 +174,30 @@ const TafsirMaudhuiTree = () => {
     return tafsirData.topics.reduce((sum, topic) => sum + topic.verses.length, 0);
   }, []);
 
+  // Sort verses by surah number first, then by ayat number
+  const getSortedVerses = (verses: Ayah[]): Ayah[] => {
+    return [...verses].sort((a, b) => {
+      // First sort by surah number
+      if (a.surah !== b.surah) {
+        return a.surah - b.surah;
+      }
+      // If same surah, sort by ayat number
+      return a.ayah - b.ayah;
+    });
+  };
+
+  // Group verses by surah number
+  const getGroupedVersesBySurah = (verses: Ayah[]): Record<number, Ayah[]> => {
+    const sortedVerses = getSortedVerses(verses);
+    return sortedVerses.reduce<Record<number, Ayah[]>>((acc, verse) => {
+      if (!acc[verse.surah]) {
+        acc[verse.surah] = [];
+      }
+      acc[verse.surah].push(verse);
+      return acc;
+    }, {});
+  };
+
   const toggleTopic = (topicName: string) => {
     const newExpandedTopics = new Set(expandedTopics);
     if (newExpandedTopics.has(topicName)) {
@@ -363,47 +387,60 @@ const TafsirMaudhuiTree = () => {
                   </svg>
                   Ayat-ayat terkait:
                 </h4>
-                <ul className="space-y-2 max-h-[500px] overflow-y-auto pr-1">
-                  {selectedTopic.verses.map((verse, index) => {
-                    const isVerseLoading = loadingAyah?.surah === verse.surah && loadingAyah?.ayah === verse.ayah;
-                    
+                <div className="max-h-[500px] overflow-y-auto pr-1 space-y-4">
+                  {/* Group verses by surah */}
+                  {Object.entries(getGroupedVersesBySurah(selectedTopic.verses)).map(([surahId, verses]) => {
+                    const surahNumber = parseInt(surahId);
                     return (
-                      <li 
-                        key={`${verse.surah}-${verse.ayah}-${index}`} 
-                        className="animate-fadeIn" 
-                        style={{ animationDelay: `${index * 50}ms` }}
-                      >
-                        <button
-                          onClick={(e) => handleAyahClick(verse.surah, verse.ayah, e)}
-                          className={`w-full text-left py-1.5 px-3 rounded hover:bg-amber-100 transition-colors flex items-center cursor-pointer
-                            ${isVerseLoading ? 'bg-amber-100' : ''}
-                          `}
-                          title={`Buka ${getSurahName(verse.surah)} (${verse.surah}) Ayat ${verse.ayah} dalam popup`}
-                        >
-                          <span className="mr-2 bg-amber-200 text-amber-800 w-6 h-6 rounded-full flex items-center justify-center text-xs">
-                            {index + 1}
-                          </span>
-                          <span>
-                            {getSurahName(verse.surah)} ({verse.surah}) : Ayat {verse.ayah}
-                          </span>
-                          <span className="ml-auto text-xs text-amber-700">
-                            {isVerseLoading ? (
-                              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                              </svg>
-                            ) : (
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            )}
-                          </span>
-                        </button>
-                      </li>
+                      <div key={surahNumber} className="animate-fadeIn">
+                        <h5 className="font-medium text-amber-700 mb-2 pb-1 border-b border-amber-200">
+                          {getSurahName(surahNumber)} (Surah {surahNumber})
+                        </h5>
+                        <ul className="space-y-2">
+                          {verses.map((verse, index) => {
+                            const isVerseLoading = loadingAyah?.surah === verse.surah && loadingAyah?.ayah === verse.ayah;
+                            
+                            return (
+                              <li 
+                                key={`${verse.surah}-${verse.ayah}`} 
+                                className="animate-fadeIn" 
+                                style={{ animationDelay: `${index * 50}ms` }}
+                              >
+                                <button
+                                  onClick={(e) => handleAyahClick(verse.surah, verse.ayah, e)}
+                                  className={`w-full text-left py-1.5 px-3 rounded hover:bg-amber-100 transition-colors flex items-center cursor-pointer
+                                    ${isVerseLoading ? 'bg-amber-100' : ''}
+                                  `}
+                                  title={`Buka ${getSurahName(verse.surah)} Ayat ${verse.ayah} dalam popup`}
+                                >
+                                  <span className="mr-2 bg-amber-200 text-amber-800 w-6 h-6 rounded-full flex items-center justify-center text-xs">
+                                    {verse.ayah}
+                                  </span>
+                                  <span>
+                                    Ayat {verse.ayah}
+                                  </span>
+                                  <span className="ml-auto text-xs text-amber-700">
+                                    {isVerseLoading ? (
+                                      <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                      </svg>
+                                    ) : (
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                      </svg>
+                                    )}
+                                  </span>
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             </div>
           ) : (

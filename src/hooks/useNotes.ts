@@ -251,7 +251,8 @@ export function useNotes({ userId }: UseNotesOptions = {}) {
         throw new Error(result.message || 'Failed to get user notes');
       }
       
-      return result.data as AyatNote[];
+      // Fix: properly access the notes array from the response structure
+      return result.data.notes as AyatNote[];
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred fetching your notes');
       return [];
