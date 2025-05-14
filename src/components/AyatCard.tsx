@@ -494,21 +494,28 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
       ref={ayatCardRef} 
       id={`ayat-${ayat.nomorAyat}`}
       className={`mb-8 transition-all duration-300 
-        ${isBookmarked ? 'bg-[#e8e0ce]' : 'bg-white'} 
-        hover:bg-[#f3efe0] rounded-xl p-5 shadow-md border border-[#d3c6a6]
-        hover:shadow-lg transform hover:-translate-y-1`}
+        ${isBookmarked ? 'bg-[#f8f4e5]' : 'bg-white'} 
+        hover:bg-[#f8f4e5] rounded-xl p-6 shadow-xl border-3 border-[#d3c6a6]
+        hover:shadow-2xl transform hover:-translate-y-1 relative overflow-hidden
+        box-border after:content-[''] after:absolute after:top-0 after:left-0 after:w-full after:h-2
+        after:bg-gradient-to-r after:from-amber-500 after:to-amber-700
+        before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-1
+        before:bg-[#d3c6a6]`}
     >
-      <div className="flex justify-between items-start mb-5 pb-3 border-b border-[#d3c6a6]">
+      <div className="flex justify-between items-start mb-5 pb-4 border-b-2 border-[#e0d5b7]">
         <div className="flex items-center">
-          <div className="relative flex items-center justify-center w-12 h-12 rounded-full bg-[#8D6E63] text-white font-semibold shadow-lg">
-            <span className="text-base">{ayat.nomorAyat}</span>
+          <div className="relative flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-amber-600 to-amber-800 text-white font-bold shadow-md">
+            <span className="text-xl">{ayat.nomorAyat}</span>
+          </div>
+          <div className="ml-3">
+            <span className="text-sm font-semibold text-amber-800">Surah {surahData?.namaLatin || surahId}</span>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <button
             onClick={() => navigator.clipboard.writeText(`${ayat.teksArab}\n\n${ayat.teksLatin}\n\n${ayat.teksIndonesia}`)}
-            className="p-2 text-[#795548] hover:bg-[#e8e0ce] rounded-md transition-colors"
+            className="p-2 text-amber-700 hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors shadow-sm"
             title="Salin Ayat"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -525,7 +532,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
               }).catch(err => console.error('Error sharing:', err)) :
               shareToSocial('whatsapp')
             }
-            className="p-2 text-[#795548] hover:bg-[#e8e0ce] rounded-md transition-colors"
+            className="p-2 text-amber-700 hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors shadow-sm"
             title="Bagikan"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -536,7 +543,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
           <button
             onClick={toggleFavorite}
             disabled={favoriteLoading}
-            className={`p-2 ${isFavorite ? 'text-[#D32F2F]' : 'text-[#795548]'} hover:bg-[#e8e0ce] rounded-md transition-colors`}
+            className={`p-2 ${isFavorite ? 'text-red-600' : 'text-amber-700'} hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors shadow-sm`}
             title={isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit"}
           >
             {favoriteLoading ? (
@@ -554,7 +561,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
           
           <button
             onClick={toggleBookmark}
-            className={`p-2 ${isBookmarked ? 'text-[#8D6E63]' : 'text-[#795548]'} hover:bg-[#e8e0ce] rounded-md transition-colors`}
+            className={`p-2 ${isBookmarked ? 'text-amber-800' : 'text-amber-700'} hover:bg-amber-100 rounded-lg border border-amber-200 transition-colors shadow-sm`}
             title={isBookmarked ? "Hapus Bookmark" : "Tambah Bookmark"}
           >
             {bookmarkLoading ? (
@@ -572,63 +579,58 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
         </div>
       </div>
       
-      <div className="space-y-6">
-        <div className="flex justify-end gap-2 mb-2">
+      <div className="space-y-4">
+        <div className="flex justify-end gap-2 mb-1">
           <Tooltip text="Perkecil Teks Arab">
             <button
               type="button"
               onClick={handleZoomOut}
-              className="px-2 py-1 rounded-md bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border shadow-sm hover:shadow"
+              className="px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-800 text-xs hover:bg-amber-100 border-2 border-amber-200 shadow-sm"
               aria-label="Perkecil Teks Arab"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-              </svg>
+              A-
             </button>
           </Tooltip>
           <Tooltip text="Perbesar Teks Arab">
             <button
               type="button"
               onClick={handleZoomIn}
-              className="px-2 py-1 rounded-md bg-book-highlight text-book-primary text-xs hover:bg-book-accent border border-book-border shadow-sm hover:shadow"
+              className="px-2.5 py-1.5 rounded-lg bg-amber-50 text-amber-800 text-xs hover:bg-amber-100 border-2 border-amber-200 shadow-sm"
               aria-label="Perbesar Teks Arab"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-4 h-4">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+              A+
             </button>
           </Tooltip>
         </div>
-
-        <div className="bg-[#f8f4e5] p-5 rounded-lg shadow-inner">
-          <p 
-            className={`font-quran font-normal text-book-primary text-right leading-loose`}
-            style={{ fontSize: `${arabicFontSize}rem` }}
-            dir="rtl"
-          >
+        <div className="bg-amber-50/80 p-5 rounded-lg border-2 border-amber-200 mb-5 shadow-inner">
+          <p className="text-right leading-loose font-arabic text-book-text" style={{ fontSize: arabicFontSize + 'rem' }}>
             {ayat.teksArab}
           </p>
         </div>
-        <p className="text-lg text-book-secondary font-arabic-translation text-left">
-          {ayat.teksLatin}
-        </p>
-        <p className="text-book-text text-left">
-          {ayat.teksIndonesia}
-        </p>
+        <div className="bg-white p-5 rounded-lg border-2 border-amber-100 mb-5 shadow-sm">
+          <p className="text-lg text-book-secondary font-arabic-translation text-left">
+            {ayat.teksLatin}
+          </p>
+          <div className="mt-4 pt-4 border-t-2 border-amber-100">
+            <p className="text-book-text text-left">
+              {ayat.teksIndonesia}
+            </p>
+          </div>
+        </div>
 
         {/* Audio Player Section */}
-        <div className="space-y-3">
+        <div className="space-y-4 bg-[#f8f8f5] p-4 rounded-lg border border-amber-100">
           {/* Qari Selection - Make width fit content */}
           <div className="inline-block">
-            <label htmlFor={`reciter-select-${ayat.nomorAyat}`} className="block text-sm font-medium text-book-secondary mb-2">
+            <label htmlFor={`reciter-select-${ayat.nomorAyat}`} className="block text-sm font-semibold text-book-secondary mb-2">
               Pilih Qari
             </label>
             <select 
               id={`reciter-select-${ayat.nomorAyat}`}
               value={selectedReciter}
               onChange={(e) => setSelectedReciter(e.target.value as keyof typeof RECITERS)}
-              className="inline-block px-4 py-2 rounded-md border border-book-border bg-book-paper text-sm text-book-primary font-medium shadow-sm hover:border-book-secondary focus:outline-none focus:ring-2 focus:ring-book-primary focus:border-transparent"
-              style={{ width: 'auto', minWidth: '8rem', maxWidth: '100%' }}
+              className="inline-block px-4 py-2.5 rounded-lg border-2 border-amber-200 bg-white text-sm text-amber-900 font-medium shadow-md hover:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+              style={{ width: 'auto', minWidth: '10rem', maxWidth: '100%' }}
             >
               {Object.entries(RECITERS).map(([key, name]) => (
                 <option key={key} value={key} className="py-1">
@@ -649,18 +651,18 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
         </div>
 
         {/* Tafsir Button and Content */}
-        <div className="mt-6">
+        <div className="mt-8 border-t-2 border-amber-200 pt-4">
           <div className="flex flex-wrap items-center gap-3 justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => setShowTafsir(!showTafsir)}
                 className={`
-                  px-4 py-2 rounded-md font-medium text-base
+                  px-4 py-2.5 rounded-lg font-medium text-base
                   flex items-center justify-center gap-2 
                   transition-all duration-200 ease-in-out
                   ${showTafsir 
-                    ? "bg-book-highlight text-book-primary border border-book-border shadow-inner" 
-                    : "bg-book-primary text-white border border-book-secondary shadow-sm hover:bg-book-secondary"}
+                    ? "bg-amber-100 text-amber-900 border-2 border-amber-300 shadow-inner" 
+                    : "bg-amber-700 text-white border-2 border-amber-800 shadow-md hover:bg-amber-800"}
                 `}
               >
                 {showTafsir ? (
@@ -682,8 +684,8 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
               
               <button
                 onClick={handleOpenNotes}
-                className="px-4 py-2 rounded-md font-medium text-base flex items-center justify-center gap-2 
-                  bg-blue-600 text-white border border-blue-700 shadow-sm hover:bg-blue-700 
+                className="px-4 py-2.5 rounded-lg font-medium text-base flex items-center justify-center gap-2 
+                  bg-blue-600 text-white border-2 border-blue-700 shadow-md hover:bg-blue-700 
                   transition-all duration-200 ease-in-out"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -695,7 +697,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
                     <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
                   </span>
                 ) : notesCount > 0 ? (
-                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-800 rounded-full ml-1">
+                  <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-800 rounded-full ml-1 shadow-inner">
                     {notesCount}
                   </span>
                 ) : null}
@@ -705,7 +707,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
             {/* WhatsApp Share Button */}
             <button
               onClick={() => shareToSocial('whatsapp')}
-              className="px-4 py-2 rounded-md font-medium text-base bg-green-600 text-white border border-green-700 shadow-sm hover:bg-green-700 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
+              className="px-4 py-2.5 rounded-lg font-medium text-base bg-green-600 text-white border-2 border-green-700 shadow-md hover:bg-green-700 transition-all duration-200 ease-in-out flex items-center justify-center gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
@@ -715,7 +717,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
           </div>
 
           {showTafsir && (
-            <div className="mt-4 p-5 bg-book-paper rounded-lg border border-book-border shadow-sm animate-fadeIn">
+            <div className="mt-6 p-6 bg-amber-50 rounded-lg border-2 border-amber-200 shadow-md animate-fadeIn">
               <div className="text-book-text leading-relaxed">
                 {isTafsirLoading ? (
                   <div className="flex justify-center py-8">
@@ -723,17 +725,17 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
                   </div>
                 ) : ayatTafsir ? (
                   <>
-                    <h3 className="text-book-primary font-semibold text-lg mb-3 pb-2 border-b border-book-border">
+                    <h3 className="text-amber-900 font-semibold text-lg mb-4 pb-3 border-b-2 border-amber-200">
                       Tafsir Surah {surahData?.namaLatin} ({surahId}) Ayat {ayat.nomorAyat}
                     </h3>
                     <div 
-                      className="whitespace-pre-wrap prose prose-stone max-w-none text-left"
+                      className="whitespace-pre-wrap prose prose-amber max-w-none text-left"
                       dangerouslySetInnerHTML={{ __html: ayatTafsir.teks }}
                     />
                   </>
                 ) : (
-                  <div className="py-4 text-left">
-                    <p className="text-book-secondary font-medium">Tafsir tidak tersedia untuk ayat ini.</p>
+                  <div className="py-6 px-4 text-left bg-amber-100/50 rounded-lg border border-amber-200">
+                    <p className="text-amber-800 font-medium">Tafsir tidak tersedia untuk ayat ini.</p>
                   </div>
                 )}
               </div>
@@ -747,36 +749,36 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
       {/* Bookmark Modal */}
       {showBookmarkModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-book-paper rounded-lg p-6 max-w-lg w-full mx-4">
-            <h3 className="text-lg font-semibold text-book-primary mb-4">Tambah Bookmark</h3>
-            <div className="space-y-4">
+          <div className="bg-[#f8f4e5] rounded-xl p-6 max-w-lg w-full mx-4 border-2 border-amber-300 shadow-2xl">
+            <h3 className="text-xl font-semibold text-amber-900 mb-5 pb-2 border-b-2 border-amber-200">Tambah Bookmark</h3>
+            <div className="space-y-5">
               <div>
-                <label htmlFor="bookmark-title" className="block text-sm font-medium text-book-text mb-1">Judul Bookmark</label>
+                <label htmlFor="bookmark-title" className="block text-sm font-medium text-amber-800 mb-2">Judul Bookmark</label>
                 <input
                   type="text"
                   id="bookmark-title"
                   value={bookmarkTitle}
                   onChange={(e) => setBookmarkTitle(e.target.value)}
                   placeholder={`Surah ${surahData?.namaLatin} Ayat ${ayat.nomorAyat}`}
-                  className="w-full px-3 py-2 border border-book-border rounded-md focus:outline-none focus:ring-2 focus:ring-book-primary bg-white"
+                  className="w-full px-4 py-2.5 border-2 border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white shadow-inner"
                 />
               </div>
               <div>
-                <label htmlFor="bookmark-notes" className="block text-sm font-medium text-book-text mb-1">Catatan (Opsional)</label>
+                <label htmlFor="bookmark-notes" className="block text-sm font-medium text-amber-800 mb-2">Catatan (Opsional)</label>
                 <textarea
                   id="bookmark-notes"
                   value={bookmarkNotes}
                   onChange={(e) => setBookmarkNotes(e.target.value)}
                   rows={4}
                   placeholder="Tambahkan catatan..."
-                  className="w-full px-3 py-2 border border-book-border rounded-md focus:outline-none focus:ring-2 focus:ring-book-primary bg-white"
+                  className="w-full px-4 py-3 border-2 border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white shadow-inner"
                 />
               </div>
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowBookmarkModal(false)}
-                  className="px-4 py-2 border border-book-border rounded-md text-book-text hover:bg-book-highlight"
+                  className="px-5 py-2.5 border-2 border-amber-300 rounded-lg text-amber-800 hover:bg-amber-100 font-medium"
                 >
                   Batal
                 </button>
@@ -784,7 +786,7 @@ export const AyatCard = ({ ayat, surahId }: AyatCardProps) => {
                   type="button"
                   onClick={saveBookmark}
                   disabled={bookmarkLoading}
-                  className="px-4 py-2 bg-book-primary text-white rounded-md hover:bg-book-secondary disabled:bg-book-accent disabled:cursor-not-allowed flex items-center justify-center"
+                  className="px-5 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-amber-400 disabled:cursor-not-allowed flex items-center justify-center font-medium border-2 border-amber-700 shadow-md"
                 >
                   {bookmarkLoading ? (
                     <>
