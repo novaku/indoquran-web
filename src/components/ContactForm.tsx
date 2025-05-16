@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 interface FormState {
@@ -29,6 +29,66 @@ export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(null);
   const { isAuthenticated, user } = useAuthContext();
+  
+  // References to form elements for custom validation messages
+  const nameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const subjectRef = useRef<HTMLInputElement>(null);
+  const messageRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Set custom validation messages in Indonesian
+  useEffect(() => {
+    if (nameRef.current) {
+      nameRef.current.oninvalid = (e) => {
+        (e.target as HTMLInputElement).setCustomValidity('Silakan isi bidang ini');
+      };
+      nameRef.current.oninput = (e) => {
+        (e.target as HTMLInputElement).setCustomValidity('');
+      };
+    }
+    
+    if (emailRef.current) {
+      emailRef.current.oninvalid = (e) => {
+        const input = e.target as HTMLInputElement;
+        if (input.validity.valueMissing) {
+          input.setCustomValidity('Silakan isi bidang ini');
+        } else if (input.validity.typeMismatch || input.validity.patternMismatch) {
+          input.setCustomValidity('Silakan masukkan alamat email yang valid');
+        }
+      };
+      emailRef.current.oninput = (e) => {
+        (e.target as HTMLInputElement).setCustomValidity('');
+      };
+    }
+    
+    if (subjectRef.current) {
+      subjectRef.current.oninvalid = (e) => {
+        const input = e.target as HTMLInputElement;
+        if (input.validity.valueMissing) {
+          input.setCustomValidity('Silakan isi bidang ini');
+        } else if (input.validity.tooShort) {
+          input.setCustomValidity('Subjek harus berisi minimal 3 karakter');
+        }
+      };
+      subjectRef.current.oninput = (e) => {
+        (e.target as HTMLInputElement).setCustomValidity('');
+      };
+    }
+    
+    if (messageRef.current) {
+      messageRef.current.oninvalid = (e) => {
+        const textarea = e.target as HTMLTextAreaElement;
+        if (textarea.validity.valueMissing) {
+          textarea.setCustomValidity('Silakan isi bidang ini');
+        } else if (textarea.validity.tooShort) {
+          textarea.setCustomValidity('Pesan harus berisi minimal 3 karakter');
+        }
+      };
+      messageRef.current.oninput = (e) => {
+        (e.target as HTMLTextAreaElement).setCustomValidity('');
+      };
+    }
+  }, []);
   
   // Auto-fill form with user data when authenticated
   useEffect(() => {
@@ -158,6 +218,7 @@ export default function ContactForm() {
             type="text"
             id="name"
             name="name"
+            ref={nameRef}
             value={formData.name}
             onChange={handleChange}
             className={`w-full px-3 py-2 pl-10 border ${
@@ -201,6 +262,7 @@ export default function ContactForm() {
             type="email"
             id="email"
             name="email"
+            ref={emailRef}
             value={formData.email}
             onChange={handleChange}
             className={`w-full px-3 py-2 pl-10 border ${
@@ -245,6 +307,7 @@ export default function ContactForm() {
           type="text"
           id="subject"
           name="subject"
+          ref={subjectRef}
           value={formData.subject}
           onChange={handleChange}
           className={`w-full px-3 py-2 border ${
@@ -292,6 +355,7 @@ export default function ContactForm() {
         <textarea
           id="message"
           name="message"
+          ref={messageRef}
           rows={4}
           value={formData.message}
           onChange={handleChange}
