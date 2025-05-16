@@ -67,13 +67,6 @@ export default function Header() {
       )
     },
     {
-      href: '/kebijakan-privasi',
-      label: 'Kebijakan Privasi',
-      icon: (
-        <LazyLoadImage src="/icons/kebijakan-privasi-icon.svg" alt="Kebijakan Privasi" width={20} height={20} className="w-5 h-5 mr-2" />
-      )
-    },
-    {
       href: '/kontak',
       label: 'Kontak',
       icon: (
