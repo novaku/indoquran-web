@@ -16,6 +16,8 @@ export async function GET(
     const url = new URL(request.url);
     const commentPage = Math.max(1, parseInt(url.searchParams.get('commentPage') || '1', 10));
     const commentsPerPage = Math.max(1, Math.min(50, parseInt(url.searchParams.get('commentsPerPage') || '10', 10)));
+    const amiinPage = Math.max(1, parseInt(url.searchParams.get('amiinPage') || '1', 10));
+    const amiinsPerPage = Math.max(1, Math.min(50, parseInt(url.searchParams.get('amiinsPerPage') || '20', 10)));
 
     // Get prayer details with counts directly from prayer_responses
     const [prayers] = await db.execute(
@@ -53,18 +55,32 @@ export async function GET(
     }
 
     // Get the comment count for pagination
-    const [countResult] = await db.execute(
+    const [commentCountResult] = await db.execute(
       `SELECT COUNT(*) AS total FROM prayer_responses 
        WHERE prayer_id = ? AND response_type = 'comment'`,
       [prayerId]
     );
     
-    const countRows = countResult as any[];
-    const totalComments = parseInt(countRows[0]?.total?.toString() || '0', 10);
+    const commentCountRows = commentCountResult as any[];
+    const totalComments = parseInt(commentCountRows[0]?.total?.toString() || '0', 10);
     const totalCommentPages = Math.max(1, Math.ceil(totalComments / commentsPerPage));
     
-    // Calculate offset for pagination
-    const offset = (commentPage - 1) * commentsPerPage;
+    // Calculate offset for comment pagination
+    const commentOffset = (commentPage - 1) * commentsPerPage;
+    
+    // Get the amiin count for pagination
+    const [amiinCountResult] = await db.execute(
+      `SELECT COUNT(*) AS total FROM prayer_responses 
+       WHERE prayer_id = ? AND response_type = 'amiin'`,
+      [prayerId]
+    );
+    
+    const amiinCountRows = amiinCountResult as any[];
+    const totalAmiins = parseInt(amiinCountRows[0]?.total?.toString() || '0', 10);
+    const totalAmiinPages = Math.max(1, Math.ceil(totalAmiins / amiinsPerPage));
+    
+    // Calculate offset for amiin pagination
+    const amiinOffset = (amiinPage - 1) * amiinsPerPage;
 
     // Get the prayer comments with pagination
     // MySQL prepared statements don't support parameter placeholders for LIMIT and OFFSET
@@ -78,10 +94,10 @@ export async function GET(
       FROM prayer_responses c
       WHERE c.prayer_id = ? AND c.response_type = 'comment'
       ORDER BY c.created_at DESC
-      LIMIT ${commentsPerPage} OFFSET ${offset}
+      LIMIT ${commentsPerPage} OFFSET ${commentOffset}
     `;
     
-    console.log('Fetching comments with query:', commentQuery.replace('${commentsPerPage}', commentsPerPage.toString()).replace('${offset}', offset.toString()), [prayerId]);
+    console.log('Fetching comments with query:', commentQuery.replace('${commentsPerPage}', commentsPerPage.toString()).replace('${commentOffset}', commentOffset.toString()), [prayerId]);
     
     const [comments] = await db.execute(
       commentQuery, 
@@ -89,6 +105,26 @@ export async function GET(
     );
 
     const commentsArray = Array.isArray(comments) ? comments : [];
+    
+    // Get the prayer amiins with pagination
+    const amiinQuery = `
+      SELECT 
+        a.id, a.content, a.user_id as userId, a.author_name as authorName,
+        a.created_at as createdAt, a.updated_at as updatedAt, 
+        a.parent_id as parentId, a.response_type as responseType,
+        a.prayer_id as prayerId
+      FROM prayer_responses a
+      WHERE a.prayer_id = ? AND a.response_type = 'amiin'
+      ORDER BY a.created_at DESC
+      LIMIT ${amiinsPerPage} OFFSET ${amiinOffset}
+    `;
+    
+    const [amiins] = await db.execute(
+      amiinQuery, 
+      [prayerId]
+    );
+
+    const amiinsArray = Array.isArray(amiins) ? amiins : [];
     
     const response = {
       success: true,
@@ -98,11 +134,20 @@ export async function GET(
           currentUserSaidAmiin
         },
         comments: commentsArray,
+        amiins: amiinsArray,
         pagination: {
-          currentPage: commentPage,
-          totalPages: totalCommentPages,
-          totalComments,
-          commentsPerPage
+          commentPagination: {
+            currentPage: commentPage,
+            totalPages: totalCommentPages,
+            totalComments,
+            commentsPerPage
+          },
+          amiinPagination: {
+            currentPage: amiinPage,
+            totalPages: totalAmiinPages,
+            totalAmiins,
+            amiinsPerPage
+          }
         }
       }
     };

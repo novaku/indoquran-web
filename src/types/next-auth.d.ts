@@ -26,5 +26,6 @@ declare module "next-auth/jwt" {
    */
   interface JWT extends DefaultJWT {
     id?: string;
+    // Admin role has been removed
   }
 }

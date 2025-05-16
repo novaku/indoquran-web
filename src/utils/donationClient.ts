@@ -1,0 +1,116 @@
+// filepath: /Users/novaherdi/Documents/GitHub/indoquran-web/src/utils/donationClient.ts
+// Client-side helpers for donation data
+// This file is safe to import in client components
+
+/**
+ * Format a number as IDR currency
+ */
+export const formatCurrency = (amount: number): string => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amount);
+};
+
+/**
+ * Convert month number to Indonesian month name
+ */
+export const getMonthName = (monthNum: string): string => {
+  const months = [
+    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+  ];
+  const index = parseInt(monthNum, 10) - 1;
+  return months[index] || '';
+};
+
+/**
+ * Get current month and year
+ */
+export const getCurrentMonthYear = (): { month: string; year: string } => {
+  const date = new Date();
+  return {
+    month: String(date.getMonth() + 1).padStart(2, '0'),
+    year: String(date.getFullYear())
+  };
+};
+
+// Type definitions
+export interface DonationSummary {
+  month: string;
+  year: string;
+  total_amount: number;
+  donor_count: number;
+  avg_donation: number;
+}
+
+export interface MonthlyDonation {
+  id: number;
+  amount: number;
+  donor_initial: string;
+  donor_name?: string;
+  method: string;
+  donation_date: string;
+  notes?: string;
+}
+
+export interface YearlyTotal {
+  total_amount: number;
+  donor_count: number;
+  avg_donation: number;
+}
+
+export interface Allocation {
+  category: string;
+  amount: number;
+  percentage: number;
+}
+
+export interface DonationsResponse {
+  monthlyDonations: DonationSummary[];
+  currentMonth: MonthlyDonation[];
+  yearlyTotal: YearlyTotal;
+  allocations: Allocation[];
+}
+
+/**
+ * Client-side function to fetch donation data from API
+ */
+export async function fetchDonations(year?: string, month?: string): Promise<DonationsResponse> {
+  try {
+    const params = new URLSearchParams();
+    if (year) params.append('year', year);
+    if (month) params.append('month', month);
+    
+    const url = `/api/donations?${params.toString()}`;
+    console.log('Client-side fetching donations from URL:', url);
+    
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch donation data: ${response.status}`);
+    }
+    
+    const responseData = await response.json();
+    if (!responseData.data) {
+      throw new Error('Response missing data property');
+    }
+    
+    return responseData.data;
+  } catch (error) {
+    console.error('Error in client-side fetchDonations:', error);
+    // Return empty data when API fails
+    return {
+      monthlyDonations: [],
+      currentMonth: [],
+      yearlyTotal: {
+        total_amount: 0,
+        donor_count: 0,
+        avg_donation: 0
+      },
+      allocations: []
+    };
+  }
+}

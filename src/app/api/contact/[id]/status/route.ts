@@ -8,13 +8,13 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Check if user is authorized (admin)
+    // Check if user is authenticated
     const session = await auth();
     
-    // Type-safe check for admin role
-    if (!session?.user || !('role' in session.user) || session.user.role !== 'admin') {
+    // Any authenticated user can now update status since admin has been removed
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Authentication required' },
         { status: 401 }
       );
     }

@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MenuIcon, XIcon, ChevronDownIcon, ChevronUpIcon, UserIcon, LogInIcon, LogOutIcon, Sun, Moon } from 'lucide-react';
+
+import LazyLoadImage from '@/components/LazyLoadImage';
 import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -48,45 +49,35 @@ export default function Header() {
       href: '/tentang',
       label: 'Tentang Kami',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-        </svg>
+        <LazyLoadImage src="/icons/tentang-icon.svg" alt="Tentang Kami" width={20} height={20} className="w-5 h-5 mr-2" />
       )
     },
     {
       href: '/doa',
       label: 'Doa Bersama',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-        </svg>
+        <LazyLoadImage src="/icons/doa-icon.svg" alt="Doa Bersama" width={20} height={20} className="w-5 h-5 mr-2" />
       )
     },
     {
       href: '/donasi',
       label: 'Donasi',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-4.5-4.15v3.85H14v-3.35c-1.3.55-2.6.85-3.9.85s-2.6-.3-3.9-.85v3.35H3.75V7.85c1.55.95 3.25 1.5 5.25 1.5s3.7-.55 5.3-1.5zm-7.1-1.35c1.05 0 1.95-.5 2.6-1.5h-5.25c.65 1 1.6 1.5 2.65 1.5z" />
-        </svg>
+        <LazyLoadImage src="/icons/donasi-icon.svg" alt="Donasi" width={20} height={20} className="w-5 h-5 mr-2" />
       )
     },
     {
       href: '/kebijakan-privasi',
       label: 'Kebijakan Privasi',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-        </svg>
+        <LazyLoadImage src="/icons/kebijakan-privasi-icon.svg" alt="Kebijakan Privasi" width={20} height={20} className="w-5 h-5 mr-2" />
       )
     },
     {
       href: '/kontak',
       label: 'Kontak',
       icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
-        </svg>
+        <LazyLoadImage src="/icons/kontak-icon.svg" alt="Kontak" width={20} height={20} className="w-5 h-5 mr-2" />
       )
     }
   ];
@@ -118,13 +109,32 @@ export default function Header() {
                 }`}
                 aria-label="Open sidebar menu"
               >
-                <MenuIcon className="h-6 w-6" />
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className="h-6 w-6"
+                >
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <line x1="3" y1="12" x2="21" y2="12"></line>
+                  <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
               </button>
               
               <Link href="/" className="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-6 h-6 ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                </svg>
+                <LazyLoadImage 
+                  src="/icons/home-icon.svg" 
+                  alt="Home" 
+                  width={24}
+                  height={24}
+                  className="w-6 h-6" 
+                />
                 <span className={`text-2xl font-bold ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
                   IndoQuran
                 </span>
@@ -147,16 +157,20 @@ export default function Header() {
                     aria-expanded={isMenuOpen}
                     aria-label="Toggle user menu"
                   >
-                    <UserIcon className="h-5 w-5 mr-1 flex-shrink-0" />
+                    <LazyLoadImage src="/icons/profile-icon.svg" alt="User Account" width={20} height={20} className="h-5 w-5 mr-1 flex-shrink-0" />
                     {isAuthenticated && !loading && user ? (
                       <span className="mr-1 truncate max-w-[120px] hidden sm:inline-block">{user.email}</span>
                     ) : (
                       <span className="mr-1">Akun</span>
                     )}
                     {isMenuOpen ? (
-                      <ChevronUpIcon className="h-4 w-4" />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                      </svg>
                     ) : (
-                      <ChevronDownIcon className="h-4 w-4" />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
                     )}
                   </button>
                 </Tooltip>
@@ -183,7 +197,7 @@ export default function Header() {
                             }`}
                             onClick={() => setIsMenuOpen(false)}
                           >
-                            <UserIcon className="w-5 h-5 mr-2" />
+                            <LazyLoadImage src="/icons/profile-icon.svg" alt="Profile" width={20} height={20} className="w-5 h-5 mr-2" />
                             Profil
                           </Link>
                           <button
@@ -197,7 +211,7 @@ export default function Header() {
                                 : 'text-gray-700 hover:bg-amber-50'
                             }`}
                           >
-                            <LogOutIcon className="w-5 h-5 mr-2" />
+                            <LazyLoadImage src="/icons/login-icon.svg" alt="Logout" width={20} height={20} className="w-5 h-5 mr-2 transform rotate-180" />
                             Keluar
                           </button>
                         </>
@@ -211,7 +225,7 @@ export default function Header() {
                           }`}
                           onClick={() => setIsMenuOpen(false)}
                         >
-                          <LogInIcon className="w-5 h-5 mr-2" />
+                          <LazyLoadImage src="/icons/login-icon.svg" alt="Login" width={20} height={20} className="w-5 h-5 mr-2" />
                           Masuk
                         </Link>
                       ))}

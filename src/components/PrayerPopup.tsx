@@ -7,6 +7,7 @@ import { LoadingSpinner } from './LoadingSpinner';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import ErrorAlert from './ErrorAlert';
+import { Toast, ToastType, ToastContainer } from './Toast';
 
 interface PrayerPopupProps { 
   isOpen: boolean; 
@@ -18,12 +19,21 @@ interface PrayerPopupProps {
   onSubmitComment: (authorName: string, content: string, parentId?: number) => Promise<void>;
   currentUserName?: string;
   pagination?: {
-    currentPage: number;
-    totalPages: number;
-    totalComments: number;
-    commentsPerPage: number;
+    commentPagination: {
+      currentPage: number;
+      totalPages: number;
+      totalComments: number;
+      commentsPerPage: number;
+    };
+    amiinPagination: {
+      currentPage: number;
+      totalPages: number;
+      totalAmiins: number;
+      amiinsPerPage: number;
+    };
   };
   onCommentPageChange?: (prayerId: number, page: number) => void;
+  onAmiinPageChange?: (prayerId: number, page: number) => void;
 }
 
 const PrayerPopup = ({ 
@@ -36,13 +46,24 @@ const PrayerPopup = ({
   onSubmitComment,
   currentUserName = '',
   pagination = {
-    currentPage: 1,
-    totalPages: 1,
-    totalComments: 0,
-    commentsPerPage: 10
+    commentPagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalComments: 0,
+      commentsPerPage: 10
+    },
+    amiinPagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalAmiins: 0,
+      amiinsPerPage: 20
+    }
   },
   onCommentPageChange = (id, page) => {
     console.log(`Default comment page change handler: prayer ${id}, page ${page}`);
+  },
+  onAmiinPageChange = (id, page) => {
+    console.log(`Default amiin page change handler: prayer ${id}, page ${page}`);
   }
 }: PrayerPopupProps) => {
   const [commentText, setCommentText] = useState('');
@@ -55,6 +76,14 @@ const PrayerPopup = ({
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // Initialize Amiin button as not submitted (always show Amiin button initially)
+  const [hasSubmittedAmiin, setHasSubmittedAmiin] = useState(false);  // Always false to ensure Amiin button is shown
+  const [hasSubmittedComment, setHasSubmittedComment] = useState(false);
+  const [submittedReplyIds, setSubmittedReplyIds] = useState<number[]>([]);
+  
+  // Toast notification state
+  const [toasts, setToasts] = useState<{ id: string; message: string; type: ToastType }[]>([]);
   
   // Client-side only mounting check
   const [isMounted, setIsMounted] = useState(false);
@@ -67,16 +96,94 @@ const PrayerPopup = ({
   useEffect(() => {
     setUserName(currentUserName);
   }, [currentUserName]);
+  
+  // Helper function to add toast notifications
+  const showToast = (message: string, type: ToastType) => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, message, type }]);
+    
+    // Auto-remove toast after its duration (separate from the UI auto-hide)
+    setTimeout(() => {
+      removeToast(id);
+    }, type === 'error' ? 8000 : 5000);
+  };
+  
+  // Helper function to remove a toast by id
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+
+  // Reset when opening a new prayer
+  useEffect(() => {
+    if (prayer) {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      // Always ensure Amiin button is enabled
+      setHasSubmittedAmiin(false);
+      setHasSubmittedComment(false);
+      setSubmittedReplyIds([]);
+    }
+  }, [prayer]);
+  
+  // Reset states when the popup opens or closes
+  useEffect(() => {
+    if (isOpen) {
+      // Only reset the states when opening the popup, not on first mount
+      if (isMounted) {
+        // Reset button states
+        setHasSubmittedAmiin(false); // Always show Amiin button, hide Terkirim on initial load
+        setHasSubmittedComment(false);
+        setSubmittedReplyIds([]);
+        
+        // Reset any in-progress submissions
+        setIsSubmittingAmiin(false);
+        setIsSubmittingComment(false);
+        setIsSubmittingReply(false);
+        
+        // Reset form states
+        setReplyTo(null);
+        setReplyText('');
+        setCommentText(''); // Clear any partial comment text
+        
+        // Even if user has already said Amiin, keep the button enabled
+        // if (prayer && prayer.currentUserSaidAmiin) {
+        //   setHasSubmittedAmiin(true); // Set Amiin button to "Terkirim" if user has already said Amiin
+        // }
+      }
+    } else {
+      // When closing the popup, clean up any temporary states and reset button states
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      
+      // Reset button states when closing the popup
+      setHasSubmittedAmiin(false);
+      setHasSubmittedComment(false);
+      setSubmittedReplyIds([]);
+      
+      // Reset any in-progress submissions
+      setIsSubmittingAmiin(false);
+      setIsSubmittingComment(false);
+      setIsSubmittingReply(false);
+    }
+  }, [isOpen, isMounted, prayer]);
 
   // Reset optimistic amiins when responses change
   useEffect(() => {
     setOptimisticAmiins([]);
   }, [responses]);
 
-  // Get direct comments (not replies)
+  // Separate responses by type
   const directResponses = responses.filter(r => r.parentId === null);
-  const amiins = [...directResponses.filter(r => r.responseType === 'amiin'), ...optimisticAmiins];
+  // For comments, we only want comments from the responses
   const comments = directResponses.filter(r => r.responseType === 'comment');
+  
+  // For amiins, we combine responses with any optimistic updates
+  // The API now returns amiins separately with pagination, 
+  // but we still need to handle optimistic updates
+  const amiins = [
+    ...directResponses.filter(r => r.responseType === 'amiin'), 
+    ...optimisticAmiins
+  ];
 
   // Handle body scroll lock
   useEffect(() => {
@@ -126,9 +233,10 @@ const PrayerPopup = ({
   };
 
   const handleAmiinSubmit = async () => {
-    if (userName.trim() && !isSubmittingAmiin) {
+    if (userName.trim() && !isSubmittingAmiin && !hasSubmittedAmiin) {
       setIsSubmittingAmiin(true);
       setErrorMessage(null); // Clear any previous error messages
+      setSuccessMessage(null); // Clear any previous success messages
       
       // Generate a temporary ID for tracking this optimistic update
       const tempId = Date.now();
@@ -157,10 +265,22 @@ const PrayerPopup = ({
         // Call the API
         await onSubmitAmiin(userName);
         
+        // Show success message inline and with toast notification
+        const successMsg = 'Amiin berhasil ditambahkan. Terima kasih!';
+        setSuccessMessage(successMsg);
+        showToast(successMsg, 'success');
+        
+        setHasSubmittedAmiin(true);
+        
         // Reset submitting state after a delay to show success animation
         setTimeout(() => {
           setIsSubmittingAmiin(false);
         }, 1000);
+        
+        // After 5 seconds, hide the inline success message but keep the button disabled
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       } catch (error: any) {
         console.error('Error submitting amiin:', error);
         
@@ -178,25 +298,51 @@ const PrayerPopup = ({
           }
         }
         
+        // Show error message inline and with toast notification
         setErrorMessage(errorMsg);
+        showToast(errorMsg, 'error');
         
         // Remove the optimistic update in case of error
         setOptimisticAmiins(prev => prev.filter(item => item.id !== tempId));
         
         // Reset submitting state immediately on error
         setIsSubmittingAmiin(false);
+        
+        // Auto-hide error message after 8 seconds
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 8000);
       }
     }
   };
 
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (userName.trim() && commentText.trim()) {
+    if (userName.trim() && commentText.trim() && !isSubmittingComment && !hasSubmittedComment) {
       setErrorMessage(null); // Clear any previous error messages
+      setSuccessMessage(null); // Clear any previous success messages
       setIsSubmittingComment(true);
       try {
         await onSubmitComment(userName, commentText);
         setCommentText('');
+        
+        // Show success message both inline and as a toast
+        const successMsg = 'Komentar berhasil ditambahkan. Terima kasih!';
+        setSuccessMessage(successMsg);
+        showToast(successMsg, 'success');
+        
+        // Mark comment as submitted to update button state
+        setHasSubmittedComment(true);
+        
+        // Reset submitting state after a delay to show success animation
+        setTimeout(() => {
+          setIsSubmittingComment(false);
+        }, 1000);
+        
+        // After 5 seconds, hide the success message but keep the button disabled
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       } catch (error: any) {
         console.error('Error submitting comment:', error);
         
@@ -214,8 +360,16 @@ const PrayerPopup = ({
           }
         }
         
+        // Set error message both inline and as a toast
         setErrorMessage(errorMsg);
-      } finally {
+        showToast(errorMsg, 'error');
+        
+        // Auto-hide error message after 8 seconds
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 8000);
+        
+        // Reset submitting state immediately on error
         setIsSubmittingComment(false);
       }
     }
@@ -224,11 +378,30 @@ const PrayerPopup = ({
   const handleReplySubmit = async (parentId: number) => {
     if (userName.trim() && replyText.trim()) {
       setErrorMessage(null); // Clear any previous error messages
+      setSuccessMessage(null); // Clear any previous success messages
       setIsSubmittingReply(true);
       try {
         await onSubmitComment(userName, replyText, parentId);
         setReplyTo(null);
         setReplyText('');
+        
+        // Add this reply ID to our list of submitted replies
+        setSubmittedReplyIds(prev => [...prev, parentId]);
+        
+        // Show success message both inline and as a toast
+        const successMsg = 'Balasan berhasil ditambahkan. Terima kasih!';
+        setSuccessMessage(successMsg);
+        showToast(successMsg, 'success');
+        
+        // After a delay, reset submitting state to show success animation
+        setTimeout(() => {
+          setIsSubmittingReply(false);
+        }, 1000);
+        
+        // After 5 seconds, hide the success message but keep reply disabled
+        setTimeout(() => {
+          setSuccessMessage(null);
+        }, 5000);
       } catch (error: any) {
         console.error('Error submitting reply:', error);
         
@@ -246,8 +419,16 @@ const PrayerPopup = ({
           }
         }
         
+        // Set error message both inline and as a toast
         setErrorMessage(errorMsg);
-      } finally {
+        showToast(errorMsg, 'error');
+        
+        // Auto-hide error message after 8 seconds
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 8000);
+        
+        // Reset submitting state immediately on error
         setIsSubmittingReply(false);
       }
     }
@@ -299,8 +480,12 @@ const PrayerPopup = ({
                 <div className="flex justify-end">
                   <button
                     onClick={() => handleReplySubmit(response.id)}
-                    className="px-3 py-1 bg-amber-500 text-white rounded-md text-sm hover:bg-amber-600"
-                    disabled={!userName.trim() || !replyText.trim() || isSubmittingReply}
+                    className={`px-3 py-1 text-white rounded-md text-sm
+                      ${submittedReplyIds.includes(response.id) 
+                        ? 'bg-green-500 cursor-not-allowed opacity-80' 
+                        : 'bg-amber-500 hover:bg-amber-600'}`}
+                    disabled={!userName.trim() || !replyText.trim() || isSubmittingReply || submittedReplyIds.includes(response.id)}
+                    title={submittedReplyIds.includes(response.id) ? "Balasan telah terkirim" : ""}
                   >
                     {isSubmittingReply ? (
                       <div className="flex items-center">
@@ -309,6 +494,13 @@ const PrayerPopup = ({
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Mengirim...
+                      </div>
+                    ) : submittedReplyIds.includes(response.id) ? (
+                      <div className="flex items-center">
+                        <svg className="w-3 h-3 mr-1" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        Terkirim
                       </div>
                     ) : (
                       <>Kirim Balasan</>
@@ -332,14 +524,18 @@ const PrayerPopup = ({
   if (!isOpen || !isMounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 flex items-center justify-center z-[9999]">
-      {/* Backdrop with blur effect */}
-      <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fadeIn"
-        onClick={onClose}
-        aria-hidden="true"
-        style={{ animation: 'fadeIn 0.3s ease-out' }}
-      ></div>
+    <>
+      {/* Toast notifications container */}
+      {toasts.length > 0 && <ToastContainer toasts={toasts} removeToast={removeToast} />}
+      
+      <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+        {/* Backdrop with blur effect */}
+        <div 
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fadeIn"
+          onClick={onClose}
+          aria-hidden="true"
+          style={{ animation: 'fadeIn 0.3s ease-out' }}
+        ></div>
       
       <div 
         className="relative bg-gradient-to-br from-white to-amber-50 rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto m-4 z-[10000] border border-amber-100"
@@ -380,6 +576,25 @@ const PrayerPopup = ({
               <button
                 className="absolute top-0 right-0 p-2 text-red-500 hover:text-red-700"
                 onClick={() => setErrorMessage(null)}
+              >
+                <svg className="h-4 w-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          )}
+          
+          {successMessage && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded relative mb-4 animate-fadeIn">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{successMessage}</span>
+              </div>
+              <button
+                className="absolute top-0 right-0 p-2 text-green-500 hover:text-green-700"
+                onClick={() => setSuccessMessage(null)}
               >
                 <svg className="h-4 w-4" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
                   <path d="M6 18L18 6M6 6l12 12"></path>
@@ -494,68 +709,189 @@ const PrayerPopup = ({
               
               {/* Amiin section with enhanced styling */}
               {activeTab === 'amiin' && (
-                <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-amber-50/30 rounded-lg border border-amber-100 shadow-inner">
-                  <div className="flex mb-4">
-                    <input
-                      type="text"
-                      placeholder="Nama Anda"
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      className="flex-1 px-3 py-2 border border-amber-200 rounded-l focus:ring focus:ring-amber-200 focus:border-amber-400 focus:outline-none transition-all duration-200"
-                      required
-                    />
-                    <button
-                      onClick={handleAmiinSubmit}
-                      className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-r hover:from-amber-600 hover:to-amber-700 transition-all duration-200 flex items-center shadow-sm"
-                      disabled={!userName.trim() || isSubmittingAmiin}
-                    >
-                      {isSubmittingAmiin ? (
-                        <div className="flex items-center">
-                          <svg className="animate-spin mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Mengirim...
-                        </div>
-                      ) : (
-                        <>
-                          <svg className="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                          Amiin
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  
-                  {amiins.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {amiins.map((amiin, index) => {
-                        // Check if this is an optimistic entry
-                        const isOptimistic = optimisticAmiins.some(opt => opt.id === amiin.id);
-                        
-                        return (
-                          <span 
-                            key={amiin.id} 
-                            className={`px-2 py-1 bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 rounded text-sm border ${isOptimistic ? 'border-amber-300 shadow-md' : 'border-amber-200/50 shadow-sm'}`} 
-                            style={{ 
-                              animationDelay: `${index * 0.1}s`,
-                              animation: 'fadeIn 0.5s ease-out forwards'
-                            }}
-                          >
-                            <span className={`${isOptimistic ? 'text-amber-600' : 'text-amber-500'} mr-1`}>•</span>
-                            {amiin.authorName}
-                            {isOptimistic && (
-                              <span className="ml-1 inline-block animate-pulse">✓</span>
-                            )}
-                          </span>
-                        );
-                      })}
+                <div className="mb-6">
+                  <div className="p-4 mb-6 bg-gradient-to-r from-amber-50 to-amber-50/30 rounded-lg border border-amber-100 shadow-inner">
+                    <div className="flex mb-4">
+                      <input
+                        type="text"
+                        placeholder="Nama Anda"
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+                        className="flex-1 px-3 py-2 border border-amber-200 rounded-l focus:ring focus:ring-amber-200 focus:border-amber-400 focus:outline-none transition-all duration-200"
+                        required
+                      />
+                      <button
+                        onClick={handleAmiinSubmit}
+                        className={`px-4 py-2 ${hasSubmittedAmiin 
+                          ? 'bg-gradient-to-r from-amber-500 to-amber-600 cursor-not-allowed opacity-80' 
+                          : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'} 
+                          text-white rounded-r transition-all duration-200 flex items-center shadow-sm`}
+                        disabled={!userName.trim() || isSubmittingAmiin}
+                        title={hasSubmittedAmiin ? "" : "Kirim Amiin"}
+                      >
+                        {isSubmittingAmiin ? (
+                          <div className="flex items-center">
+                            <svg className="animate-spin mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Mengirim...
+                          </div>
+                        ) : hasSubmittedAmiin ? (
+                          <>
+                            <svg className="w-4 h-4 mr-1" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Terkirim
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4 mr-1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                            Amiin
+                          </>
+                        )}
+                      </button>
                     </div>
-                  )}
-                  {amiins.length === 0 && (
-                    <div className="text-center py-4 text-amber-700/70 text-sm italic">
-                      Belum ada yang mengucapkan Amiin. Jadilah yang pertama!
+                  </div>
+
+                  {isLoading ? (
+                    <div className="flex justify-center py-6">
+                      <LoadingSpinner />
+                    </div>
+                  ) : amiins.length > 0 ? (
+                    <div>
+                      <h4 className="text-lg font-medium text-amber-800 mb-3 flex items-center">
+                        <svg className="w-5 h-5 mr-1.5 text-amber-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Amiin dari Jamaah
+                      </h4>
+                      
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {amiins.map((amiin, index) => {
+                          // Check if this is an optimistic entry
+                          const isOptimistic = optimisticAmiins.some(opt => opt.id === amiin.id);
+                          
+                          return (
+                            <span 
+                              key={amiin.id} 
+                              className={`px-3 py-1.5 bg-gradient-to-r from-amber-100 to-amber-50 text-amber-800 rounded text-sm border ${isOptimistic ? 'border-amber-300 shadow-md' : 'border-amber-200/50 shadow-sm'}`} 
+                              style={{ 
+                                animationDelay: `${index * 0.1}s`,
+                                animation: 'fadeIn 0.5s ease-out forwards'
+                              }}
+                            >
+                              <span className={`${isOptimistic ? 'text-amber-600' : 'text-amber-500'} mr-1.5`}>•</span>
+                              <span className="font-medium">{amiin.authorName}</span>
+                              <span className="text-amber-500/70 text-xs ml-1.5">
+                                {formatDistanceToNow(new Date(amiin.createdAt), { addSuffix: true, locale: id })}
+                              </span>
+                              {isOptimistic && (
+                                <span className="ml-1 inline-block animate-pulse">✓</span>
+                              )}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      
+                      {/* Amiin Pagination */}
+                      {pagination.amiinPagination.totalPages > 1 && (
+                        <div className="flex justify-center items-center mt-4 mb-4">
+                          <button
+                            onClick={() => {
+                              if (prayer && prayer.id) {
+                                onAmiinPageChange(prayer.id, Math.max(1, pagination.amiinPagination.currentPage - 1));
+                              } else {
+                                console.error('Cannot change page: prayer or prayer.id is undefined');
+                              }
+                            }}
+                            disabled={pagination.amiinPagination.currentPage === 1}
+                            className="px-3 py-1 mx-1 rounded bg-amber-100 text-amber-800 hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Previous page"
+                          >
+                            &laquo;
+                          </button>
+                          
+                          {/* Page numbers */}
+                          <div className="flex space-x-1">
+                            {(() => {
+                              const pageNumbers = [];
+                              let lastRenderedPage = 0;
+                              
+                              for (let i = 1; i <= pagination.amiinPagination.totalPages; i++) {
+                                const isCurrentPage = i === pagination.amiinPagination.currentPage;
+                                const isFirstPage = i === 1;
+                                const isLastPage = i === pagination.amiinPagination.totalPages;
+                                const isAdjacentToCurrentPage = Math.abs(i - pagination.amiinPagination.currentPage) <= 1;
+                                
+                                if (isCurrentPage || isFirstPage || isLastPage || isAdjacentToCurrentPage) {
+                                  // Add ellipsis if there's a gap
+                                  if (i > lastRenderedPage + 1 && lastRenderedPage !== 0) {
+                                    pageNumbers.push(
+                                      <span key={`ellipsis-${i}`} className="px-2 py-1">
+                                        &hellip;
+                                      </span>
+                                    );
+                                  }
+                                  
+                                  pageNumbers.push(
+                                    <button
+                                      key={i}
+                                      onClick={() => {
+                                        if (prayer && prayer.id) {
+                                          onAmiinPageChange(prayer.id, i);
+                                        } else {
+                                          console.error('Cannot change page: prayer or prayer.id is undefined');
+                                        }
+                                      }}
+                                      className={`px-3 py-1 rounded ${
+                                        i === pagination.amiinPagination.currentPage
+                                          ? 'bg-amber-500 text-white'
+                                          : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
+                                      }`}
+                                    >
+                                      {i}
+                                    </button>
+                                  );
+                                  
+                                  lastRenderedPage = i;
+                                }
+                              }
+                              
+                              return pageNumbers;
+                            })()}
+                          </div>
+                          
+                          <button
+                            onClick={() => {
+                              if (prayer && prayer.id) {
+                                onAmiinPageChange(prayer.id, Math.min(pagination.amiinPagination.totalPages, pagination.amiinPagination.currentPage + 1));
+                              } else {
+                                console.error('Cannot change page: prayer or prayer.id is undefined');
+                              }
+                            }}
+                            disabled={pagination.amiinPagination.currentPage === pagination.amiinPagination.totalPages}
+                            className="px-3 py-1 mx-1 rounded bg-amber-100 text-amber-800 hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            aria-label="Next page"
+                          >
+                            &raquo;
+                          </button>
+                        </div>
+                      )}
+                      
+                      <div className="text-center mt-2 text-sm text-gray-500">
+                        Menampilkan {((pagination.amiinPagination.currentPage - 1) * pagination.amiinPagination.amiinsPerPage) + 1} sampai {Math.min(pagination.amiinPagination.currentPage * pagination.amiinPagination.amiinsPerPage, pagination.amiinPagination.totalAmiins)} dari {pagination.amiinPagination.totalAmiins} amiin
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 bg-amber-50/50 rounded-lg border border-amber-100 shadow-inner">
+                      <svg className="w-12 h-12 mx-auto text-amber-200 mb-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <p className="text-amber-700">Belum ada yang mengucapkan Amiin untuk doa ini.</p>
+                      <p className="text-amber-500 text-sm mt-1">Jadilah yang pertama mengucapkan Amiin!</p>
                     </div>
                   )}
                 </div>
@@ -593,8 +929,12 @@ const PrayerPopup = ({
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-md hover:from-amber-600 hover:to-amber-700 transition-all duration-200 flex items-center shadow-sm"
-                      disabled={!userName.trim() || !commentText.trim() || isSubmittingComment}
+                      className={`px-4 py-2 ${hasSubmittedComment 
+                          ? 'bg-gradient-to-r from-green-500 to-green-600 cursor-not-allowed opacity-80' 
+                          : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700'} 
+                          text-white rounded-md transition-all duration-200 flex items-center shadow-sm`}
+                      disabled={!userName.trim() || !commentText.trim() || isSubmittingComment || hasSubmittedComment}
+                      title={hasSubmittedComment ? "Komentar telah terkirim" : ""}
                     >
                       {isSubmittingComment ? (
                         <div className="flex items-center">
@@ -604,6 +944,13 @@ const PrayerPopup = ({
                           </svg>
                           Mengirim...
                         </div>
+                      ) : hasSubmittedComment ? (
+                        <>
+                          <svg className="w-4 h-4 mr-1" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Terkirim
+                        </>
                       ) : (
                         <>
                           <svg className="w-4 h-4 mr-1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -644,17 +991,17 @@ const PrayerPopup = ({
                     </div>
                     
                     {/* Comment Pagination */}
-                    {pagination.totalPages > 1 && (
+                    {pagination.commentPagination.totalPages > 1 && (
                       <div className="flex justify-center items-center mt-4">
                         <button
                           onClick={() => {
                             if (prayer && prayer.id) {
-                              onCommentPageChange(prayer.id, Math.max(1, pagination.currentPage - 1));
+                              onCommentPageChange(prayer.id, Math.max(1, pagination.commentPagination.currentPage - 1));
                             } else {
                               console.error('Cannot change page: prayer or prayer.id is undefined');
                             }
                           }}
-                          disabled={pagination.currentPage === 1}
+                          disabled={pagination.commentPagination.currentPage === 1}
                           className="px-3 py-1 mx-1 rounded bg-amber-100 text-amber-800 hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
                           aria-label="Previous page"
                         >
@@ -667,11 +1014,11 @@ const PrayerPopup = ({
                             const pageNumbers = [];
                             let lastRenderedPage = 0;
                             
-                            for (let i = 1; i <= pagination.totalPages; i++) {
-                              const isCurrentPage = i === pagination.currentPage;
+                            for (let i = 1; i <= pagination.commentPagination.totalPages; i++) {
+                              const isCurrentPage = i === pagination.commentPagination.currentPage;
                               const isFirstPage = i === 1;
-                              const isLastPage = i === pagination.totalPages;
-                              const isAdjacentToCurrentPage = Math.abs(i - pagination.currentPage) <= 1;
+                              const isLastPage = i === pagination.commentPagination.totalPages;
+                              const isAdjacentToCurrentPage = Math.abs(i - pagination.commentPagination.currentPage) <= 1;
                               
                               if (isCurrentPage || isFirstPage || isLastPage || isAdjacentToCurrentPage) {
                                 // Add ellipsis if there's a gap
@@ -694,7 +1041,7 @@ const PrayerPopup = ({
                                       }
                                     }}
                                     className={`px-3 py-1 rounded ${
-                                      i === pagination.currentPage
+                                      i === pagination.commentPagination.currentPage
                                         ? 'bg-amber-500 text-white'
                                         : 'bg-amber-100 text-amber-800 hover:bg-amber-200'
                                     }`}
@@ -714,12 +1061,12 @@ const PrayerPopup = ({
                         <button
                           onClick={() => {
                             if (prayer && prayer.id) {
-                              onCommentPageChange(prayer.id, Math.min(pagination.totalPages, pagination.currentPage + 1));
+                              onCommentPageChange(prayer.id, Math.min(pagination.commentPagination.totalPages, pagination.commentPagination.currentPage + 1));
                             } else {
                               console.error('Cannot change page: prayer or prayer.id is undefined');
                             }
                           }}
-                          disabled={pagination.currentPage === pagination.totalPages}
+                          disabled={pagination.commentPagination.currentPage === pagination.commentPagination.totalPages}
                           className="px-3 py-1 mx-1 rounded bg-amber-100 text-amber-800 hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
                           aria-label="Next page"
                         >
@@ -729,7 +1076,7 @@ const PrayerPopup = ({
                     )}
                     
                     <div className="text-center mt-2 text-sm text-gray-500">
-                      Showing {((pagination.currentPage - 1) * pagination.commentsPerPage) + 1} to {Math.min(pagination.currentPage * pagination.commentsPerPage, pagination.totalComments)} of {pagination.totalComments} comments
+                      Menampilkan {((pagination.commentPagination.currentPage - 1) * pagination.commentPagination.commentsPerPage) + 1} sampai {Math.min(pagination.commentPagination.currentPage * pagination.commentPagination.commentsPerPage, pagination.commentPagination.totalComments)} dari {pagination.commentPagination.totalComments} komentar
                     </div>
                   </div>
                 ) : (
@@ -758,7 +1105,8 @@ const PrayerPopup = ({
           )}
         </div>
       </div>
-    </div>,
+    </div>
+    </>,
     document.body
   );
 };

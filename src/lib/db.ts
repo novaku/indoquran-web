@@ -1,3 +1,4 @@
+import 'server-only'; // This ensures this module is never used on the client side
 import mysql from 'mysql2/promise';
 import { getEnv } from '@/utils/env'; 
 import logger from '@/utils/logger';

@@ -22,6 +22,23 @@ const nextConfig = {
   // Core configuration
   serverExternalPackages: ['mysql2', 'ioredis', 'bcryptjs'], // External packages that need to be bundled
   
+  // Explicitly mark modules that should be treated as external (server-only)
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Don't resolve 'tls', 'fs', etc. on the client to prevent issues
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        tls: false,
+        fs: false,
+        net: false,
+        path: false,
+        mysql: false,
+        mysql2: false,
+      };
+    }
+    return config;
+  },
+  
   // Output as standalone for Docker deployment
   output: 'standalone',
   
@@ -38,7 +55,13 @@ const nextConfig = {
   
   // Image optimization
   images: {
-    domains: ['api.quran.gading.dev'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.quran.gading.dev',
+        pathname: '**',
+      },
+    ],
     formats: ['image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],

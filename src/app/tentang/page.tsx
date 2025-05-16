@@ -292,7 +292,7 @@ export default function AboutPage() {
                       src="/images/features/prayer-share.png" 
                       alt="Fitur Doa Bersama" 
                       width={800} 
-                      height={187} 
+                      height={331} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
                     />
                     </div>

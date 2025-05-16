@@ -24,10 +24,18 @@ export default function PrayerPage() {
   const [loadingPrayerDetail, setLoadingPrayerDetail] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [paginationData, setPaginationData] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalComments: 0,
-    commentsPerPage: 10
+    commentPagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalComments: 0,
+      commentsPerPage: 10
+    },
+    amiinPagination: {
+      currentPage: 1,
+      totalPages: 1,
+      totalAmiins: 0,
+      amiinsPerPage: 20
+    }
   });
 
   const fetchPrayers = async () => {
@@ -55,10 +63,10 @@ export default function PrayerPage() {
     }
   };
 
-  const fetchPrayerDetail = async (id: number, commentPage: number = 1) => {
+  const fetchPrayerDetail = async (id: number, commentPage: number = 1, amiinPage: number = 1) => {
     setLoadingPrayerDetail(true);
     try {
-      const res = await fetch(`/api/prayers/${id}?commentPage=${commentPage}&commentsPerPage=10`);
+      const res = await fetch(`/api/prayers/${id}?commentPage=${commentPage}&commentsPerPage=10&amiinPage=${amiinPage}&amiinsPerPage=20`);
       
       if (!res.ok) {
         console.error(`Error fetching prayer detail: Server responded with ${res.status} ${res.statusText}`);
@@ -69,12 +77,25 @@ export default function PrayerPage() {
       
       if (data && data.success === true && data.data) {
         setSelectedPrayer(data.data.prayer);
-        setPrayerResponses(data.data.comments || []);
+        // Combine comments and amiins into a single responses array for backward compatibility
+        const allResponses = [
+          ...(data.data.comments || []), 
+          ...(data.data.amiins || [])
+        ];
+        setPrayerResponses(allResponses);
         setPaginationData(data.data.pagination || {
-          currentPage: 1,
-          totalPages: 1,
-          totalComments: 0,
-          commentsPerPage: 10
+          commentPagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalComments: 0,
+            commentsPerPage: 10
+          },
+          amiinPagination: {
+            currentPage: 1,
+            totalPages: 1,
+            totalAmiins: 0,
+            amiinsPerPage: 20
+          }
         });
         setShowPopup(true); // Show the popup after data is loaded
       } else {
@@ -111,7 +132,7 @@ export default function PrayerPage() {
     }
   };
 
-  const handleSubmitAmiin = async (authorName: string) => {
+  const handleSubmitAmiin = async (authorName: string): Promise<void> => {
     if (!selectedPrayer) return;
     
     try {
@@ -140,8 +161,21 @@ export default function PrayerPage() {
         }
       }
 
-      // Refresh the prayer detail, preserving current comment page
-      fetchPrayerDetail(selectedPrayer.id, paginationData.currentPage);
+      // Refresh the prayer detail, preserving current pages for both comment and amiin
+      fetchPrayerDetail(
+        selectedPrayer.id, 
+        paginationData.commentPagination.currentPage, 
+        paginationData.amiinPagination.currentPage
+      );
+      
+      // If successful, update the prayer data to reflect the user's amiin submission
+      if (selectedPrayer) {
+        setSelectedPrayer({
+          ...selectedPrayer,
+          currentUserSaidAmiin: true,
+          amiinCount: (selectedPrayer.amiinCount || 0) + 1
+        });
+      }
     } catch (error) {
       console.error('Error submitting amiin:', error);
       throw error; // Re-throw to be handled by the component
@@ -188,7 +222,12 @@ export default function PrayerPage() {
   
   const handleCommentPageChange = (prayerId: number, page: number) => {
     console.log(`Changing to comment page ${page} for prayer ${prayerId}`);
-    fetchPrayerDetail(prayerId, page);
+    fetchPrayerDetail(prayerId, page, paginationData.amiinPagination.currentPage);
+  };
+  
+  const handleAmiinPageChange = (prayerId: number, page: number) => {
+    console.log(`Changing to amiin page ${page} for prayer ${prayerId}`);
+    fetchPrayerDetail(prayerId, paginationData.commentPagination.currentPage, page);
   };
 
   const handleViewPrayer = (id: number) => {
@@ -476,6 +515,7 @@ export default function PrayerPage() {
         currentUserName={session?.user?.name || ''}
         pagination={paginationData}
         onCommentPageChange={handleCommentPageChange}
+        onAmiinPageChange={handleAmiinPageChange}
       />
     </main>
   );

@@ -32,7 +32,13 @@ const nextConfig: NextConfig = {
   },
   // Additional Next.js configuration
   images: {
-    domains: ['api.quran.gading.dev']
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'api.quran.gading.dev',
+        pathname: '**',
+      },
+    ],
   },
   // Add this section to specify Node.js packages for server components
   experimental: {

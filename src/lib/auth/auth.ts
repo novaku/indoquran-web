@@ -80,7 +80,7 @@ export const {
           return {
             id: userFromDb.user_id.toString(),
             name: userFromDb.username,
-            email: userFromDb.email,
+            email: userFromDb.email
           };
         } catch (error) {
           console.error("Auth error:", error);
@@ -93,12 +93,18 @@ export const {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        // All users have the same role since admin functionality has been removed
+        token.role = 'user';
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any, token: any }) {
       if (token && session.user) {
         session.user.id = token.id as string;
+        // Add the role to the session if it exists in the token
+        if (token.role) {
+          session.user.role = token.role;
+        }
       }
       return session;
     },
