@@ -174,8 +174,9 @@ export default function AboutPage() {
                       width={800} 
                       height={371} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
-                    </div>
+                  </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan daftar 114 surah Al-Quran dengan informasi lengkap</p>
                   <p className="text-amber-800 mb-4">
                     Memuat 114 surah Al-Quran lengkap dengan informasi nama, arti, jumlah ayat, dan tempat turun. 
@@ -203,6 +204,7 @@ export default function AboutPage() {
                       width={800} 
                       height={187} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal waktu sholat dengan deteksi lokasi dan penghitungan countdown</p>
@@ -233,6 +235,7 @@ export default function AboutPage() {
                       width={800} 
                       height={460} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Hasil pencarian terjemahan dengan highlight pada kata kunci</p>
@@ -263,6 +266,7 @@ export default function AboutPage() {
                       width={800} 
                       height={258} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan ayat dengan teks Arab, Latin dan terjemahan yang optimal</p>
@@ -294,6 +298,7 @@ export default function AboutPage() {
                       width={800} 
                       height={331} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Platform berbagi doa dan saling mendoakan sesama muslim</p>
@@ -327,6 +332,7 @@ export default function AboutPage() {
                       width={800} 
                       height={189} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan tafsir lengkap dengan penjelasan kontekstual dan asbabun nuzul</p>
@@ -357,6 +363,7 @@ export default function AboutPage() {
                       width={800} 
                       height={104} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Player audio murattal dengan pilihan qari dan kontrol pemutaran</p>
@@ -388,6 +395,7 @@ export default function AboutPage() {
                       width={800} 
                       height={495} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Fitur bookmark, catatan pribadi dan posisi terakhir membaca</p>
@@ -417,6 +425,7 @@ export default function AboutPage() {
                       width={650} 
                       height={394} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Opsi berbagi ayat melalui berbagai platform media sosial</p>
@@ -447,6 +456,7 @@ export default function AboutPage() {
                       width={800} 
                       height={425} 
                       className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
                     />
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan tafsir tematik dengan indeks ayat berdasarkan tema</p>
@@ -480,6 +490,7 @@ export default function AboutPage() {
                         width={618} 
                         height={206} 
                         className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                        clickable={true}
                       />
                       </div>
                       <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal sholat terintegrasi di footer pada semua halaman</p>
