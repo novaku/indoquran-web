@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import LazyLoadImage from '@/components/LazyLoadImage';
 import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import Tooltip from '@/components/Tooltip';
 import Sidebar from '@/components/Sidebar';
 
@@ -16,7 +15,6 @@ export default function Header() {
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, logout, loading, user } = useAuthContext();
-  const { theme, toggleTheme } = useTheme();
   
   // Determine if current page is a reading page (surah or ayat page)
   const isReadingPage = pathname.includes('/surah/') || pathname.includes('/ayat/');

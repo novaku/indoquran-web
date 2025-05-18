@@ -39,17 +39,17 @@ export const NoteCard = ({
   };
   
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-4">
+    <div className="bg-white rounded-lg shadow-md p-4 mb-4">
       <div className="flex justify-between items-start mb-3">
-        <div className="font-medium text-gray-900 dark:text-white">
+        <div className="font-medium text-gray-900">
           {note.username || 'User'}
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="text-xs text-gray-500">
           {new Date(note.created_at).toLocaleDateString()}
         </div>
       </div>
       
-      <div className="prose prose-sm dark:prose-invert mb-4">{note.content}</div>
+      <div className="prose prose-sm mb-4">{note.content}</div>
       
       <div className="flex justify-between items-center">
         <button 
@@ -57,8 +57,8 @@ export const NoteCard = ({
           disabled={isLiking}
           className={`flex items-center space-x-1 ${
             isLikedByUser 
-              ? 'text-book-primary dark:text-book-accent' 
-              : 'text-gray-500 dark:text-gray-400'
+              ? 'text-book-primary' 
+              : 'text-gray-500'
           }`}
         >
           <svg 
@@ -78,7 +78,7 @@ export const NoteCard = ({
             {onEdit && (
               <button 
                 onClick={onEdit}
-                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                className="text-blue-500 hover:text-blue-700"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -95,7 +95,7 @@ export const NoteCard = ({
             {onDelete && (
               <button 
                 onClick={onDelete}
-                className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                className="text-red-500 hover:text-red-700"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -157,7 +157,7 @@ export const CreateNoteForm = ({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Tulis catatan Anda di sini..."
-          className="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          className="w-full px-3 py-2 border rounded-lg"
           rows={4}
           required
         />
@@ -171,7 +171,7 @@ export const CreateNoteForm = ({
           onChange={(e) => setIsPublic(e.target.checked)}
           className="mr-2"
         />
-        <label htmlFor="is-public" className="text-sm text-gray-700 dark:text-gray-300">
+        <label htmlFor="is-public" className="text-sm text-gray-700">
           Jadikan catatan ini publik (terlihat oleh pengguna lain)
         </label>
       </div>
@@ -189,7 +189,7 @@ export const CreateNoteForm = ({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+            className="px-4 py-2 rounded bg-gray-300 text-gray-700 hover:bg-gray-400"
           >
             Batal
           </button>
@@ -214,12 +214,12 @@ export const NotesContainer = ({
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
-        <div className="px-6 py-4 border-b dark:border-gray-700 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[80vh] overflow-y-auto">
+        <div className="px-6 py-4 border-b flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-900">
             Catatan untuk Surah {surahId}:{ayatNumber}
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -229,7 +229,7 @@ export const NotesContainer = ({
         <div className="p-6">
           {!isAuthenticated ? (
             <div className="text-center py-8">
-              <p className="mb-4 text-gray-700 dark:text-gray-300">
+              <p className="mb-4 text-gray-700">
                 Anda perlu masuk untuk membuat catatan.
               </p>
               <a 

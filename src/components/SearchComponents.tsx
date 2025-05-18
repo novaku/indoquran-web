@@ -243,7 +243,7 @@ export function SimpleSearchInput({
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full p-4 pl-12 pr-24 rounded-xl border-2 border-amber-300 dark:border-amber-700 bg-white dark:bg-gray-800 text-amber-900 dark:text-amber-50 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+            className="w-full p-4 pl-12 pr-24 rounded-xl border-2 border-amber-300 bg-white text-amber-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
             style={{ zIndex: 10 }}
             autoComplete="off"
             minLength={2}
@@ -267,7 +267,7 @@ export function SimpleSearchInput({
               <button
                 type="button"
                 onClick={handleClearClick}
-                className="p-2 bg-amber-100 dark:bg-amber-700/50 hover:bg-amber-200 dark:hover:bg-amber-700 text-amber-600 dark:text-amber-200 rounded-full cursor-pointer"
+                className="p-2 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-full cursor-pointer"
                 style={{ zIndex: 50, position: 'relative' }}
                 aria-label="Hapus pencarian"
               >
@@ -291,19 +291,19 @@ export function SimpleSearchInput({
           {showSuggestions && (
             <div 
               ref={suggestionsRef}
-              className="absolute left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 rounded-lg shadow-lg z-50 overflow-hidden"
+              className="absolute left-0 right-0 mt-1 bg-white border border-amber-200 rounded-lg shadow-lg z-50 overflow-hidden"
               role="listbox"
               aria-label="Saran pencarian surah"
               id="surah-suggestions"
             >
               <ul className="max-h-60 overflow-auto">
                 {isLoading ? (
-                  <li className="p-3 flex items-center text-amber-700 dark:text-amber-300">
+                  <li className="p-3 flex items-center text-amber-700">
                     <div className="animate-spin h-4 w-4 mr-2 border-2 border-amber-500 rounded-full border-t-transparent"></div>
                     <span>Mencari surah...</span>
                   </li>
                 ) : suggestions.length === 0 ? (
-                  <li className="p-3 text-amber-700 dark:text-amber-300 text-center">
+                  <li className="p-3 text-amber-700 text-center">
                     Tidak ditemukan surah yang sesuai
                   </li>
                 ) : (
@@ -312,29 +312,29 @@ export function SimpleSearchInput({
                       key={surah.nomor}
                       onClick={() => handleSuggestionClick(surah)}
                       onMouseEnter={() => setSelectedIndex(index)}
-                      className={`p-3 cursor-pointer transition-colors border-b border-amber-100 dark:border-amber-800 ${
+                      className={`p-3 cursor-pointer transition-colors border-b border-amber-100 ${
                         index === selectedIndex 
-                          ? 'bg-amber-100 dark:bg-amber-800/50' 
-                          : 'hover:bg-amber-50 dark:hover:bg-amber-800/30'
+                          ? 'bg-amber-100' 
+                          : 'hover:bg-amber-50'
                       }`}
                       role="option"
                       aria-selected={index === selectedIndex}
                       id={`surah-suggestion-${surah.nomor}`}
                     >
                       <div className="flex items-center">
-                        <span className="w-8 h-8 flex items-center justify-center bg-amber-100 dark:bg-amber-800 text-amber-800 dark:text-amber-100 rounded-full mr-3 text-sm font-semibold">
+                        <span className="w-8 h-8 flex items-center justify-center bg-amber-100 text-amber-800 rounded-full mr-3 text-sm font-semibold">
                           {surah.nomor}
                         </span>
                         <div className="flex-1">
                           <div className="flex justify-between">
-                            <h4 className="font-semibold text-amber-900 dark:text-amber-100">
+                            <h4 className="font-semibold text-amber-900">
                               <HighlightedText text={surah.namaLatin} query={currentQuery} />
                             </h4>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">{surah.jumlahAyat} ayat</span>
+                            <span className="text-xs text-gray-500">{surah.jumlahAyat} ayat</span>
                           </div>
                           <div className="flex flex-wrap mt-1 text-sm">
-                            <span className="text-amber-700 dark:text-amber-300 mr-3">{surah.nama}</span>
-                            <span className="text-gray-600 dark:text-gray-400 italic">
+                            <span className="text-amber-700 mr-3">{surah.nama}</span>
+                            <span className="text-gray-600 italic">
                               <HighlightedText text={surah.arti} query={currentQuery} />
                             </span>
                           </div>
@@ -350,7 +350,7 @@ export function SimpleSearchInput({
       </form>
       
       <div className="text-center mt-2">
-        <p className="text-xs text-amber-600 dark:text-amber-400">
+        <p className="text-xs text-amber-600">
           Cari surah dengan nama seperti "<span className="font-medium">Al-Fatihah</span>" atau cari ayat dengan frasa seperti "<span className="font-medium">maha pengasih</span>"
         </p>
       </div>
@@ -422,13 +422,13 @@ export function BasicSearch({
   return (
     <div className="w-full mb-6">
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center border-2 border-amber-400 dark:border-amber-700 rounded-lg overflow-hidden">
+        <div className="flex items-center border-2 border-amber-400 rounded-lg overflow-hidden">
           <input
             type="text" 
             value={displayValue || ''}
             onChange={handleInputChange}
             placeholder={placeholder}
-            className="flex-grow p-3 focus:outline-none bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+            className="flex-grow p-3 focus:outline-none bg-white text-gray-800"
             autoComplete="off"
             disabled={isDisabled}
           />
@@ -436,7 +436,7 @@ export function BasicSearch({
           {displayValue && (
             <button
               type="button"
-              className="px-3 py-2 bg-amber-100 dark:bg-amber-800/50 text-amber-700 dark:text-amber-300"
+              className="px-3 py-2 bg-amber-100 text-amber-700"
               onClick={handleClearButtonClick}
               style={{ cursor: 'pointer' }}
               aria-label="Clear search"
@@ -456,7 +456,7 @@ export function BasicSearch({
       </form>
       
       <div className="text-center mt-2">
-        <p className="text-xs text-amber-600 dark:text-amber-400">
+        <p className="text-xs text-amber-600">
           Cari dengan frasa lengkap seperti "maha pengasih" untuk hasil terbaik
         </p>
       </div>
@@ -641,10 +641,10 @@ export function AyatSearchResults({
         
         <div className="animate-pulse space-y-4">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="bg-gray-100 dark:bg-gray-800 p-4 rounded-md">
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full mb-1"></div>
-              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+            <div key={i} className="bg-gray-100 p-4 rounded-md">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-full mb-1"></div>
+              <div className="h-3 bg-gray-200 rounded w-5/6"></div>
             </div>
           ))}
         </div>
@@ -735,16 +735,16 @@ export function AyatSearchResults({
       {/* Dedicated bottom dropdown pagination for easier navigation */}
       {results.length > 0 && totalPages > 1 && (
         <div className="mt-8 mb-4 flex justify-center">
-          <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg px-5 py-3 border border-amber-200 dark:border-amber-700">
+          <div className="bg-white shadow-md rounded-lg px-5 py-3 border border-amber-200">
             <div className="flex flex-col sm:flex-row items-center gap-3">
-              <span className="text-gray-700 dark:text-gray-300 font-medium">
+              <span className="text-gray-700 font-medium">
                 Loncat ke Halaman:
               </span>
               <div className="flex items-center gap-3">
                 <select
                   value={currentPage}
                   onChange={handlePageChange}
-                  className="block w-full min-w-[120px] border border-amber-300 dark:border-amber-700 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-gray-800 text-amber-800 dark:text-amber-200"
+                  className="block w-full min-w-[120px] border border-amber-300 rounded-md px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white text-amber-800"
                   aria-label="Pilih halaman untuk dilihat"
                 >
                   {[...Array(totalPages)].map((_, i) => (

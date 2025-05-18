@@ -27,16 +27,16 @@ const Footer: React.FC = () => {
   };
   
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[#f8f4e5] dark:bg-gray-900 border-t border-[#d3c6a6] dark:border-gray-700 py-3 px-4 z-40 shadow-md">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[#f8f4e5] border-t border-[#d3c6a6] py-3 px-4 z-40 shadow-md">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-2 md:mb-0">
-            <p className="text-[#5D4037] dark:text-gray-200 text-sm">
+            <p className="text-[#5D4037] text-sm">
               © {new Date().getFullYear()} IndoQuran - Al-Quran Digital Bahasa Indonesia
             </p>
           </div>
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/donasi" className="text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 transition-colors flex items-center mr-4">
+            <Link href="/donasi" className="text-amber-700 hover:text-amber-900 transition-colors flex items-center mr-4">
               <LazyLoadImage 
                 src="/icons/donasi-icon.svg" 
                 alt="Donasi" 
@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
             <Tooltip text={useAutoLocation ? 'Beralih ke lokasi default (Jakarta)' : 'Deteksi lokasi otomatis'} position="top">
               <button 
                 onClick={toggleLocationPreference}
-                className="text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 transition-colors flex items-center"
+                className="text-amber-700 hover:text-amber-900 transition-colors flex items-center"
               >
                 {/* Replace with Google Maps-like location icon */}
                 <svg 

@@ -34,10 +34,10 @@ export default function ContactPage() {
           Kontak Kami
         </h1>
         
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-amber-700 dark:text-amber-400 mb-4">Kirim Pesan</h2>
+        <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-amber-700 mb-4">Kirim Pesan</h2>
           {isOffline ? (
-            <div className="bg-yellow-100 dark:bg-yellow-800/30 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 p-4 mb-4">
+            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
               <p className="font-medium">Anda sedang dalam mode offline</p>
               <p className="text-sm">Untuk mengirim pesan, silakan hubungkan kembali ke internet.</p>
             </div>
@@ -46,43 +46,43 @@ export default function ContactPage() {
           )}
         </div>
         
-        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-amber-700 dark:text-amber-400 mb-4">Pertanyaan Umum</h2>
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-amber-700 mb-4">Pertanyaan Umum</h2>
           <div className="space-y-6">
             <div>
-              <h3 className="font-medium text-amber-800 dark:text-amber-300">Apakah IndoQuran tersedia sebagai aplikasi?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="font-medium text-amber-800">Apakah IndoQuran tersedia sebagai aplikasi?</h3>
+              <p className="text-gray-600 mt-1">
                 IndoQuran tersedia sebagai aplikasi web yang dapat diakses langsung dari browser.
               </p>
             </div>
             
             <div>
-              <h3 className="font-medium text-amber-800 dark:text-amber-300">Bagaimana cara melaporkan kesalahan terjemahan?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="font-medium text-amber-800">Bagaimana cara melaporkan kesalahan terjemahan?</h3>
+              <p className="text-gray-600 mt-1">
                 Untuk melaporkan kesalahan terjemahan atau tafsir, silakan kirimkan pesan melalui 
                 formulir kontak di atas dengan menyebutkan surah, ayat, dan koreksi yang perlu dilakukan.
               </p>
             </div>
             
             <div>
-              <h3 className="font-medium text-amber-800 dark:text-amber-300">Apakah pembaharuan sering dilakukan?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="font-medium text-amber-800">Apakah pembaharuan sering dilakukan?</h3>
+              <p className="text-gray-600 mt-1">
                 Ya, kami selalu berusaha meningkatkan IndoQuran. Pembaruan dilakukan secara berkala untuk 
                 menambah fitur baru dan memperbaiki kesalahan.
               </p>
             </div>
             
             <div>
-              <h3 className="font-medium text-amber-800 dark:text-amber-300">Bagaimana cara memberikan saran fitur?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="font-medium text-amber-800">Bagaimana cara memberikan saran fitur?</h3>
+              <p className="text-gray-600 mt-1">
                 Untuk memberikan saran fitur atau masukan lainnya, silakan kirim pesan melalui 
                 formulir kontak di atas. Semua saran akan kami pertimbangkan.
               </p>
             </div>
             
             <div>
-              <h3 className="font-medium text-amber-800 dark:text-amber-300">Bagaimana cara menyebarkan IndoQuran?</h3>
-              <p className="text-gray-600 dark:text-gray-300 mt-1">
+              <h3 className="font-medium text-amber-800">Bagaimana cara menyebarkan IndoQuran?</h3>
+              <p className="text-gray-600 mt-1">
                 Anda dapat membagikan tautan IndoQuran melalui media sosial atau aplikasi pesan. 
                 Bantu kami menyebarkan manfaat kepada lebih banyak pengguna.
               </p>

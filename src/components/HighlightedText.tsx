@@ -13,7 +13,7 @@ export default function HighlightedText({
   text, 
   query, 
   className = '', 
-  highlightClassName = 'font-bold text-amber-700 dark:text-amber-300' 
+  highlightClassName = 'font-bold text-amber-700' 
 }: HighlightedTextProps) {
   // Check if we have valid inputs
   if (!text || !query || query.trim() === '') {

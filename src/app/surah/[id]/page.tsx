@@ -220,7 +220,7 @@ export default function SurahPage() {
       {/* Floating Surah Info that appears below the header */}
       {surah && (
         <div 
-          className={`fixed top-[72px] left-0 right-0 z-20 bg-[#f8f4e5]/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-md border-b border-[#d3c6a6] dark:border-gray-700 py-2 px-4 transition-all duration-300 ${
+          className={`fixed top-[72px] left-0 right-0 z-20 bg-[#f8f4e5]/95 backdrop-blur-sm shadow-md border-b border-[#d3c6a6] py-2 px-4 transition-all duration-300 ${
             showStickyHeader ? 'opacity-100 translate-y-0 animate-slideDown' : 'opacity-0 -translate-y-full pointer-events-none'
           }`}
         >
@@ -230,20 +230,20 @@ export default function SurahPage() {
                 <span className="text-sm">{surah.nomor}</span>
               </div>
               <div>
-                <h2 className="font-bold text-[#5D4037] dark:text-amber-300 flex items-baseline gap-2">
+                <h2 className="font-bold text-[#5D4037] flex items-baseline gap-2">
                   {surah.namaLatin}
-                  <span className="text-xl font-arabic text-[#8D6E63] dark:text-amber-400">{surah.nama}</span>
+                  <span className="text-xl font-arabic text-[#8D6E63]">{surah.nama}</span>
                 </h2>
                 <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-xs text-[#8D6E63] dark:text-amber-400">{surah.arti}</p>
-                  <span className="text-xs px-2 py-0.5 bg-[#e8e0ce] dark:bg-gray-800 rounded-full text-[#8D6E63] dark:text-amber-400 font-medium">
+                  <p className="text-xs text-[#8D6E63]">{surah.arti}</p>
+                  <span className="text-xs px-2 py-0.5 bg-[#e8e0ce] rounded-full text-[#8D6E63] font-medium">
                     {surah.jumlahAyat} Ayat
                   </span>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-[#8D6E63] dark:text-amber-400 hidden sm:block">
+              <span className="text-sm text-[#8D6E63] hidden sm:block">
                 {surah.tempatTurun === 'mekah' ? 'Makkah' : 'Madinah'} • {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, surah.ayat.length)} dari {surah.jumlahAyat}
               </span>
               <button 
@@ -255,7 +255,7 @@ export default function SurahPage() {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                   }
                 }}
-                className="bg-[#8D6E63] hover:bg-[#6D4C41] dark:bg-amber-600 dark:hover:bg-amber-700 text-white p-2 rounded-full transition-colors"
+                className="bg-[#8D6E63] hover:bg-[#6D4C41] text-white p-2 rounded-full transition-colors"
                 aria-label="Kembali ke atas"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -305,7 +305,7 @@ export default function SurahPage() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }
             }}
-            className="bg-[#8D6E63] hover:bg-[#6D4C41] dark:bg-amber-600 dark:hover:bg-amber-700 text-white p-2 rounded-full shadow-lg transition-colors"
+            className="bg-[#8D6E63] hover:bg-[#6D4C41] text-white p-2 rounded-full shadow-lg transition-colors"
             aria-label="Kembali ke atas"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

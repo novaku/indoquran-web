@@ -69,7 +69,7 @@ export default function Sidebar({ isOpen, onClose, menuItems }: SidebarProps) {
       {/* Sidebar */}
       <div 
         id="sidebar"
-        className={`fixed top-0 left-0 h-full w-64 bg-white dark:bg-gray-800 shadow-xl z-50 transform sidebar ${
+        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-xl z-50 transform sidebar ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         } ${isReadingPage ? 'bg-[#f8f4e5] text-[#5D4037]' : 'bg-white text-gray-800'}`}
       >

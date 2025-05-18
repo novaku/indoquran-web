@@ -400,8 +400,8 @@ const PrayerTimesWidget: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-tr from-amber-50 to-amber-100 dark:bg-gradient-to-tr dark:from-gray-800 dark:to-gray-700 rounded-lg p-4 shadow-md w-full">
-        <h3 className="font-semibold text-xl text-amber-800 dark:text-amber-400 mb-2 flex items-center">
+      <div className="bg-gradient-to-tr from-amber-50 to-amber-100 rounded-lg p-4 shadow-md w-full">
+        <h3 className="font-semibold text-xl text-amber-800 mb-2 flex items-center">
           <LazyLoadImage 
             src="/icons/prayer-icon.svg"
             alt="Prayer Times"
@@ -411,13 +411,13 @@ const PrayerTimesWidget: React.FC = () => {
           />
           Jadwal Sholat
         </h3>
-        <div className="text-red-600 dark:text-red-400 mb-3 bg-red-100 dark:bg-red-900/30 p-3 rounded border-l-4 border-red-500 dark:border-red-600">
+        <div className="text-red-600 mb-3 bg-red-100 p-3 rounded border-l-4 border-red-500">
           <p className="font-medium mb-1">{error}</p>
-          <p className="text-sm text-red-700 dark:text-red-300">Pastikan perangkat Anda terhubung ke internet.</p>
+          <p className="text-sm text-red-700">Pastikan perangkat Anda terhubung ke internet.</p>
         </div>
         <button 
           onClick={() => window.location.reload()} 
-          className="bg-amber-600 hover:bg-amber-700 dark:bg-amber-700 dark:hover:bg-amber-600 text-white py-2 px-4 rounded text-sm transition-colors flex items-center"
+          className="bg-amber-600 hover:bg-amber-700 text-white py-2 px-4 rounded text-sm transition-colors flex items-center"
         >
           <LazyLoadImage 
             src="/icons/tentang-icon.svg"
@@ -463,9 +463,9 @@ const PrayerTimesWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-amber-50 to-amber-100 dark:bg-gradient-to-tr dark:from-gray-800 dark:to-gray-700 rounded-lg p-4 shadow-md w-full transition-all duration-300 hover:shadow-lg">
+    <div className="bg-gradient-to-tr from-amber-50 to-amber-100 rounded-lg p-4 shadow-md w-full transition-all duration-300 hover:shadow-lg">
       <div className="flex flex-wrap justify-between items-start mb-2">
-        <h3 className="font-semibold text-xl text-amber-800 dark:text-amber-400 flex items-center">
+        <h3 className="font-semibold text-xl text-amber-800 flex items-center">
           <LazyLoadImage 
             src="/icons/prayer-icon.svg"
             alt="Prayer Times"
@@ -481,8 +481,8 @@ const PrayerTimesWidget: React.FC = () => {
               onClick={toggleNotifications} 
               className={`p-1 rounded-full ${
                 notificationsEnabled 
-                  ? 'bg-amber-200 text-amber-800 dark:bg-amber-700 dark:text-amber-200' 
-                  : 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400'
+                  ? 'bg-amber-200 text-amber-800' 
+                  : 'bg-gray-200 text-gray-500'
                 } transition-all duration-300`}
               aria-label={notificationsEnabled ? 'Nonaktifkan notifikasi sholat' : 'Aktifkan notifikasi sholat'}
             >
@@ -495,7 +495,7 @@ const PrayerTimesWidget: React.FC = () => {
               />
             </button>
           </Tooltip>
-          <div className="text-amber-900 dark:text-amber-300 font-medium text-sm">
+          <div className="text-amber-900 font-medium text-sm">
             {format(currentDate, 'HH:mm:ss', { locale: id })}
           </div>
         </div>
@@ -503,7 +503,7 @@ const PrayerTimesWidget: React.FC = () => {
       
       <div className="flex flex-wrap items-center justify-between mb-3">
         {location && (
-          <div className="text-sm text-amber-700 dark:text-amber-400 flex items-center mr-3 mb-1">
+          <div className="text-sm text-amber-700 flex items-center mr-3 mb-1">
             <LazyLoadImage 
               src="/icons/prayer-icon.svg"
               alt="Location"
@@ -515,7 +515,7 @@ const PrayerTimesWidget: React.FC = () => {
           </div>
         )}
         
-        <div className="text-sm text-amber-900 dark:text-amber-300 flex items-center mb-1">
+        <div className="text-sm text-amber-900 flex items-center mb-1">
           <LazyLoadImage 
             src="/icons/tentang-icon.svg"
             alt="Calendar"
@@ -528,46 +528,46 @@ const PrayerTimesWidget: React.FC = () => {
       </div>
       
       {nextPrayer && (
-        <div className="mb-4 bg-gradient-to-r from-amber-200/80 to-amber-100/80 dark:from-amber-900/60 dark:to-amber-800/60 rounded-md p-3 border-l-4 border-amber-500 dark:border-amber-600 shadow-sm">
-          <div className="text-xs text-amber-800 dark:text-amber-300 uppercase font-semibold mb-1">Waktu sholat berikutnya</div>
-          <div className="font-bold text-amber-900 dark:text-amber-200 flex justify-between items-center">
+        <div className="mb-4 bg-gradient-to-r from-amber-200/80 to-amber-100/80 rounded-md p-3 border-l-4 border-amber-500 shadow-sm">
+          <div className="text-xs text-amber-800 uppercase font-semibold mb-1">Waktu sholat berikutnya</div>
+          <div className="font-bold text-amber-900 flex justify-between items-center">
             <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2 text-amber-600">
                 <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
               </svg>
               <span>{nextPrayer.name}</span>
             </div>
-            <span className="bg-amber-500/20 dark:bg-amber-500/30 py-1 px-3 rounded-full text-amber-900 dark:text-amber-100">{nextPrayer.time}</span>
+            <span className="bg-amber-500/20 py-1 px-3 rounded-full text-amber-900">{nextPrayer.time}</span>
           </div>
         </div>
       )}
       
       {prayerTimes && (
-        <div className="border-t border-amber-200/50 dark:border-amber-700/50 pt-3">
+        <div className="border-t border-amber-200/50 pt-3">
           <div className="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-sm">
-            <div className="bg-amber-100/70 dark:bg-amber-800/50 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 dark:text-amber-200 text-xs uppercase font-medium">Subuh</div>
-              <div className="font-bold text-amber-900 dark:text-amber-100">{prayerTimes.fajr}</div>
+            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+              <div className="text-amber-800 text-xs uppercase font-medium">Subuh</div>
+              <div className="font-bold text-amber-900">{prayerTimes.fajr}</div>
             </div>
             
-            <div className="bg-amber-100/70 dark:bg-amber-800/50 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 dark:text-amber-200 text-xs uppercase font-medium">Dzuhur</div>
-              <div className="font-bold text-amber-900 dark:text-amber-100">{prayerTimes.dhuhr}</div>
+            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+              <div className="text-amber-800 text-xs uppercase font-medium">Dzuhur</div>
+              <div className="font-bold text-amber-900">{prayerTimes.dhuhr}</div>
             </div>
             
-            <div className="bg-amber-100/70 dark:bg-amber-800/50 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 dark:text-amber-200 text-xs uppercase font-medium">Ashar</div>
-              <div className="font-bold text-amber-900 dark:text-amber-100">{prayerTimes.asr}</div>
+            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+              <div className="text-amber-800 text-xs uppercase font-medium">Ashar</div>
+              <div className="font-bold text-amber-900">{prayerTimes.asr}</div>
             </div>
             
-            <div className="bg-amber-100/70 dark:bg-amber-800/50 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 dark:text-amber-200 text-xs uppercase font-medium">Maghrib</div>
-              <div className="font-bold text-amber-900 dark:text-amber-100">{prayerTimes.maghrib}</div>
+            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+              <div className="text-amber-800 text-xs uppercase font-medium">Maghrib</div>
+              <div className="font-bold text-amber-900">{prayerTimes.maghrib}</div>
             </div>
             
-            <div className="bg-amber-100/70 dark:bg-amber-800/50 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 dark:text-amber-200 text-xs uppercase font-medium">Isya</div>
-              <div className="font-bold text-amber-900 dark:text-amber-100">{prayerTimes.isha}</div>
+            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+              <div className="text-amber-800 text-xs uppercase font-medium">Isya</div>
+              <div className="font-bold text-amber-900">{prayerTimes.isha}</div>
             </div>
           </div>
         </div>

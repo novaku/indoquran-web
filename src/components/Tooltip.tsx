@@ -30,7 +30,7 @@ const Tooltip: React.FC<TooltipProps> = ({ text, children, position = 'bottom' }
       {children}
       {show && (
         <span 
-          className={`absolute z-50 px-2 py-1 rounded bg-amber-800 dark:bg-gray-800 text-white text-xs whitespace-nowrap shadow-lg ${positionClasses[position]}`}
+          className={`absolute z-50 px-2 py-1 rounded bg-amber-800 text-white text-xs whitespace-nowrap shadow-lg ${positionClasses[position]}`}
           role="tooltip"
         >
           {text}

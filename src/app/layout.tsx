@@ -85,30 +85,17 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning className="scroll-smooth">
       <head>
         <meta name="theme-color" content="#d97706" />
-        <script dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                  document.documentElement.classList.add('dark');
-                  document.querySelector('meta[name="theme-color"]').setAttribute('content', '#1f2937');
-                }
-              } catch (e) {}
-            })()
-          `
-        }} />
       </head>
       <body className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
         <Providers>
           <BookThemeProvider>
             <div className="flex flex-col min-h-screen">
               <Header />
-              <main className="flex-grow w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white dark:bg-gradient-to-b dark:from-gray-900 dark:to-gray-800 main-content">
+              <main className="flex-grow w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white main-content">
                 <div className="w-full mx-auto content-fade-in">
                   <header className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-amber-900 dark:text-amber-300 mb-2">Al-Quran Indonesia</h1>
-                    <p className="text-amber-700 dark:text-amber-400">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
+                    <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
+                    <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
                   </header>
                   {children}
                 </div>
