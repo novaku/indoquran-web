@@ -142,8 +142,10 @@ export function useBookmarks({ userId }: UseBookmarksOptions) {
     
     try {
       const response = await axios.get(`/api/bookmarks/${userId}/${surahId}/${ayatNumber}`);
-      return response.data.success;
+      // Check both success flag and if data exists
+      return response.data.success && !!response.data.data;
     } catch (err) {
+      console.error('Error checking bookmark:', err);
       return false;
     }
   }, [userId]);

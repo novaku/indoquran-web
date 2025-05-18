@@ -12,7 +12,10 @@ import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents'
 import LazyLoadImage from '@/components/LazyLoadImage';
 import PrayerTimesWidget from '@/components/PrayerTimesWidget';
 import TafsirMaudhuiTree from '@/components/TafsirMaudhuiTree';
+import QuranPages from '@/components/QuranPages';
 import tafsirData from '@/utils/tafsir_maudhui_full.json';
+import { getQuranFontPreferences, setQuranFontPreferences } from '@/services/userPreferences';
+import { QuranFontPreferences } from '@/types/quranPreferences';
 
 function HomeContent() {
   const router = useRouter();
@@ -21,12 +24,16 @@ function HomeContent() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   
-  // Set initial active tab - if URL has #tafsir-tematik, show tafsir tab
-  const [activeTab, setActiveTab] = useState('surah'); // 'surah' or 'tafsir'
+  // Set initial active tab - if URL has hash, show corresponding tab
+  const [activeTab, setActiveTab] = useState('surah'); // 'surah', 'tafsir', or 'arabic'
   // States for Redis cache initialization
   const [isRedisCacheInitializing, setIsRedisCacheInitializing] = useState(false);
   const [cachingStep, setCachingStep] = useState(1);
   const [totalSteps, setTotalSteps] = useState(1); // Reduced to 1 step (only Surahs, no Tafsirs)
+  
+  // Font preferences for Arabic Quran pages
+  const [fontPreferences, setFontPreferences] = useState<QuranFontPreferences | null>(null);
+  const [isFontLoading, setIsFontLoading] = useState(false);
   
   const { data: surahs, isLoading, error, refetch } = useQuery({
     queryKey: ['surahs'],
@@ -39,6 +46,26 @@ function HomeContent() {
 
   const [tooltipSurah, setTooltipSurah] = useState<number | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  const [currentArabicPage, setCurrentArabicPage] = useState(1);
+
+  // Function to handle keyboard navigation for tabs
+  const handleTabKeyDown = (e: React.KeyboardEvent, tabName: string) => {
+    // Handle arrow keys for tab navigation
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const tabs = ['surah', 'tafsir', 'arabic'];
+      const currentIndex = tabs.indexOf(tabName);
+      let newIndex;
+      
+      if (e.key === 'ArrowLeft') {
+        newIndex = currentIndex === 0 ? tabs.length - 1 : currentIndex - 1;
+      } else {
+        newIndex = currentIndex === tabs.length - 1 ? 0 : currentIndex + 1;
+      }
+      
+      setActiveTab(tabs[newIndex]);
+    }
+  };
 
   // Debounce the search query
   useEffect(() => {
@@ -54,30 +81,46 @@ function HomeContent() {
     if (typeof window !== 'undefined') {
       if (window.location.hash === '#tafsir-tematik') {
         setActiveTab('tafsir');
+      } else if (window.location.hash === '#arabic-pages') {
+        setActiveTab('arabic');
+        
+        // Check if there's a page parameter in the URL
+        const pageMatch = window.location.hash.match(/page=(\d+)/);
+        if (pageMatch && pageMatch[1]) {
+          const page = parseInt(pageMatch[1], 10);
+          if (!isNaN(page) && page >= 1 && page <= 604) {
+            setCurrentArabicPage(page);
+          }
+        }
+        
+        // Fetch font preferences when switching to Arabic tab
+        fetchFontPreferences();
       }
     }
   }, []);
   
-  // Handle keyboard navigation for tabs
-  const handleTabKeyDown = (e: React.KeyboardEvent, tabName: 'surah' | 'tafsir') => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      // Toggle between tabs with arrow keys
-      setActiveTab(tabName === 'surah' ? 'tafsir' : 'surah');
-      
-      // Update URL hash accordingly
-      if (typeof window !== 'undefined') {
-        if (tabName === 'surah') {
-          window.location.hash = 'tafsir-tematik';
-        } else {
-          history.pushState("", document.title, window.location.pathname + window.location.search);
-        }
-      }
-      
-      // Focus the newly selected tab
-      setTimeout(() => {
-        document.getElementById(`tab-${tabName === 'surah' ? 'tafsir' : 'surah'}`)?.focus();
-      }, 10);
+  // Fetch font preferences from Redis
+  const fetchFontPreferences = async () => {
+    try {
+      setIsFontLoading(true);
+      // In a real app with auth, you'd pass user ID here
+      const prefs = await getQuranFontPreferences();
+      setFontPreferences(prefs);
+    } catch (error) {
+      console.error('Error fetching font preferences:', error);
+    } finally {
+      setIsFontLoading(false);
+    }
+  };
+  
+  // Handle font preference updates
+  const handleFontPreferenceChange = async (newPrefs: QuranFontPreferences) => {
+    setFontPreferences(newPrefs);
+    try {
+      // In a real app with auth, you'd pass user ID here
+      await setQuranFontPreferences(newPrefs);
+    } catch (error) {
+      console.error('Error saving font preferences:', error);
     }
   };
 
@@ -350,7 +393,7 @@ function HomeContent() {
                 history.pushState("", document.title, window.location.pathname + window.location.search);
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/2
+            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
               ${activeTab === 'surah' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
                 : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
@@ -377,7 +420,7 @@ function HomeContent() {
                 window.location.hash = 'tafsir-tematik';
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/2
+            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
               ${activeTab === 'tafsir' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
                 : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
@@ -390,6 +433,44 @@ function HomeContent() {
             Tafsir Tematik
             <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">{tafsirData.topics.length}</span>
             {activeTab === 'tafsir' && (
+              <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[6px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-amber-500"></span>
+            )}
+          </button>
+          <button
+            role="tab"
+            id="tab-arabic"
+            aria-selected={activeTab === 'arabic'}
+            aria-controls="panel-arabic"
+            tabIndex={activeTab === 'arabic' ? 0 : -1}
+            onKeyDown={(e) => handleTabKeyDown(e, 'arabic')}
+            onClick={() => {
+              setActiveTab('arabic');
+              // Add hash to URL for direct linking
+              if (typeof window !== 'undefined') {
+                window.location.hash = `arabic-pages${currentArabicPage > 1 ? `?page=${currentArabicPage}` : ''}`;
+              }
+              // Fetch font preferences when switching to this tab
+              fetchFontPreferences();
+            }}
+            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
+              ${activeTab === 'arabic' 
+                ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
+                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
+              }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            Mushaf Arab
+            <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">604</span>
+            <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              <svg className="mr-0.5 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
+                <circle cx="4" cy="4" r="3" />
+              </svg>
+              Baru
+            </span>
+            {activeTab === 'arabic' && (
               <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[6px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-amber-500"></span>
             )}
           </button>
@@ -443,6 +524,16 @@ function HomeContent() {
             </header>
             <TafsirMaudhuiTree />
           </div>
+        )}
+        
+        {/* Arabic Mushaf Pages Tab */}
+        {activeTab === 'arabic' && (
+            <div className="relative">
+            <QuranPages 
+              currentPage={currentArabicPage} 
+              onPageChange={setCurrentArabicPage}
+            />
+            </div>
         )}
       </div>
     </main>

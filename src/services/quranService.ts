@@ -452,5 +452,26 @@ async function searchFromAPI(searchTerm: string): Promise<AyatSearchResult[]> {
   return [];
 }
 
-// The tafsir caching functions have been removed to avoid server/client component conflicts
-// Tafsirs will now be fetched on-demand directly from the API instead of being pre-cached
+/**
+ * Get the total number of ayat in a surah directly from Redis cache
+ * @param surahNumber The surah number (1-114)
+ * @returns The total number of ayat, or null if not found
+ */
+export async function getSurahAyatCount(surahNumber: number): Promise<number | null> {
+  const cacheKey = `quran:surah:${surahNumber}`;
+  
+  try {
+    // Try to get data from cache
+    const cachedData = await getCache<any>(cacheKey);
+    
+    if (cachedData && typeof cachedData === 'object' && 'jumlahAyat' in cachedData) {
+      return cachedData.jumlahAyat;
+    }
+    
+    // If not in cache or Redis is not available, return null
+    return null;
+  } catch (error) {
+    console.error(`Error fetching ayat count for surah ${surahNumber}:`, error);
+    return null;
+  }
+}

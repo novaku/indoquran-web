@@ -36,6 +36,11 @@ interface LazyLoadImageProps extends Omit<ImageProps, 'onLoadingComplete'> {
    * Whether the image is clickable to view in full size
    */
   clickable?: boolean;
+
+  /**
+   * Fallback content to display if image fails to load
+   */
+  fallback?: React.ReactNode;
 }
 
 /**
@@ -55,10 +60,12 @@ const LazyLoadImage: React.FC<LazyLoadImageProps> = ({
   priority = false,
   className = "",
   clickable = false,
+  fallback = null,
   ...props
 }) => {
   const [isVisible, setIsVisible] = useState(priority);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [showViewer, setShowViewer] = useState(false);
   const imgRef = useRef<HTMLDivElement>(null);
 
@@ -122,31 +129,37 @@ const LazyLoadImage: React.FC<LazyLoadImageProps> = ({
         {/* Only render the image when it's about to be visible */}
         {isVisible ? (
           <>
-            <Image
-              src={src}
-              alt={alt}
-              width={width}
-              height={height}
-              className={`transition-opacity duration-500 ${className}`}
-              style={imageStyle as any}
-              onLoad={() => setIsLoaded(true)}
-              placeholder="blur"
-              blurDataURL={placeholderSrc}
-              priority={priority}
-              {...props}
-            />
-            {clickable && isLoaded && (
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
-                <div className="bg-amber-600 text-white p-2 rounded-full">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    <line x1="11" y1="8" x2="11" y2="14"></line>
-                    <line x1="8" y1="11" x2="14" y2="11"></line>
-                  </svg>
-                </div>
-              </div>
+            {!hasError && (
+              <>
+                <Image
+                  src={src}
+                  alt={alt}
+                  width={width}
+                  height={height}
+                  className={`transition-opacity duration-500 ${className}`}
+                  style={imageStyle as any}
+                  onLoad={() => setIsLoaded(true)}
+                  onError={() => setHasError(true)}
+                  placeholder="blur"
+                  blurDataURL={placeholderSrc}
+                  priority={priority}
+                  {...props}
+                />
+                {clickable && isLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/30">
+                    <div className="bg-amber-600 text-white p-2 rounded-full">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        <line x1="11" y1="8" x2="11" y2="14"></line>
+                        <line x1="8" y1="11" x2="14" y2="11"></line>
+                      </svg>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
+            {hasError && fallback}
           </>
         ) : (
           // Placeholder while the image is not yet visible

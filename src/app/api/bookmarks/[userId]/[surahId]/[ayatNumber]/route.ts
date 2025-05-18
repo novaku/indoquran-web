@@ -12,7 +12,6 @@ export async function GET(
   }> }
 ) {
   try {
-    // Await the params object since it's a promise in Next.js 15
     const resolvedParams = await params;
     const { userId, surahId, ayatNumber } = resolvedParams;
     
@@ -29,16 +28,12 @@ export async function GET(
       Number(ayatNumber)
     );
     
-    if (!bookmark) {
-      return NextResponse.json({
-        success: false,
-        message: 'Bookmark not found'
-      }, { status: 404 });
-    }
-    
+    // Even if bookmark is not found, return success with null data
+    // This helps prevent 404 errors and lets client handle non-existence smoothly
     return NextResponse.json({
       success: true,
-      data: bookmark
+      data: bookmark || null,
+      exists: !!bookmark
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Failed to fetch bookmark';
