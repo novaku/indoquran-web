@@ -462,7 +462,7 @@ function HomeContent() {
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-            Mushaf Arab
+            Mushaf Al-Quran
             <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">604</span>
             <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               <svg className="mr-0.5 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">

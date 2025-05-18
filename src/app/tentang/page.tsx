@@ -163,10 +163,10 @@ export default function AboutPage() {
             
             {activeTab === 'fitur' && (
               <div className="animate-fadeIn">
-                <h2>Fitur Utama</h2>
+                <h2>Fitur Unggulan</h2>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">1. Daftar Surah yang Lengkap</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">1. Navigasi Surah Komprehensif</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/surah-list.png" 
@@ -177,11 +177,11 @@ export default function AboutPage() {
                       clickable={true}
                     />
                   </div>
-                    <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan daftar 114 surah Al-Quran dengan informasi lengkap</p>
+                    <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan daftar 114 surah Al-Quran dengan informasi kontekstual</p>
                   <p className="text-amber-800 mb-4">
-                    Memuat 114 surah Al-Quran lengkap dengan informasi nama, arti, jumlah ayat, dan tempat turun. 
-                    Tampilan dioptimalkan untuk kemudahan navigasi dan pencarian surah tertentu dengan desain yang responsif 
-                    dan nyaman diakses dari berbagai perangkat.
+                    Akses lengkap ke 114 surah Al-Quran dengan antarmuka yang elegan, menyajikan informasi esensial seperti nama surah dalam Bahasa Arab dan Indonesia, 
+                    arti nama, jumlah ayat, tempat turun (Makkiyah/Madaniyah), dan metadata informatif. 
+                    Dirancang dengan prinsip aksesibilitas terdepan, memungkinkan navigasi yang mulus di berbagai perangkat dan ukuran layar.
                   </p>
                   <div className="mt-3 space-y-2 text-amber-800">
                     <h4 className="font-medium">Fitur Utama:</h4>
@@ -196,7 +196,7 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">2. Jadwal Waktu Sholat</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">2. Sistem Jadwal Sholat Presisi</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/prayer-times.png" 
@@ -207,11 +207,11 @@ export default function AboutPage() {
                       clickable={true}
                     />
                     </div>
-                    <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal waktu sholat dengan deteksi lokasi dan penghitungan countdown</p>
+                    <p className="text-sm text-center mt-2 text-amber-700 italic">Jadwal waktu sholat dengan teknologi geolokasi dan visualisasi countdown dinamis</p>
                   <p className="text-amber-800 mb-4">
-                    Fitur jadwal waktu sholat terintegrasi yang dapat secara otomatis mendeteksi lokasi pengguna atau 
-                    menggunakan lokasi default (Jakarta Pusat). Menampilkan waktu sholat harian dengan notifikasi pengingat 
-                    dan memungkinkan pengguna untuk melihat waktu sholat berikutnya dengan mudah.
+                    Sistem penghitungan waktu sholat dengan akurasi tinggi menggunakan teknologi geolokasi yang secara otomatis mendeteksi posisi pengguna 
+                    atau menawarkan opsi pemilihan lokasi manual. Pengalaman yang dipersonalisasi dengan tampilan waktu sholat berikutnya dan fitur countdown 
+                    real-time, dilengkapi notifikasi yang dapat disesuaikan untuk memastikan ketepatan waktu dalam beribadah.
                   </p>
                   <div className="mt-3 space-y-2 text-amber-800">
                     <h4 className="font-medium">Fitur Utama:</h4>
@@ -240,9 +240,9 @@ export default function AboutPage() {
                     </div>
                     <p className="text-sm text-center mt-2 text-amber-700 italic">Hasil pencarian terjemahan dengan highlight pada kata kunci</p>
                   <p className="text-amber-800 mb-4">
-                    Fitur pencarian terjemahan yang canggih memungkinkan pengguna untuk mencari kata, frasa, atau tema tertentu 
-                    dalam terjemahan Al-Quran. Hasil pencarian ditampilkan dengan highlight pada kata kunci 
-                    untuk identifikasi cepat dan tepat.
+                    Teknologi pencarian mutakhir yang memungkinkan penemuan ayat berdasarkan kata kunci, frasa, atau konteks tematik dalam terjemahan Al-Quran. 
+                    Menggunakan algoritma pemahaman semantik, sistem ini memberikan hasil yang relevan dengan sorotan visual pada kata kunci, dilengkapi 
+                    dengan opsi filter multi-dimensi untuk memudahkan eksplorasi mendalam terhadap ayat-ayat yang dicari.
                   </p>
                   <div className="mt-3 space-y-2 text-amber-800">
                     <h4 className="font-medium">Fitur Utama:</h4>
@@ -355,7 +355,7 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">6. Audio Murattal Berkualitas</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">7. Audio Murattal Berkualitas</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/audio-player.png" 
@@ -387,7 +387,7 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">7. Fitur Personalisasi</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">8. Fitur Personalisasi</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/personalization.png" 
@@ -417,7 +417,7 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">8. Berbagi dan Interaktivitas</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">9. Berbagi dan Interaktivitas</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/sharing-feature.png" 
@@ -448,7 +448,42 @@ export default function AboutPage() {
                 </div>
                 
                 <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">9. Tafsir Tematik (Maudhu'i)</h3>
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">10. Mushaf Al-Quran Digital</h3>
+                  <div className="mb-4 flex justify-center">
+                    <LazyLoadImage 
+                      src="/images/features/mushaf-quran.png" 
+                      alt="Mushaf Al-Quran Digital" 
+                      width={800} 
+                      height={468} 
+                      className="rounded-lg border border-amber-200 shadow-md w-full mx-auto"
+                      clickable={true}
+                    />
+                    </div>
+                    <p className="text-sm text-center mt-2 text-amber-700 italic">Tampilan mushaf Al-Quran digital dengan navigasi halaman dan sistem identifikasi ayat yang dilengkapi nomor surah</p>
+                  <p className="text-amber-800 mb-4">
+                    Fitur Mushaf Al-Quran Digital menghadirkan pengalaman membaca Al-Quran autentik dengan tampilan halaman yang menyerupai kitab fisik. 
+                    Setiap halaman dari total 604 halaman Mushaf tersedia dalam format gambar beresolusi tinggi dengan sistem navigasi intuitif. 
+                    Dilengkapi dengan teknologi identifikasi cerdas yang menampilkan informasi lengkap surah dan ayat pada setiap halaman, memudahkan pengguna 
+                    untuk mengidentifikasi posisi bacaan mereka dengan tepat, bahkan pada halaman-halaman khusus yang memuat beberapa surah sekaligus 
+                    seperti halaman 596 yang mencakup surah 92, 93, dan 94.
+                  </p>
+                  <div className="mt-3 space-y-2 text-amber-800">
+                    <h4 className="font-medium">Fitur Utama:</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      <li>Navigasi intuitif untuk 604 halaman Mushaf Al-Quran dengan indikator posisi halaman</li>
+                      <li>Gambar halaman Mushaf beresolusi tinggi dengan teknologi lazy loading untuk performa optimal</li>
+                      <li>Panel "Ayat dalam Halaman" yang menampilkan informasi nomor surah dan ayat secara terstruktur</li>
+                      <li>Penampilan nomor surah bersama nomor ayat pada halaman dengan multiple surah untuk identifikasi presisi</li>
+                      <li>Integrasi dengan Redis untuk penghitungan dan penyajian data ayat yang akurat dan responsif</li>
+                      <li>Tautan langsung dari daftar ayat ke tampilan surah dan ayat lengkap dengan terjemahan</li>
+                      <li>Tab informasi kontekstual dengan metadata halaman Mushaf dan data juz</li>
+                      <li>Visualisasi data navigasi yang dioptimalkan untuk memudahkan pembacaan berkesinambungan</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">11. Tafsir Tematik (Maudhu'i)</h3>
                   <div className="mb-4 flex justify-center">
                     <LazyLoadImage 
                       src="/images/features/tafsir-maudhui.png" 
@@ -513,21 +548,23 @@ export default function AboutPage() {
             
             {activeTab === 'pengembangan' && (
               <div className="animate-fadeIn">
-                <h2>Teknologi dan Pengembangan</h2>
+                <h2>Arsitektur Teknologi</h2>
                 
                 <p>
-                  IndoQuran dibangun dengan fondasi teknologi web terkini untuk menghadirkan pengalaman digital 
+                  IndoQuran dibangun dengan fondasi teknologi web mutakhir untuk menghadirkan pengalaman digital 
                   Al-Quran yang unggul dalam performa, keamanan, dan aksesibilitas. Dengan pendekatan "mobile-first" 
-                  dan fokus pada kecepatan akses, aplikasi ini dirancang untuk memberikan pengalaman membaca yang nyaman 
-                  dan keterbacaan optimal di berbagai perangkat. Arsitektur aplikasi kami didukung oleh ekosistem teknologi berikut:
+                  dan fokus pada pengoptimalan kecepatan akses, aplikasi ini dirancang untuk memberikan pengalaman membaca 
+                  yang nyaman dan keterbacaan optimal di seluruh spektrum perangkat. Infrastruktur aplikasi kami 
+                  didukung oleh ekosistem teknologi terdepan:
                 </p>
                 
                 <ul>
-                  <li><strong>Next.js 15</strong> - Kerangka pengembangan React generasi terbaru dengan fitur Server Components, Streaming SSR, dan App Router yang mendukung rendering hybrid untuk performa optimal</li>
-                  <li><strong>TypeScript</strong> - Bahasa pemrograman berskala enterprise dengan sistem tipe statis yang meningkatkan keamanan kode, memfasilitasi refaktorisasi, dan mendukung pengembangan kolaboratif</li>
-                  <li><strong>TailwindCSS</strong> - Framework CSS utilitas dengan pendekatan "utility-first" yang memungkinkan desain responsif, konsistensi visual, dan bundel CSS yang dioptimalkan</li>
-                  <li><strong>React Query</strong> - Pustaka manajemen status server dengan kemampuan caching cerdas, invalidasi otomatis, dan sinkronisasi data yang efisien untuk pengalaman pengguna yang responsif</li>
-                  <li><strong>Redis</strong> - Solusi penyimpanan data in-memory untuk caching berkinerja tinggi, mendukung akses data yang cepat dan mengurangi beban pada database utama</li>
+                  <li><strong>Next.js 15</strong> - Kerangka pengembangan React generasi terkini dengan fitur Server Components, Streaming SSR, dan App Router yang mendukung rendering hybrid untuk performa optimal dan SEO yang superior</li>
+                  <li><strong>TypeScript</strong> - Bahasa pemrograman berskala enterprise dengan sistem tipe statis yang meningkatkan keamanan kode, memfasilitasi refaktorisasi, dan mendukung pengembangan berkelanjutan dengan tingkat error yang minimal</li>
+                  <li><strong>TailwindCSS</strong> - Framework CSS utilitas dengan pendekatan "utility-first" yang memungkinkan desain responsif, konsistensi visual, dan bundel CSS yang dioptimalkan untuk kecepatan loading maksimal</li>
+                  <li><strong>React Query</strong> - Pustaka manajemen status server dengan kemampuan caching cerdas, invalidasi otomatis, dan sinkronisasi data yang efisien untuk pengalaman pengguna yang responsif dan hemat bandwidth</li>
+                  <li><strong>Redis</strong> - Solusi penyimpanan data in-memory untuk caching berkinerja tinggi, mendukung akses data yang hampir instan dan mengurangi beban pada database utama</li>
+                  <li><strong>MySQL</strong> - Database relasional yang handal untuk penyimpanan structured data dengan keamanan tingkat lanjut dan dukungan untuk transaksi kompleks</li>
                 </ul>
                 
                 <h3 className="mt-6">Peta Pengembangan</h3>
@@ -637,7 +674,14 @@ export default function AboutPage() {
                     Al-Quran menjadi lebih mendalam dan komprehensif, membantu pengguna menemukan tuntunan hidup yang relevan dalam konteks kekinian.
                   </p>
                   <p className="text-green-700 mt-2">
-                    <strong>Terbaru 14 Mei 2025:</strong> Dengan semangat kebersamaan dan keberlanjutan, kami telah meluncurkan platform 
+                    <strong>Terbaru 18 Mei 2025:</strong> Kami telah mengimplementasikan perbaikan pada fitur navigasi halaman mushaf Al-Quran. 
+                    Kini pengguna dapat melihat informasi nomor surah bersama dengan nomor ayat pada tampilan "Ayat dalam Halaman", 
+                    mempermudah identifikasi ayat-ayat yang berada di halaman dengan multiple surah (seperti halaman 596 yang mencakup surah 92, 93, dan 94). 
+                    Kami juga telah meningkatkan akurasi penghitungan jumlah ayat dengan menggunakan data dari Redis untuk memberikan informasi yang 
+                    lebih tepat dan konsisten pada setiap halaman mushaf.
+                  </p>
+                  <p className="text-green-700 mt-2">
+                    <strong>Update 14 Mei 2025:</strong> Dengan semangat kebersamaan dan keberlanjutan, kami telah meluncurkan platform 
                     donasi yang transparan untuk mendukung pengembangan IndoQuran. Kontribusi Anda, sekecil apapun, memiliki nilai 
                     yang sangat berarti bagi keberlanjutan dan pengembangan layanan ini. Setiap donasi dikelola dengan amanah dan 
                     digunakan secara efektif untuk meningkatkan kualitas layanan. 
@@ -685,6 +729,20 @@ export default function AboutPage() {
                 </p>
                 
                 <div className="space-y-8">
+                  <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.3 (18 Mei 2025)</h3>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Penyempurnaan Navigasi Mushaf Al-Quran</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Penambahan nomor surah pada tampilan "Ayat dalam Halaman" untuk halaman dengan multiple surah</li>
+                      <li>Implementasi sistem penghitungan ayat berdasarkan data Redis yang lebih akurat</li>
+                      <li>Perbaikan tampilan untuk halaman yang berisi ayat-ayat dari berbagai surah</li>
+                      <li>Optimasi performa pada sistem navigasi mushaf dengan teknik lazy loading</li>
+                      <li>Integrasi informasi lengkap surah dan juz pada tampilan navigasi halaman</li>
+                      <li>Perbaikan antarmuka visualisasi data navigasi halaman Al-Quran</li>
+                      <li>Pembaruan UI untuk kemudahan identifikasi posisi ayat dalam mushaf</li>
+                    </ul>
+                  </div>
+                  
                   <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.2 (14 Mei 2025)</h3>
                     <p className="text-sm text-amber-700 mb-3 font-medium">Platform Donasi & Penyempurnaan Antarmuka</p>
