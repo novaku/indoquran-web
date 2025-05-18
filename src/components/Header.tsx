@@ -87,13 +87,13 @@ export default function Header() {
           ? 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6]' 
           : 'bg-white text-gray-800 shadow-md'
       }`}>
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+        <div className="w-full px-2 sm:px-3 md:px-4 py-4">
+          <div className="flex items-center justify-between max-w-[1920px] mx-auto">
+            <div className="flex items-center pl-1">
               {/* Hamburger Menu Button */}
               <button
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                className={`mr-2 p-2 rounded-md ${
+                className={`mr-1 sm:mr-2 p-1 sm:p-2 rounded-md ${
                   isReadingPage
                     ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
                     : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
@@ -118,7 +118,7 @@ export default function Header() {
                 </svg>
               </button>
               
-              <Link href="/" className="flex items-center space-x-2">
+              <Link href="/" className="flex items-center space-x-1 sm:space-x-2">
                 <LazyLoadImage 
                   src="/icons/home-icon.svg" 
                   alt="Home" 
@@ -126,13 +126,13 @@ export default function Header() {
                   height={24}
                   className="w-6 h-6" 
                 />
-                <span className={`text-2xl font-bold ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
+                <span className={`text-xl sm:text-2xl font-bold ${isReadingPage ? 'text-[#5D4037]' : 'text-amber-600'}`}>
                   IndoQuran
                 </span>
               </Link>
             </div>
             
-            <div className="flex items-center space-x-2">            
+            <div className="flex items-center space-x-2 pr-1">            
               {/* User management dropdown menu */}
               <div className="relative" ref={dropdownRef}>
                 <Tooltip text="Menu Akun Pengguna">
@@ -140,7 +140,7 @@ export default function Header() {
                     onClick={() => {
                       setIsMenuOpen(!isMenuOpen);
                     }}
-                    className={`flex items-center px-3 py-2 rounded-md transition-colors ${
+                    className={`flex items-center px-2 sm:px-3 py-2 rounded-md transition-colors ${
                       isReadingPage 
                         ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
                         : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
@@ -167,7 +167,7 @@ export default function Header() {
                 </Tooltip>
                 
                 {isMenuOpen && (
-                  <div className={`absolute right-0 mt-2 w-64 sm:w-72 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
+                  <div className={`absolute right-0 mt-2 w-56 sm:w-64 md:w-72 rounded-md shadow-lg p-2 z-40 animate-fadeIn ${
                     isReadingPage ? 'bg-[#f8f4e5] border border-[#d3c6a6]' : 'bg-white border border-gray-200'
                   }`}>
                     <div className="py-1">
