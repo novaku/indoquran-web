@@ -195,6 +195,35 @@ export function NoteSkeleton({ count = 3, groupsCount = 2 }) {
   );
 }
 
+/**
+ * SearchHistorySkeleton - Loading placeholder for search history section
+ */
+export function SearchHistorySkeleton() {
+  return (
+    <div className="w-full">
+      <div className="flex justify-between items-center mb-4">
+        <div className="h-6 w-32 bg-amber-200 rounded"></div>
+        <div className="h-6 w-24 bg-amber-200 rounded"></div>
+      </div>
+      <div className="space-y-2 animate-pulse">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-200 rounded-md">
+            <div className="flex-1">
+              <div className="h-5 w-3/4 bg-amber-200 rounded mb-2"></div>
+              <div className="flex">
+                <div className="h-4 w-16 bg-amber-200 rounded mr-4"></div>
+                <div className="h-4 w-20 bg-amber-200 rounded mr-4"></div>
+                <div className="h-4 w-32 bg-amber-200 rounded"></div>
+              </div>
+            </div>
+            <div className="h-6 w-6 bg-amber-200 rounded-full"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // Default export for backward compatibility
 export default {
   AyatCardSkeleton,
@@ -202,5 +231,6 @@ export default {
   BookmarkSkeleton,
   FavoriteSkeleton,
   ReadingHistorySkeleton,
-  NoteSkeleton
+  NoteSkeleton,
+  SearchHistorySkeleton
 };

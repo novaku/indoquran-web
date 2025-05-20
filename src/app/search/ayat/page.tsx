@@ -7,12 +7,15 @@ import quranClient from '@/services/quranClient';
 import Link from 'next/link';
 import { AyatSearchResults, BasicSearch } from '@/components/SearchComponents';
 import DynamicHead from '@/components/DynamicHead';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { saveSearchHistory } from '@/services/searchHistoryService';
 
 function AyatSearch() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const initialPage = parseInt(searchParams.get('page') || '1', 10);
+  const { user, isAuthenticated } = useAuthContext();
   
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
@@ -20,6 +23,8 @@ function AyatSearch() {
   
   // Track if we're handling an external URL change
   const isUrlChangeHandled = useRef(false);
+  // Track search history to prevent duplicate saves
+  const savedSearches = useRef<Record<string, boolean>>({});
   
   // Only sync from URL on initial page load
   useEffect(() => {
@@ -64,10 +69,26 @@ function AyatSearch() {
     };
   }, []);
   
+  // Clear saved searches when component unmounts
+  useEffect(() => {
+    return () => {
+      savedSearches.current = {};
+    };
+  }, []);
+  
   // Debounce search query changes
   useEffect(() => {
     // Skip empty queries or very short inputs
     if (!searchQuery || searchQuery.trim().length < 3) return;
+    
+    // Reset saved searches when query changes significantly
+    const trimmedQuery = searchQuery.trim().toLowerCase();
+    if (debouncedQuery && 
+        trimmedQuery !== debouncedQuery.toLowerCase() && 
+        !trimmedQuery.includes(debouncedQuery.toLowerCase()) && 
+        !debouncedQuery.toLowerCase().includes(trimmedQuery)) {
+      savedSearches.current = {};
+    }
     
     // Use a debounce timer
     const timer = setTimeout(() => {
@@ -78,7 +99,7 @@ function AyatSearch() {
     }, 500);
     
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [searchQuery, debouncedQuery]);
   
   // No need to track user page changes anymore since we're using POST
   // We'll handle page changes directly in the component without URL updates
@@ -114,6 +135,41 @@ function AyatSearch() {
   });
   
   // Debounce function now handled by SearchInput component
+  
+  const fromHistory = searchParams.get('fromHistory') === '1';
+  
+  // Save search history for logged-in users
+  useEffect(() => {
+    const saveHistory = async () => {
+      if (
+        isAuthenticated && user?.user_id && 
+        debouncedQuery && debouncedQuery.trim().length >= 3 && 
+        searchResponse && searchResponse.results &&
+        !fromHistory // <-- skip if from history
+      ) {
+        // Create a unique key for this search to prevent duplicates
+        const searchKey = `${debouncedQuery}-${user.user_id}`;
+        
+        // Only save if we haven't saved this search already
+        if (!savedSearches.current[searchKey]) {
+          try {
+            const resultCount = searchResponse.totalResults || 0;
+            await saveSearchHistory(user.user_id, debouncedQuery, 'ayat', resultCount);
+            
+            // Mark this search as saved
+            savedSearches.current[searchKey] = true;
+            console.log(`Search history saved for: ${debouncedQuery}`);
+          } catch (error) {
+            console.error('Error saving search history:', error);
+          }
+        }
+      }
+    };
+
+    if (searchResponse) {
+      saveHistory();
+    }
+  }, [isAuthenticated, user, debouncedQuery, searchResponse, fromHistory]);
   
   return (
     <div className="w-full py-8 px-4">

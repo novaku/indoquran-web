@@ -730,6 +730,18 @@ export default function AboutPage() {
                 
                 <div className="space-y-8">
                   <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
+                    <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.4 (20 Mei 2025)</h3>
+                    <p className="text-sm text-amber-700 mb-3 font-medium">Fitur Riwayat Pencarian &amp; Peningkatan Pengalaman Pengguna</p>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700">
+                      <li>Penambahan tab <strong>Riwayat Pencarian</strong> di halaman profil, memungkinkan pengguna melihat, mengelola, dan mengakses ulang pencarian ayat dan surah yang pernah dilakukan.</li>
+                      <li>Setiap riwayat pencarian dapat langsung diklik untuk menampilkan hasil pencarian yang sama tanpa menambah duplikasi riwayat.</li>
+                      <li>Peningkatan wording dan tampilan pada tab Riwayat Pencarian agar lebih informatif dan mudah dipahami.</li>
+                      <li>Optimalisasi sistem penyimpanan riwayat pencarian agar tidak terjadi duplikasi saat mengakses dari riwayat.</li>
+                      <li>Perbaikan minor pada tampilan dan navigasi halaman profil.</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="border-l-4 border-amber-500 pl-4 pb-1 bg-amber-50/50 rounded-r shadow-sm">
                     <h3 className="text-lg font-semibold text-amber-900">Versi 2.5.3 (18 Mei 2025)</h3>
                     <p className="text-sm text-amber-700 mb-3 font-medium">Penyempurnaan Navigasi Mushaf Al-Quran</p>
                     <ul className="list-disc list-inside space-y-1 text-gray-700">

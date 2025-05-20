@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -9,13 +9,19 @@ import { ErrorMessage } from '@/components/ErrorMessage';
 import SurahList, { SurahIndexItem } from '@/components/SurahList';
 import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
 import Link from 'next/link';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { saveSearchHistory } from '@/services/searchHistoryService';
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
+  const fromHistory = searchParams.get('fromHistory') === '1';
   const router = useRouter();
+  const { user, isAuthenticated } = useAuthContext();
 
   const [searchQuery, setSearchQuery] = useState(query);
+  // Track search history to prevent duplicate saves
+  const savedSearches = useRef<Record<string, boolean>>({});
 
   // Fetch all surahs
   const { data: allSurahs, isLoading: isLoadingSurahs, error: surahsError } = useQuery({
@@ -32,10 +38,46 @@ function SearchContent() {
       )
     : (allSurahs || null);
 
+  // Save search history for logged-in users
+  useEffect(() => {
+    const saveHistory = async () => {
+      if (
+        isAuthenticated && user?.user_id && query && query.trim().length >= 3 &&
+        !fromHistory // <-- skip if from history
+      ) {
+        // Create a unique key for this search to prevent duplicates
+        const searchKey = `${query}-${user.user_id}`;
+        
+        // Only save if we haven't saved this search already
+        if (!savedSearches.current[searchKey]) {
+          try {
+            const resultCount = filteredSurahs?.length || 0;
+            await saveSearchHistory(user.user_id, query, 'surah', resultCount);
+            
+            // Mark this search as saved
+            savedSearches.current[searchKey] = true;
+            console.log(`Search history saved for: ${query}`);
+          } catch (error) {
+            console.error('Error saving search history:', error);
+          }
+        }
+      }
+    };
+
+    saveHistory();
+  }, [isAuthenticated, user, query, filteredSurahs, fromHistory]);
+
   // Handle going back to home
   const handleBackToHome = () => {
     router.push('/');
   };
+
+  // Clear saved searches when component unmounts
+  useEffect(() => {
+    return () => {
+      savedSearches.current = {};
+    };
+  }, []);
 
   const handleClearSearch = () => {
     setSearchQuery('');
