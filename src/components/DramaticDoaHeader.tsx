@@ -39,7 +39,12 @@ export const DramaticDoaHeader: React.FC<DramaticDoaHeaderProps> = ({
   ];
   
   // Create shuffled version of images on component mount
-  const [shuffledImages] = useState(() => shuffleArray(staticDoaImages));
+  const [shuffledImages, setShuffledImages] = useState(staticDoaImages);
+
+  // Shuffle images only on the client after hydration
+  useEffect(() => {
+    setShuffledImages(shuffleArray(staticDoaImages));
+  }, []);
   
   // Preload all images first
   useEffect(() => {
