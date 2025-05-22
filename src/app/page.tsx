@@ -6,7 +6,6 @@ import { ErrorMessage } from '../components/ErrorMessage';
 import { useState, useEffect, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
 import LazyLoadImage from '@/components/LazyLoadImage';
