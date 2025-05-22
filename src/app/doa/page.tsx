@@ -38,10 +38,10 @@ export default function PrayerPage() {
     }
   });
 
-  const fetchPrayers = async () => {
+  const fetchPrayers = async (page = currentPage, limit = itemsPerPage, sort = sortBy) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/prayers?page=${currentPage}&limit=${itemsPerPage}&sortBy=${sortBy}`);
+      const res = await fetch(`/api/prayers?page=${page}&limit=${limit}&sortBy=${sort}`);
       const data = await res.json();
       
       if (data.success && Array.isArray(data.prayers)) {
@@ -109,8 +109,17 @@ export default function PrayerPage() {
   };
 
   useEffect(() => {
-    fetchPrayers();
-  }, [currentPage, sortBy, itemsPerPage]); // eslint-disable-line react-hooks/exhaustive-deps
+    // On mount, read pagination from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const pageParam = parseInt(params.get('page') || '1', 10);
+    const limitParam = parseInt(params.get('limit') || String(itemsPerPage), 10);
+    const sortParam = params.get('sortBy') || sortBy;
+    setCurrentPage(pageParam);
+    setItemsPerPage(limitParam);
+    setSortBy(sortParam);
+    fetchPrayers(pageParam, limitParam, sortParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleCreatePrayer = async (authorName: string, content: string) => {
     try {
@@ -236,6 +245,13 @@ export default function PrayerPage() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    // Update URL with GET params for pagination
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', String(page));
+    params.set('limit', String(itemsPerPage));
+    params.set('sortBy', sortBy);
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+    fetchPrayers(page, itemsPerPage, sortBy);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -244,8 +260,14 @@ export default function PrayerPage() {
     setIsPageSizeChanging(true); // Trigger the animation
     setItemsPerPage(value);
     setCurrentPage(1); // Reset to first page when changing items per page
+    // Update URL with GET params for pagination
+    const params = new URLSearchParams(window.location.search);
+    params.set('page', '1');
+    params.set('limit', String(value));
+    params.set('sortBy', sortBy);
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+    fetchPrayers(1, value, sortBy);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
     // Reset animation state after delay
     setTimeout(() => {
       setIsPageSizeChanging(false);
@@ -406,7 +428,17 @@ export default function PrayerPage() {
                   <select
                     id="sortBy"
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value)}
+                    onChange={(e) => {
+                      setSortBy(e.target.value);
+                      setCurrentPage(1);
+                      // Update URL with GET params for sort change
+                      const params = new URLSearchParams(window.location.search);
+                      params.set('page', '1');
+                      params.set('limit', String(itemsPerPage));
+                      params.set('sortBy', e.target.value);
+                      window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+                      fetchPrayers(1, itemsPerPage, e.target.value);
+                    }}
                     className="border border-amber-200 rounded px-3 py-1.5 text-sm bg-amber-50 focus:border-amber-400 focus:ring focus:ring-amber-200 focus:ring-opacity-50"
                   >
                     <option value="newest">Terbaru</option>
