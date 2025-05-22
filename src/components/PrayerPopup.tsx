@@ -88,6 +88,10 @@ const PrayerPopup = ({
   // Client-side only mounting check
   const [isMounted, setIsMounted] = useState(false);
   
+  // Track last submitted name and prayerId for Amiin and Comment
+  const [lastAmiin, setLastAmiin] = useState<{ name: string; prayerId: number } | null>(null);
+  const [lastComment, setLastComment] = useState<{ name: string; prayerId: number } | null>(null);
+  
   useEffect(() => {
     setIsMounted(true);
     return () => setIsMounted(false);
@@ -234,6 +238,12 @@ const PrayerPopup = ({
 
   const handleAmiinSubmit = async () => {
     if (userName.trim() && !isSubmittingAmiin && !hasSubmittedAmiin) {
+      // Confirmation if same name and same prayerId as last Amiin
+      if (lastAmiin && lastAmiin.name === userName.trim() && lastAmiin.prayerId === (prayer?.id || 0)) {
+        const confirmed = window.confirm('Anda sudah mengirim Amiin dengan nama yang sama untuk doa ini. Kirim lagi?');
+        if (!confirmed) return;
+      }
+      setLastAmiin({ name: userName.trim(), prayerId: prayer?.id || 0 });
       setIsSubmittingAmiin(true);
       setErrorMessage(null); // Clear any previous error messages
       setSuccessMessage(null); // Clear any previous success messages
@@ -319,6 +329,12 @@ const PrayerPopup = ({
   const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (userName.trim() && commentText.trim() && !isSubmittingComment && !hasSubmittedComment) {
+      // Confirmation if same name and same prayerId as last Comment
+      if (lastComment && lastComment.name === userName.trim() && lastComment.prayerId === (prayer?.id || 0)) {
+        const confirmed = window.confirm('Anda sudah mengirim komentar dengan nama yang sama untuk doa ini. Kirim lagi?');
+        if (!confirmed) return;
+      }
+      setLastComment({ name: userName.trim(), prayerId: prayer?.id || 0 });
       setErrorMessage(null); // Clear any previous error messages
       setSuccessMessage(null); // Clear any previous success messages
       setIsSubmittingComment(true);
@@ -948,7 +964,7 @@ const PrayerPopup = ({
                         <>
                           <svg className="w-4 h-4 mr-1" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
+                        </svg>
                           Terkirim
                         </>
                       ) : (

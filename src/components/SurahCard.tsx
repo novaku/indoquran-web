@@ -248,13 +248,11 @@ const AyatDetailPopup = ({
             
             <hr className="border-t border-amber-200" />
             
-            <p className="text-lg text-amber-800 font-arabic-translation text-left">
+            <p className="text-lg font-bold text-amber-900 bg-gradient-to-r from-amber-100 to-amber-200 rounded-lg px-3 py-2 shadow-inner border border-amber-200 text-left">
               {latinText}
             </p>
-            
             <hr className="border-t border-amber-200" />
-            
-            <p className="text-gray-700 text-left">
+            <p className="text-lg font-bold text-amber-900 bg-gradient-to-r from-amber-100 to-amber-200 rounded-lg px-3 py-2 shadow-inner border border-amber-200 text-left">
               {searchTerms ? (
                 <HighlightedText 
                   text={translation} 
@@ -270,28 +268,32 @@ const AyatDetailPopup = ({
               <button
                 onClick={() => setShowTafsir(!showTafsir)}
                 className={`
-                  px-4 py-2 rounded-md font-medium text-base
+                  px-4 py-2 rounded-md font-semibold text-base
                   flex items-center justify-center gap-2 
                   transition-all duration-200 ease-in-out
+                  border-2
                   ${showTafsir 
-                    ? "bg-amber-100 text-amber-800 border border-amber-300 shadow-inner" 
-                    : "bg-amber-500 text-white border border-amber-600 shadow-sm hover:bg-amber-600"}
+                    ? "bg-white text-amber-900 border-amber-700 shadow-inner hover:bg-amber-50 focus:ring-2 focus:ring-amber-700" 
+                    : "bg-amber-700 text-white border-amber-900 shadow-md hover:bg-amber-800 focus:ring-2 focus:ring-amber-900"}
                 `}
+                style={{
+                  boxShadow: showTafsir ? '0 2px 8px 0 rgba(245, 158, 11, 0.10)' : '0 2px 8px 0 rgba(0,0,0,0.10)'
+                }}
               >
                 {showTafsir ? (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
+                  <span className="font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 font-bold text-amber-700 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M12 6c.28 0 .53.11.71.29l6 6a1 1 0 01-1.42 1.42L13 9.41V18a1 1 0 11-2 0V9.41l-4.29 4.3a1 1 0 01-1.42-1.42l6-6A1 1 0 0112 6z" clipRule="evenodd" />
                     </svg>
-                    <span>Sembunyikan Tafsir</span>
-                  </>
+                    <span className="text-amber-900">Sembunyikan Tafsir</span>
+                  </span>
                 ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <span className="font-bold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 font-bold text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                      <path fillRule="evenodd" d="M12 18a1 1 0 01-.71-.29l-6-6a1 1 0 011.42-1.42L11 14.59V6a1 1 0 112 0v8.59l4.29-4.3a1 1 0 111.42 1.42l-6 6A1 1 0 0112 18z" clipRule="evenodd" />
                     </svg>
-                    <span>Tampilkan Tafsir</span>
-                  </>
+                    <span className="text-white">Tampilkan Tafsir</span>
+                  </span>
                 )}
               </button>
 
@@ -347,11 +349,11 @@ const AyatDetailPopup = ({
                       id="popup-reciter-select"
                       value={selectedReciter}
                       onChange={(e) => setSelectedReciter(e.target.value as keyof typeof RECITERS)}
-                      className="inline-block px-4 py-2 rounded-md border border-amber-200 bg-white text-sm text-amber-900 font-medium shadow-sm hover:border-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                      style={{ width: 'auto', minWidth: '8rem', maxWidth: '100%' }}
+                      className="inline-block px-5 py-3 rounded-xl border-2 border-amber-700 bg-gradient-to-br from-amber-50 to-amber-200 text-lg text-amber-900 font-bold shadow-lg hover:border-amber-900 focus:outline-none focus:ring-4 focus:ring-amber-400 focus:border-amber-900 transition-all duration-200"
+                      style={{ width: 'auto', minWidth: '12rem', maxWidth: '100%', boxShadow: '0 2px 12px 0 rgba(245, 158, 11, 0.15)' }}
                     >
                       {Object.entries(RECITERS).map(([key, name]) => (
-                        <option key={key} value={key} className="py-1">
+                        <option key={key} value={key} className="py-2 text-base font-semibold text-amber-900 bg-white hover:bg-amber-100">
                           {name}
                         </option>
                       ))}
@@ -540,7 +542,7 @@ export const SurahSearch = ({ onSearchStateChange, onQueryChange }: SurahSearchP
                 <input
                   id="search-query"
                   type="text"
-                  placeholder="Masukkan kata kunci pencarian (contoh: rahmat iman)..."
+                  placeholder="Masukkan kata kunci pencarian (contoh: rahmat iman sholat)..."
                   value={query}
                   onChange={handleQueryChange}
                   className="w-full px-4 py-2 border border-amber-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent placeholder-amber-300 text-amber-900 pr-10"

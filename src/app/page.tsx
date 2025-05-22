@@ -7,15 +7,18 @@ import { useState, useEffect, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import SurahList from '@/components/SurahList';
+import dynamic from 'next/dynamic';
 import { SimpleSearchInput as SearchInput } from '@/components/SearchComponents';
 import LazyLoadImage from '@/components/LazyLoadImage';
 import PrayerTimesWidget from '@/components/PrayerTimesWidget';
-import TafsirMaudhuiTree from '@/components/TafsirMaudhuiTree';
-import QuranPages from '@/components/QuranPages';
 import tafsirData from '@/utils/tafsir_maudhui_full.json';
 import { getQuranFontPreferences, setQuranFontPreferences } from '@/services/userPreferences';
 import { QuranFontPreferences } from '@/types/quranPreferences';
+
+// Dynamic imports for heavy tab content
+const DynamicSurahList = dynamic(() => import('@/components/SurahList'), { ssr: false, loading: () => <div>Memuat daftar surah...</div> });
+const DynamicTafsirMaudhuiTree = dynamic(() => import('@/components/TafsirMaudhuiTree'), { ssr: false, loading: () => <div>Memuat tafsir tematik...</div> });
+const DynamicQuranPages = dynamic(() => import('@/components/QuranPages'), { ssr: false, loading: () => <div>Memuat halaman mushaf...</div> });
 
 function HomeContent() {
   const router = useRouter();
@@ -493,7 +496,7 @@ function HomeContent() {
               </h2>
             </div>
             
-            <SurahList
+            <DynamicSurahList
               surahs={surahs || null}
               loading={isLoading}
               error={error ? String(error) : null}
@@ -522,14 +525,14 @@ function HomeContent() {
                 Penafsiran Al-Quran berdasarkan tema-tema tertentu dengan mengumpulkan dan menganalisis ayat-ayat dari berbagai surah.
               </p>
             </header>
-            <TafsirMaudhuiTree />
+            <DynamicTafsirMaudhuiTree />
           </div>
         )}
         
         {/* Arabic Mushaf Pages Tab */}
         {activeTab === 'arabic' && (
             <div className="relative">
-            <QuranPages 
+            <DynamicQuranPages 
               currentPage={currentArabicPage} 
               onPageChange={setCurrentArabicPage}
             />
