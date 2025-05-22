@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import quranClient from '../services/quranClient';
+import axios from 'axios';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { useState, useEffect, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -14,6 +14,7 @@ import PrayerTimesWidget from '@/components/PrayerTimesWidget';
 import tafsirData from '@/utils/tafsir_maudhui_full.json';
 import { getQuranFontPreferences, setQuranFontPreferences } from '@/services/userPreferences';
 import { QuranFontPreferences } from '@/types/quranPreferences';
+import quranClient from '../services/quranClient';
 
 // Dynamic imports for heavy tab content
 const DynamicSurahList = dynamic(() => import('@/components/SurahList'), { ssr: false, loading: () => <div>Memuat daftar surah...</div> });
@@ -40,7 +41,11 @@ function HomeContent() {
   
   const { data: surahs, isLoading, error, refetch } = useQuery({
     queryKey: ['surahs'],
-    queryFn: () => quranClient.getAllSurah(),
+    queryFn: async () => {
+      // Fetch from server-side Redis-cached API
+      const res = await axios.get('/api/surahs');
+      return res.data.surahs;
+    },
     staleTime: 5 * 60 * 1000,
   });
   
@@ -179,8 +184,8 @@ function HomeContent() {
             console.log(`Fetching batch ${i + 1}/${totalBatches}: Surahs ${surahBatch.join(', ')}`);
             
             try {
-              await Promise.all(surahBatch.map(id => 
-                quranClient.getSurahDetail(id).catch(err => {
+              await Promise.all(surahBatch.map((id: number) => 
+                quranClient.getSurahDetail(id).catch((err: unknown) => {
                   console.warn(`Failed to fetch surah ${id}:`, err);
                   return null;
                 })
@@ -227,8 +232,8 @@ function HomeContent() {
             console.log(`Fetching tafsir batch ${i + 1}/${totalBatches}: Surahs ${tafsirBatch.join(', ')}`);
             
             try {
-              await Promise.all(tafsirBatch.map(id => 
-                quranClient.getTafsir(id).catch(err => {
+              await Promise.all(tafsirBatch.map((id: number) => 
+                quranClient.getTafsir(id).catch((err: unknown) => {
                   console.warn(`Failed to fetch tafsir ${id}:`, err);
                   return null;
                 })
