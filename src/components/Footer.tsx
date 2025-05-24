@@ -27,15 +27,15 @@ const Footer: React.FC = () => {
   };
   
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-[#f8f4e5] border-t border-[#d3c6a6] py-2 sm:py-3 px-2 z-40 shadow-md">
-      <div className="w-full px-2 sm:px-3 md:px-4">
+    <footer className="fixed bottom-0 left-0 right-0 bg-[#f8f4e5] border-t border-[#d3c6a6] py-2 sm:py-3 px-1 z-40 shadow-md">
+      <div className="w-full px-1 sm:px-2">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-[1920px] mx-auto">
-          <div className="mb-2 md:mb-0 pl-1">
+          <div className="mb-2 md:mb-0">
             <p className="text-[#5D4037] text-xs sm:text-sm">
               © {new Date().getFullYear()} IndoQuran - Al-Quran Digital Bahasa Indonesia
             </p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm pr-1">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
             <Link href="/donasi" className="text-amber-700 hover:text-amber-900 transition-colors flex items-center mr-2 sm:mr-4">
               <LazyLoadImage 
                 src="/icons/donasi-icon.svg" 

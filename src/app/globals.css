@@ -310,3 +310,371 @@ body {
 .page-size-change {
   animation: pulse-border 1.5s ease-in-out;
 }
+
+/* Mobile App View Styles */
+.mobile-app-view {
+  /* Apply mobile-first design principles */
+  --mobile-max-width: 430px;
+  --mobile-padding: 1rem;
+  --mobile-border-radius: 12px;
+}
+
+.mobile-app-view main {
+  max-width: var(--mobile-max-width);
+  margin: 0 auto;
+  padding: var(--mobile-padding);
+  border-radius: var(--mobile-border-radius);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  background: #ffffff;
+  min-height: calc(100vh - 80px);
+}
+
+.mobile-app-view header {
+  max-width: var(--mobile-max-width);
+  margin: 0 auto;
+  border-radius: var(--mobile-border-radius) var(--mobile-border-radius) 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-app-view footer {
+  max-width: var(--mobile-max-width);
+  margin: 0 auto;
+  border-radius: 0 0 var(--mobile-border-radius) var(--mobile-border-radius);
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile app view - reduce margins and padding for compact design */
+.mobile-app-view .w-full {
+  max-width: 100%;
+}
+
+.mobile-app-view .px-3,
+.mobile-app-view .px-4 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.mobile-app-view .py-4,
+.mobile-app-view .py-8 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.mobile-app-view .mb-6,
+.mobile-app-view .mb-8 {
+  margin-bottom: 1.5rem;
+}
+
+/* Mobile app view - adjust text sizes for better mobile readability */
+.mobile-app-view h1 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.mobile-app-view h2 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.mobile-app-view .text-xl {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+.mobile-app-view .text-2xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.mobile-app-view .text-3xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+/* Mobile app view - adjust card spacing */
+.mobile-app-view .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.5rem;
+}
+
+.mobile-app-view .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0.75rem;
+}
+
+.mobile-app-view .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem;
+}
+
+/* Mobile app view - adjust button sizes */
+.mobile-app-view button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.mobile-app-view .p-2 {
+  padding: 0.375rem;
+}
+
+.mobile-app-view .p-3 {
+  padding: 0.5rem;
+}
+
+.mobile-app-view .p-4 {
+  padding: 0.75rem;
+}
+
+/* Mobile app view - optimize for touch interactions */
+.mobile-app-view .touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Mobile app view - enhance scroll behavior */
+.mobile-app-view {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile app view - reduce rounded corners for mobile */
+.mobile-app-view .rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.mobile-app-view .rounded-xl {
+  border-radius: 0.75rem;
+}
+
+/* Mobile app view - adjust shadows for mobile */
+.mobile-app-view .shadow-md {
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.06);
+}
+
+.mobile-app-view .shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Mobile app view - add transition for smooth toggle */
+body {
+  transition: all 0.3s ease-in-out;
+}
+
+body.mobile-app-view {
+  background-color: #f3f4f6;
+}
+
+/* Mobile app view - enhance ayat cards */
+.mobile-app-view .ayat-card {
+  margin-bottom: 0.75rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile app view - optimize search input */
+.mobile-app-view input[type="search"],
+.mobile-app-view input[type="text"] {
+  font-size: 16px; /* Prevents zoom on iOS */
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+}
+
+/* Mobile app view - enhance prayer times widget */
+.mobile-app-view .prayer-times-widget {
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/* Mobile app view - optimize tabs */
+.mobile-app-view .tab-navigation {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile app view - enhance surah list */
+.mobile-app-view .surah-list-item {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile app view - active toggle button styling */
+.mobile-app-view .mobile-toggle-active {
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
+
+/* Mobile app view - add subtle animation for content */
+.mobile-app-view main {
+  animation: mobileSlideIn 0.3s ease-out;
+}
+
+@keyframes mobileSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile app view - improve header spacing */
+.mobile-app-view header .container {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Mobile app view - enhance sidebar for mobile */
+.mobile-app-view .sidebar {
+  border-radius: 0 0.75rem 0.75rem 0;
+  max-width: 280px;
+}
+
+/* Mobile app view - optimize footer */
+.mobile-app-view footer {
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+/* Mobile app view - enhanced navbar for mobile */
+.mobile-app-view .header-mobile-enhancement {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile app view - improve tap targets */
+.mobile-app-view button,
+.mobile-app-view a,
+.mobile-app-view .clickable {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+/* Mobile app view - enhance focus states for accessibility */
+.mobile-app-view button:focus,
+.mobile-app-view a:focus,
+.mobile-app-view input:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Mobile app view - prevent text selection on UI elements */
+.mobile-app-view .no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Mobile app view - smooth scrolling and momentum */
+.mobile-app-view * {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile app view - optimize loading states */
+.mobile-app-view .loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile app view - enhance pull-to-refresh area */
+.mobile-app-view .pull-to-refresh {
+  overscroll-behavior-y: contain;
+}
+
+/* Mobile app view - better safe area support for newer phones */
+.mobile-app-view {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.mobile-app-view header {
+  padding-top: env(safe-area-inset-top);
+}
+
+.mobile-app-view footer {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Header and footer edge alignment improvements */
+.mobile-app-view header .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.mobile-app-view footer .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* Web view - ensure header and footer elements align to screen edges */
+header .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+footer .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* Override padding for very small screens */
+@media (max-width: 640px) {
+  header .w-full,
+  footer .w-full {
+    padding-left: 0.125rem;
+    padding-right: 0.125rem;
+  }
+  
+  .mobile-app-view header .w-full,
+  .mobile-app-view footer .w-full {
+    padding-left: 0.125rem;
+    padding-right: 0.125rem;
+  }
+}
+
+/* Mobile app view - ensure header and footer elements align to edges */
+.mobile-app-view header .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.mobile-app-view footer .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* Web view - ensure header and footer elements align to screen edges */
+header .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+footer .w-full {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+/* Override padding for very small screens */
+@media (max-width: 640px) {
+  header .w-full,
+  footer .w-full {
+    padding-left: 0.125rem;
+    padding-right: 0.125rem;
+  }
+  
+  .mobile-app-view header .w-full,
+  .mobile-app-view footer .w-full {
+    padding-left: 0.125rem;
+    padding-right: 0.125rem;
+  }
+}
