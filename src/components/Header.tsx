@@ -183,7 +183,7 @@ export default function Header() {
                           </div>
                           <Link
                             href="/profile"
-                            className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                            className={`flex items-center px-4 py-2 text-sm rounded-md w-full text-left ${
                               isReadingPage 
                                 ? 'text-[#5D4037] hover:bg-[#e8e0ce]' 
                                 : 'text-gray-700 hover:bg-amber-50'
