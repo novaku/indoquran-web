@@ -38,6 +38,7 @@
     "nodemailer": "^6.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^6.0.0",
     "react-helmet-async": "^2.0.5",
     "redis": "^5.0.1",
     "server-only": "^0.0.1",

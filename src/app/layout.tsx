@@ -85,6 +85,8 @@ export default function RootLayout({
     <html lang="id" suppressHydrationWarning className="scroll-smooth">
       <head>
         <meta name="theme-color" content="#d97706" />
+        <link rel="preload" href="/icons/home-icon.svg" as="image" type="image/svg+xml" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
         <Providers>
@@ -92,7 +94,7 @@ export default function RootLayout({
             <div className="flex flex-col min-h-screen">
               <Header />
               <main className="flex-grow w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white main-content">
-                <div className="w-full mx-auto content-fade-in">
+                <div className="w-full mx-auto content-fade-in transform-gpu">
                   <header className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
                     <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>

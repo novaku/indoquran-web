@@ -49,32 +49,42 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', 'indoquran.vercel.app'],
     },
     // Enable optimizations
-    optimizeCss: true,
-    scrollRestoration: true,
+    optimizeCss: true, // Enable CSS optimization
+    optimizePackageImports: ['@/components'], // Optimize component imports
+    optimizeServerActions: true,
+    serverMinification: true,
+    turbotrace: {
+      logLevel: 'error'
+    },
+    webVitals: true
   },
-  
+
   // Image optimization
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'api.quran.gading.dev',
-        pathname: '**',
-      },
-    ],
-    formats: ['image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    minimumCacheTTL: 60,
   },
+
+  // Static optimization
+  staticPageGenerationTimeout: 120,
+  compress: true,
+  poweredByHeader: false,
   
-  // Performance optimizations
+  // Cache optimization
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000, // 1 hour
+    pagesBufferLength: 5,
+  },
+
+  // Improve page loading
+  reactStrictMode: true,
+  swcMinify: true,
   compiler: {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  
-  // Enable built-in React 18 optimizations
-  reactStrictMode: true,
   
   // Configure headers for better security
   headers: async () => [

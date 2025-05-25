@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -14,11 +14,16 @@ import tafsirData from '@/utils/tafsir_maudhui_full.json';
 import { getQuranFontPreferences, setQuranFontPreferences } from '@/services/userPreferences';
 import { QuranFontPreferences } from '@/types/quranPreferences';
 import quranClient from '../services/quranClient';
+import { ErrorBoundary } from 'react-error-boundary';
 
 // Dynamic imports for heavy tab content
 const DynamicSurahList = dynamic(() => import('@/components/SurahList'), { ssr: false, loading: () => <div>Memuat daftar surah...</div> });
 const DynamicTafsirMaudhuiTree = dynamic(() => import('@/components/TafsirMaudhuiTree'), { ssr: false, loading: () => <div>Memuat tafsir tematik...</div> });
 const DynamicQuranPages = dynamic(() => import('@/components/QuranPages'), { ssr: false, loading: () => <div>Memuat halaman mushaf...</div> });
+const DynamicPrayerTimesWidget = dynamic(() => import('@/components/PrayerTimesWidget'), {
+  loading: () => <div className="w-full h-32 bg-gray-100 animate-pulse rounded-lg" />,
+  ssr: false // Disable SSR for prayer times as it depends on user's location
+});
 
 function HomeContent() {
   const router = useRouter();
@@ -411,10 +416,13 @@ function HomeContent() {
           `
         }}
       />
+      
       {/* Prayer Times Widget - Full Width */}
-      <div className="w-full mb-4 sm:mb-6">
-        <PrayerTimesWidget />
-      </div>
+      <ErrorBoundary fallback={<div>Error loading prayer times</div>}>
+        <Suspense fallback={<div className="w-full h-32 bg-gray-100 animate-pulse rounded-lg" />}>
+          <DynamicPrayerTimesWidget />
+        </Suspense>
+      </ErrorBoundary>
       
       {/* Enhanced Search Section */}
       <div className="mb-6 sm:mb-8 w-full">
@@ -548,72 +556,38 @@ function HomeContent() {
       <div className="mt-4 w-full">
         {/* Surah List Tab */}
         {activeTab === 'surah' && (
-          <div 
-            role="tabpanel"
-            id="panel-surah"
-            aria-labelledby="tab-surah"
-            className="animate-fadeIn w-full">
-            <div className="mb-3 sm:mb-4 w-full">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
-                <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={28} height={28} className="w-6 h-6 sm:w-7 sm:h-7 mr-2" />
-                Daftar Surah
-              </h2>
-            </div>
-            
-            <DynamicSurahList
-              surahs={surahs || null}
-              loading={isLoading}
-              error={error ? String(error) : null}
-              searchQuery={debouncedQuery}
-              setSearchQuery={setSearchQuery} // Pass this down to enable reset
-            />
-          </div>
+          <ErrorBoundary fallback={<div>Error loading surah list</div>}>
+            <Suspense fallback={<div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg" />}>
+              <DynamicSurahList
+                surahs={surahs || null}
+                loading={isLoading}
+                error={error ? String(error) : null}
+                searchQuery={debouncedQuery}
+                setSearchQuery={setSearchQuery}
+              />
+            </Suspense>
+          </ErrorBoundary>
         )}
         
         {/* Tafsir Al-Maudhu'i Tab */}
         {activeTab === 'tafsir' && (
-          <div 
-            role="tabpanel"
-            id="panel-tafsir"
-            aria-labelledby="tab-tafsir"
-            className="animate-fadeIn w-full">
-            <header className="mb-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 sm:w-7 sm:h-7 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                </svg>
-                Tafsir Al-Maudhu'i (Tafsir Tematik)
-              </h2>
-              <p className="text-gray-600 mt-2">
-                Penafsiran Al-Quran berdasarkan tema-tema tertentu dengan mengumpulkan dan menganalisis ayat-ayat dari berbagai surah.
-              </p>
-            </header>
-            <DynamicTafsirMaudhuiTree />
-          </div>
+          <ErrorBoundary fallback={<div>Error loading tafsir content</div>}>
+            <Suspense fallback={<div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg" />}>
+              <DynamicTafsirMaudhuiTree />
+            </Suspense>
+          </ErrorBoundary>
         )}
         
         {/* Arabic Mushaf Pages Tab */}
         {activeTab === 'arabic' && (
-            <div className="relative touch-manipulation">
-              {/* Mobile-friendly touch controls */}
-              <div className="mb-3 text-sm text-center text-gray-600 md:hidden">
-                <p>Geser ke kiri/kanan untuk mengganti halaman</p>
-                <div className="flex justify-center items-center mt-1 gap-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
-                  </svg>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
-              </div>
-              
+          <ErrorBoundary fallback={<div>Error loading Quran pages</div>}>
+            <Suspense fallback={<div className="w-full h-96 bg-gray-100 animate-pulse rounded-lg" />}>
               <DynamicQuranPages 
                 currentPage={currentArabicPage} 
                 onPageChange={setCurrentArabicPage}
               />
-            </div>
+            </Suspense>
+          </ErrorBoundary>
         )}
       </div>
     </main>
