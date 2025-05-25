@@ -267,11 +267,27 @@ function HomeContent() {
 
   if (showLoading) {
     return (
-      <div className="w-full p-4">
+      <div className="w-full p-4 min-h-[50vh] flex flex-col items-center justify-center">
         {!isRedisCacheInitializing && isLoading && (
-          <div className="flex flex-col items-center justify-center p-8 w-full">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500 mb-4"></div>
-            <p className="text-gray-600">Memuat daftar surah...</p>
+          <div className="flex flex-col items-center justify-center p-4 sm:p-8 w-full">
+            <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-amber-500 mb-3 sm:mb-4"></div>
+            <p className="text-gray-600 text-center">Memuat daftar surah...</p>
+          </div>
+        )}
+        
+        {isRedisCacheInitializing && (
+          <div className="flex flex-col items-center justify-center p-4 sm:p-8 w-full">
+            <div className="w-full max-w-md bg-white rounded-lg shadow-md p-4 sm:p-6">
+              <div className="flex items-center mb-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-amber-500 mr-3"></div>
+                <h3 className="text-base sm:text-lg font-medium text-gray-700">Menyiapkan data Al-Quran</h3>
+              </div>
+              <p className="text-sm text-gray-600 mb-3">Ini hanya perlu dilakukan sekali. Mohon tunggu sebentar...</p>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div className="bg-amber-500 h-2.5 rounded-full" style={{ width: `${(cachingStep / totalSteps) * 100}%` }}></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2 text-right">{Math.round((cachingStep / totalSteps) * 100)}%</p>
+            </div>
           </div>
         )}
       </div>
@@ -301,10 +317,19 @@ function HomeContent() {
         <title>Al-Quran Indonesia | Baca Al-Quran Online dengan Terjemahan & Tafsir Tematik</title>
         <meta name="description" content="Baca Al-Quran online lengkap dengan terjemahan Bahasa Indonesia, tafsir tematik (Al-Maudhu'i), audio murottal. Tersedia 114 surah dengan navigasi mudah." />
         <meta name="keywords" content="al quran, quran online, baca quran, al-quran indonesia, terjemahan quran, tafsir quran, tafsir tematik, tafsir maudhui, quran digital, murottal quran" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+        <meta name="theme-color" content="#f8f4e5" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="format-detection" content="telephone=no" />
         <link rel="canonical" href={canonicalUrl} />
-        <script type="application/ld+json">
-          {`
+      </Helmet>
+      
+      {/* JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `
             {
               "@context": "https://schema.org",
               "@type": "WebSite",
@@ -318,12 +343,45 @@ function HomeContent() {
                   "urlTemplate": "${canonicalUrl}?search={search_term_string}"
                 },
                 "query-input": "required name=search_term_string"
+              },
+              "offers": {
+                "@type": "Offer",
+                "availability": "https://schema.org/InStock",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "applicationCategory": "ReligiousApp",
+              "operatingSystem": "Any"
+            }
+          `
+        }}
+      />
+      
+      {/* Additional mobile-specific schema markup */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `
+            {
+              "@context": "https://schema.org",
+              "@type": "MobileApplication",
+              "name": "Al-Quran Indonesia (Mobile Web)",
+              "applicationCategory": "ReligiousApp",
+              "operatingSystem": "Any",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
               }
             }
-          `}
-        </script>
-        <script type="application/ld+json">
-          {`
+          `
+        }}
+      />
+      
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: `
             {
               "@context": "https://schema.org",
               "@type": "ItemList",
@@ -350,9 +408,9 @@ function HomeContent() {
                 }
               ]
             }
-          `}
-        </script>
-      </Helmet>      
+          `
+        }}
+      />
       {/* Prayer Times Widget - Full Width */}
       <div className="w-full mb-4 sm:mb-6">
         <PrayerTimesWidget />
@@ -385,7 +443,9 @@ function HomeContent() {
 
       {/* Tab Navigation */}
       <div className="mb-6 w-full">
-        <div role="tablist" aria-label="Konten Al-Quran" className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-hidden w-full">
+        <div role="tablist" 
+             aria-label="Konten Al-Quran" 
+             className="flex border-b-2 border-amber-200 bg-[#f8f4e5] rounded-t-lg shadow-sm overflow-x-auto overflow-y-hidden w-full touch-pan-x">
           <button
             role="tab"
             id="tab-surah"
@@ -400,15 +460,15 @@ function HomeContent() {
                 history.pushState("", document.title, window.location.pathname + window.location.search);
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
+            className={`relative py-2 px-3 sm:px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center min-w-[33%] whitespace-nowrap touch-manipulation
               ${activeTab === 'surah' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
-                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
+                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50 active:bg-amber-100'
               }`}
           >
-            <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={20} height={20} className="w-5 h-5 mr-2" />
-            Daftar Surah
-            <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">114</span>
+            <LazyLoadImage src="/icons/home-icon.svg" alt="Beranda" width={20} height={20} className="w-5 h-5 mr-1 sm:mr-2" />
+            <span className="truncate">Daftar Surah</span>
+            <span className="ml-1 sm:ml-2 bg-amber-200 text-amber-800 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">114</span>
             {activeTab === 'surah' && (
               <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[6px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-amber-500"></span>
             )}
@@ -427,18 +487,18 @@ function HomeContent() {
                 window.location.hash = 'tafsir-tematik';
               }
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
+            className={`relative py-2 px-3 sm:px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center min-w-[33%] whitespace-nowrap touch-manipulation
               ${activeTab === 'tafsir' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
-                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
+                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50 active:bg-amber-100'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-1 sm:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
               <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
-            Tafsir Tematik
-            <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">{tafsirData.topics.length}</span>
+            <span className="truncate">Tafsir Tematik</span>
+            <span className="ml-1 sm:ml-2 bg-amber-200 text-amber-800 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">{tafsirData.topics.length}</span>
             {activeTab === 'tafsir' && (
               <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-[6px] w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-amber-500"></span>
             )}
@@ -459,19 +519,19 @@ function HomeContent() {
               // Fetch font preferences when switching to this tab
               fetchFontPreferences();
             }}
-            className={`relative py-2 px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center w-1/3
+            className={`relative py-2 px-3 sm:px-4 font-medium text-sm sm:text-base rounded-t-lg transition-colors flex items-center justify-center min-w-[33%] whitespace-nowrap touch-manipulation
               ${activeTab === 'arabic' 
                 ? 'bg-amber-100 text-amber-800 border-b-2 border-amber-500' 
-                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50'
+                : 'text-gray-600 hover:text-amber-700 hover:bg-amber-50 active:bg-amber-100'
               }`}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 mr-1 sm:mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
             </svg>
-            Mushaf Al-Quran
-            <span className="ml-2 bg-amber-200 text-amber-800 text-xs px-2 py-0.5 rounded-full">604</span>
-            <span className="ml-1 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <span className="truncate">Mushaf Al-Quran</span>
+            <span className="ml-1 sm:ml-2 bg-amber-200 text-amber-800 text-xs px-1.5 sm:px-2 py-0.5 rounded-full">604</span>
+            <span className="ml-1 inline-flex items-center px-1 sm:px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
               <svg className="mr-0.5 h-2 w-2 text-green-500" fill="currentColor" viewBox="0 0 8 8">
                 <circle cx="4" cy="4" r="3" />
               </svg>
@@ -535,11 +595,24 @@ function HomeContent() {
         
         {/* Arabic Mushaf Pages Tab */}
         {activeTab === 'arabic' && (
-            <div className="relative">
-            <DynamicQuranPages 
-              currentPage={currentArabicPage} 
-              onPageChange={setCurrentArabicPage}
-            />
+            <div className="relative touch-manipulation">
+              {/* Mobile-friendly touch controls */}
+              <div className="mb-3 text-sm text-center text-gray-600 md:hidden">
+                <p>Geser ke kiri/kanan untuk mengganti halaman</p>
+                <div className="flex justify-center items-center mt-1 gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+              
+              <DynamicQuranPages 
+                currentPage={currentArabicPage} 
+                onPageChange={setCurrentArabicPage}
+              />
             </div>
         )}
       </div>

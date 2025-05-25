@@ -6,7 +6,6 @@ import { HelmetProvider } from 'react-helmet-async';
 import { NextAuthProvider } from '@/contexts/AuthContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
-import { MobileViewProvider } from '@/contexts/MobileViewContext';
 
 export function Providers({ children }: { children: ReactNode }) {
   const queryClientRef = useRef<QueryClient | null>(null);
@@ -27,9 +26,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <NextAuthProvider>
           <ToastProvider>
             <ThemeProvider>
-              <MobileViewProvider>
-                {children}
-              </MobileViewProvider>
+              {children}
             </ThemeProvider>
           </ToastProvider>
         </NextAuthProvider>

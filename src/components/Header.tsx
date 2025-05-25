@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import LazyLoadImage from '@/components/LazyLoadImage';
 import { useState, useEffect, useRef } from 'react';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useMobileView } from '@/contexts/MobileViewContext';
 import { useToast } from '@/contexts/ToastContext';
 import Tooltip from '@/components/Tooltip';
 import Sidebar from '@/components/Sidebar';
@@ -17,7 +16,6 @@ export default function Header() {
   const pathname = usePathname();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, logout, loading, user } = useAuthContext();
-  const { isMobileAppView, toggleMobileAppView } = useMobileView();
   const { showToast } = useToast();
   
   // Determine if current page is a reading page (surah or ayat page)
@@ -88,12 +86,8 @@ export default function Header() {
       
       <header className={`sticky top-0 z-30 w-full transition-all duration-300 ${
         isReadingPage 
-          ? isMobileAppView
-            ? 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6] shadow-md' 
-            : 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6]'
-          : isMobileAppView
-            ? 'bg-white text-gray-800 shadow-lg border-b border-gray-200'
-            : 'bg-white text-gray-800 shadow-md'
+          ? 'bg-[#f8f4e5] text-[#5D4037] border-b border-[#d3c6a6]'
+          : 'bg-white text-gray-800 shadow-md'
       }`}>
         <div className="w-full px-1 sm:px-2 py-4">
           <div className="flex items-center justify-between max-w-[1920px] mx-auto">
@@ -141,53 +135,6 @@ export default function Header() {
             </div>
             
             <div className="flex items-center space-x-2">
-              {/* Mobile App View Toggle */}
-              <Tooltip text={`${isMobileAppView ? "Tampilan Web" : "Tampilan Mobile App"} (Ctrl+M)`}>
-                <button
-                  onClick={() => {
-                    toggleMobileAppView();
-                    showToast(
-                      `Tampilan ${!isMobileAppView ? 'Mobile App' : 'Web'} diaktifkan`, 
-                      'success'
-                    );
-                  }}
-                  className={`flex items-center px-2 sm:px-3 py-2 rounded-md transition-colors ${
-                    isMobileAppView 
-                      ? 'bg-blue-100 border border-blue-300 text-blue-700' 
-                      : isReadingPage 
-                        ? 'text-[#8D6E63] hover:text-[#6D4C41] hover:bg-[#e8e0ce]' 
-                        : 'text-amber-600 hover:text-amber-800 hover:bg-amber-50'
-                  }`}
-                  aria-label={`Toggle to ${isMobileAppView ? 'web' : 'mobile app'} view`}
-                >
-                  {isMobileAppView ? (
-                    // Desktop/Web icon when in mobile app view
-                    <LazyLoadImage 
-                      src="/icons/desktop-icon.svg" 
-                      alt="Desktop View" 
-                      width={20} 
-                      height={20} 
-                      className="w-5 h-5" 
-                    />
-                  ) : (
-                    // Mobile phone icon when in web view
-                    <LazyLoadImage 
-                      src="/icons/mobile-app-icon.svg" 
-                      alt="Mobile App View" 
-                      width={20} 
-                      height={20} 
-                      className="w-5 h-5" 
-                    />
-                  )}
-                  <span className="ml-1 text-sm hidden sm:inline-block">
-                    {isMobileAppView ? 'Web' : 'Mobile'}
-                  </span>
-                  {isMobileAppView && (
-                    <span className="ml-1 inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
-                  )}
-                </button>
-              </Tooltip>
-              
               {/* User management dropdown menu */}
               <div className="relative" ref={dropdownRef}>
                 <Tooltip text="Menu Akun Pengguna">

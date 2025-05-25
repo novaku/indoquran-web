@@ -192,6 +192,15 @@ const PrayerTimesWidget: React.FC = () => {
       const useAutoLocationStr = localStorage.getItem('useAutoLocation');
       const useAutoLocation = useAutoLocationStr === null || useAutoLocationStr === 'true';
       
+      // Check if we're in a secure context (HTTPS), which is required for geolocation
+      const isSecureContext = window.isSecureContext;
+      
+      if (!isSecureContext) {
+        console.warn('Geolocation requires a secure context (HTTPS). Using default location.');
+        handleDefaultLocation();
+        return;
+      }
+      
       if (useAutoLocation && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
@@ -202,17 +211,28 @@ const PrayerTimesWidget: React.FC = () => {
             getLocationName(position.coords.latitude, position.coords.longitude);
           },
           (error) => {
-            console.error('Error getting location:', error);
-            useDefaultLocation();
+            // Code 1 is PERMISSION_DENIED, often occurs with "Only secure origins are allowed" message
+            if (error.code === 1 && error.message.includes("secure origins")) {
+              console.warn('Geolocation requires HTTPS. Using default location.');
+            } else if (error.code === 1) {
+              console.warn('Geolocation permission denied. Using default location.');
+            } else if (error.code === 2) {
+              console.warn('Location information unavailable. Using default location.');
+            } else if (error.code === 3) {
+              console.warn('Geolocation request timed out. Using default location.');
+            } else {
+              console.warn(`Geolocation error (${error.code}): ${error.message}. Using default location.`);
+            }
+            handleDefaultLocation();
           },
           { timeout: 10000 }
         );
       } else {
-        useDefaultLocation();
+        handleDefaultLocation();
       }
     };
     
-    const useDefaultLocation = () => {
+    const handleDefaultLocation = () => {
       setCoordinates(defaultCoords);
       getLocationName(defaultCoords.latitude, defaultCoords.longitude);
     };
@@ -229,7 +249,7 @@ const PrayerTimesWidget: React.FC = () => {
       if (event.detail?.useAutoLocation) {
         getUserLocation();
       } else {
-        useDefaultLocation();
+        handleDefaultLocation();
       }
     };
     

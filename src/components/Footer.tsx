@@ -7,6 +7,13 @@ import LazyLoadImage from '@/components/LazyLoadImage';
 
 const Footer: React.FC = () => {
   const [useAutoLocation, setUseAutoLocation] = useState<boolean>(true);
+  const [deviceInfo, setDeviceInfo] = useState<{
+    type: 'desktop' | 'mobile' | 'tablet' | 'unknown';
+    name: string;
+  }>({
+    type: 'unknown',
+    name: 'Unknown Device'
+  });
   
   useEffect(() => {
     // Load user preference from localStorage if available
@@ -14,7 +21,51 @@ const Footer: React.FC = () => {
     if (storedPreference !== null) {
       setUseAutoLocation(storedPreference === 'true');
     }
+    
+    // Detect device type and name
+    detectDevice();
   }, []);
+  
+  const detectDevice = () => {
+    if (typeof window !== 'undefined') {
+      const userAgent = navigator.userAgent;
+      const width = window.innerWidth;
+      
+      // Detect device type based on screen width
+      let deviceType: 'desktop' | 'mobile' | 'tablet' | 'unknown' = 'unknown';
+      if (width <= 640) {
+        deviceType = 'mobile';
+      } else if (width <= 1024) {
+        deviceType = 'tablet';
+      } else {
+        deviceType = 'desktop';
+      }
+      
+      // Try to detect device name from user agent
+      let deviceName = 'Unknown Device';
+      
+      // Check for common mobile devices
+      if (/(iPhone|iPad|iPod)/i.test(userAgent)) {
+        deviceName = userAgent.match(/(iPhone|iPad|iPod)/i)?.[0] || 'iOS Device';
+      } else if (/Android/i.test(userAgent)) {
+        const match = userAgent.match(/Android\s([0-9.]+)/);
+        deviceName = match ? `Android ${match[1]}` : 'Android Device';
+      } else if (/Windows Phone/i.test(userAgent)) {
+        deviceName = 'Windows Phone';
+      } else if (/Windows NT/i.test(userAgent)) {
+        deviceName = 'Windows';
+      } else if (/Macintosh/i.test(userAgent)) {
+        deviceName = 'Mac';
+      } else if (/Linux/i.test(userAgent)) {
+        deviceName = 'Linux';
+      }
+      
+      setDeviceInfo({
+        type: deviceType,
+        name: deviceName
+      });
+    }
+  };
   
   const toggleLocationPreference = () => {
     const newValue = !useAutoLocation;
@@ -30,10 +81,13 @@ const Footer: React.FC = () => {
     <footer className="fixed bottom-0 left-0 right-0 bg-[#f8f4e5] border-t border-[#d3c6a6] py-2 sm:py-3 px-1 z-40 shadow-md">
       <div className="w-full px-1 sm:px-2">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-[1920px] mx-auto">
-          <div className="mb-2 md:mb-0">
+          <div className="mb-2 md:mb-0 flex flex-col xs:flex-row items-center xs:items-start">
             <p className="text-[#5D4037] text-xs sm:text-sm">
               © {new Date().getFullYear()} IndoQuran - Al-Quran Digital Bahasa Indonesia
             </p>
+            <div className="text-xs text-gray-500 mt-1 xs:mt-0 xs:ml-2">
+              <span className="hidden xs:inline">|</span> {deviceInfo.name} ({deviceInfo.type})
+            </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
             <Link href="/donasi" className="text-amber-700 hover:text-amber-900 transition-colors flex items-center mr-2 sm:mr-4">
