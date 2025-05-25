@@ -51,17 +51,40 @@ type Topic = {
   verses: Ayah[];
 };
 
+// Function to get next and previous ayat in a topic
+const getRelatedAyat = (verses: Ayah[], currentSurah: number, currentAyah: number) => {
+  const sortedVerses = verses.sort((a, b) => {
+    if (a.surah !== b.surah) {
+      return a.surah - b.surah;
+    }
+    return a.ayah - b.ayah;
+  });
+  
+  const currentIndex = sortedVerses.findIndex(
+    v => v.surah === currentSurah && v.ayah === currentAyah
+  );
+  
+  return {
+    nextAyat: currentIndex < sortedVerses.length - 1 ? sortedVerses[currentIndex + 1] : null,
+    prevAyat: currentIndex > 0 ? sortedVerses[currentIndex - 1] : null
+  };
+};
+
 // Define AyatPopup component
 const AyatPopup: React.FC<{ 
   isOpen: boolean; 
   onClose: () => void; 
   surahId: number; 
   ayatId: number;
+  currentTopic?: Topic;
+  onNavigate: (surah: number, ayah: number) => void;
 }> = ({ 
   isOpen, 
   onClose, 
   surahId, 
-  ayatId 
+  ayatId,
+  currentTopic,
+  onNavigate
 }) => {
   const { data: ayatData, isLoading } = useQuery({
     queryKey: ['ayat', surahId, ayatId],
@@ -73,6 +96,12 @@ const AyatPopup: React.FC<{
     enabled: isOpen // Only fetch when popup is open
   });
   
+  // Get the next and previous ayat from the topic
+  const { nextAyat, prevAyat } = useMemo(() => {
+    if (!currentTopic) return { nextAyat: null, prevAyat: null };
+    return getRelatedAyat(currentTopic.verses, surahId, ayatId);
+  }, [currentTopic, surahId, ayatId]);
+
   // Client-side only mounting check
   const [isMounted, setIsMounted] = useState(false);
   
@@ -150,7 +179,38 @@ const AyatPopup: React.FC<{
           )}
           
           {!isLoading && ayatData && (
-            <AyatCard ayat={ayatData} surahId={surahId} />
+            <>
+              <AyatCard ayat={ayatData} surahId={surahId} />
+              
+              {/* Navigation buttons */}
+              {(prevAyat || nextAyat) && (
+                <div className="mt-6 flex justify-between border-t pt-4">
+                  {prevAyat ? (
+                    <button
+                      onClick={() => onNavigate(prevAyat.surah, prevAyat.ayah)}
+                      className="flex items-center text-amber-700 hover:text-amber-800"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                      {getSurahName(prevAyat.surah)} : {prevAyat.ayah}
+                    </button>
+                  ) : <div />}
+                  
+                  {nextAyat && (
+                    <button
+                      onClick={() => onNavigate(nextAyat.surah, nextAyat.ayah)}
+                      className="flex items-center text-amber-700 hover:text-amber-800"
+                    >
+                      {getSurahName(nextAyat.surah)} : {nextAyat.ayah}
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -250,6 +310,11 @@ const TafsirMaudhuiTree = () => {
   // Close the ayat popup
   const closeAyatPopup = () => {
     setSelectedAyat(null);
+  };
+
+  // Handle navigation between ayat in popup
+  const handleAyatNavigation = (surah: number, ayah: number) => {
+    setSelectedAyat({ surah, ayah });
   };
 
   // Filter topics based on search term
@@ -474,6 +539,8 @@ const TafsirMaudhuiTree = () => {
           onClose={closeAyatPopup}
           surahId={selectedAyat.surah}
           ayatId={selectedAyat.ayah}
+          currentTopic={selectedTopic || undefined}
+          onNavigate={handleAyatNavigation}
         />
       )}
     </div>
