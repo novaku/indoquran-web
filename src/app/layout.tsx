@@ -6,6 +6,8 @@ import StructuredData from '../components/StructuredData';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import BookThemeProvider from '@/components/BookThemeProvider';
+import LocationSettingsProvider from '@/components/LocationSettingsProvider';
+import ClientHydrationHandler from '@/components/ClientHydrationHandler';
 import React from 'react';
 
 // Optimize Inter font loading - only load Latin subset
@@ -82,32 +84,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning className="scroll-smooth">
-      <head>
-        <meta name="theme-color" content="#d97706" />
-        <link rel="preload" href="/icons/home-icon.svg" as="image" type="image/svg+xml" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+    <ClientHydrationHandler>
+      <head className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
+        <StructuredData />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f8f4e5" />
       </head>
-      <body className={`${inter.className} ${arabic.variable} ${amiri.variable}`}>
+      <body className="flex flex-col min-h-screen bg-[#f8f4e5]" suppressHydrationWarning>
         <Providers>
           <BookThemeProvider>
-            <div className="flex flex-col min-h-screen">
+            <LocationSettingsProvider>
               <Header />
-              <main className="flex-grow w-full mx-auto px-4 py-8 pb-24 bg-gradient-to-b from-amber-50 to-white main-content">
-                <div className="w-full mx-auto content-fade-in transform-gpu">
-                  <header className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-amber-900 mb-2">Al-Quran Indonesia</h1>
-                    <p className="text-amber-700">Baca Al-Quran dengan Terjemahan dan Tafsir Bahasa Indonesia</p>
-                  </header>
-                  {children}
-                </div>
+              <main className="flex-grow">
+                {children}
               </main>
               <Footer />
-              <StructuredData />
-            </div>
+            </LocationSettingsProvider>
           </BookThemeProvider>
         </Providers>
       </body>
-    </html>
+    </ClientHydrationHandler>
   );
 }

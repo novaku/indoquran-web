@@ -1,11 +1,21 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { requestNotificationPermission, schedulePrayerNotification } from '@/utils/notifications';
 import Tooltip from '@/components/Tooltip';
 import LazyLoadImage from '@/components/LazyLoadImage';
+import { useLocation } from './LocationSettingsProvider';
+import { defaultLocation } from '@/utils/constants';
+import dynamic from 'next/dynamic';
+import AutoLocationPrompt from './AutoLocationPrompt';
+
+// Dynamic import for the clock to prevent hydration issues
+const PrayerTimesClock = dynamic(() => import('./PrayerTimesClock'), {
+  ssr: false,
+  loading: () => <div className="text-amber-900 font-medium text-sm">Loading...</div>
+});
 
 interface PrayerTime {
   fajr: string;
@@ -89,28 +99,48 @@ interface LocationInfo {
   country: string;
 }
 
-const defaultCoords = {
-  latitude: -6.1753924, // Jakarta Pusat
-  longitude: 106.8271528,
-};
+interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
 
 const PrayerTimesWidget: React.FC = () => {
+  const { useAutoLocation, hasSetPreference } = useLocation();
   const [prayerTimes, setPrayerTimes] = useState<PrayerTime | null>(null);
   const [location, setLocation] = useState<LocationInfo | null>(null);
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [nextPrayer, setNextPrayer] = useState<{name: string; time: string} | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [coordinates, setCoordinates] = useState(defaultCoords);
+  const [coordinates, setCoordinates] = useState<Coordinates>({
+    latitude: defaultLocation.latitude,
+    longitude: defaultLocation.longitude
+  });
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(false);
   const [notificationTimers, setNotificationTimers] = useState<number[]>([]);
-  
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Format time from 24h to 12h format
   const formatTime = (time: string): string => {
     const [hours, minutes] = time.split(':');
     return `${hours}:${minutes}`;
   };
   
+  const handleDefaultLocation = () => {
+    setCoordinates({
+      latitude: defaultLocation.latitude,
+      longitude: defaultLocation.longitude
+    });
+    setLocation({
+      city: defaultLocation.city,
+      region: defaultLocation.region,
+      country: defaultLocation.country
+    });
+  };
+
   // Get city name from coordinates
   const getLocationName = async (lat: number, lng: number) => {
     try {
@@ -127,9 +157,9 @@ const PrayerTimesWidget: React.FC = () => {
     } catch (error) {
       console.error('Error fetching location name:', error);
       setLocation({
-        city: 'Jakarta Pusat',
-        region: 'Jakarta',
-        country: 'Indonesia'
+        city: defaultLocation.city,
+        region: defaultLocation.region,
+        country: defaultLocation.country
       });
     }
   };
@@ -185,83 +215,40 @@ const PrayerTimesWidget: React.FC = () => {
     return hours * 60 + minutes;
   };
 
-  // Get user location
+  // Check if user has made a location choice on first load
   useEffect(() => {
-    const getUserLocation = () => {
-      // Check if user has set a preference
-      const useAutoLocationStr = localStorage.getItem('useAutoLocation');
-      const useAutoLocation = useAutoLocationStr === null || useAutoLocationStr === 'true';
-      
-      // Check if we're in a secure context (HTTPS), which is required for geolocation
-      const isSecureContext = window.isSecureContext;
-      
-      if (!isSecureContext) {
-        console.warn('Geolocation requires a secure context (HTTPS). Using default location.');
-        handleDefaultLocation();
-        return;
-      }
-      
-      if (useAutoLocation && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            setCoordinates({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            });
-            getLocationName(position.coords.latitude, position.coords.longitude);
-          },
-          (error) => {
-            // Code 1 is PERMISSION_DENIED, often occurs with "Only secure origins are allowed" message
-            if (error.code === 1 && error.message.includes("secure origins")) {
-              console.warn('Geolocation requires HTTPS. Using default location.');
-            } else if (error.code === 1) {
-              console.warn('Geolocation permission denied. Using default location.');
-            } else if (error.code === 2) {
-              console.warn('Location information unavailable. Using default location.');
-            } else if (error.code === 3) {
-              console.warn('Geolocation request timed out. Using default location.');
-            } else {
-              console.warn(`Geolocation error (${error.code}): ${error.message}. Using default location.`);
-            }
-            handleDefaultLocation();
-          },
-          { timeout: 10000 }
-        );
-      } else {
-        handleDefaultLocation();
-      }
-    };
-    
-    const handleDefaultLocation = () => {
-      setCoordinates(defaultCoords);
-      getLocationName(defaultCoords.latitude, defaultCoords.longitude);
-    };
-    
-    getUserLocation();
-    
-    // Set up clock
-    const intervalId = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 1000);
-    
-    // Listen for location preference changes
-    const handleLocationPreferenceChange = (event: CustomEvent) => {
-      if (event.detail?.useAutoLocation) {
-        getUserLocation();
-      } else {
-        handleDefaultLocation();
-      }
-    };
-    
-    window.addEventListener('locationPreferenceChanged', 
-      handleLocationPreferenceChange as EventListener);
-    
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener('locationPreferenceChanged', 
-        handleLocationPreferenceChange as EventListener);
-    };
-  }, []);
+    if (!hasSetPreference) {
+      setLocation({
+        city: defaultLocation.city,
+        region: defaultLocation.region,
+        country: defaultLocation.country
+      });
+    }
+  }, [hasSetPreference]);
+
+  // Update location based on context preference
+  useEffect(() => {
+    if (!hasSetPreference) return;
+
+    if (useAutoLocation && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCoordinates({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
+          getLocationName(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          console.warn(`Geolocation error (${error.code}): ${error.message}. Using default location.`);
+          handleDefaultLocation();
+        },
+        { timeout: 10000 }
+      );
+    } else {
+      handleDefaultLocation();
+    }
+  }, [hasSetPreference, useAutoLocation]);
 
   // Request notification permission and load settings from localStorage
   useEffect(() => {
@@ -376,12 +363,12 @@ const PrayerTimesWidget: React.FC = () => {
     fetchPrayerTimes();
   }, [coordinates, notificationsEnabled]);
 
-  // Calculate next prayer whenever prayer times or current time changes
+  // Calculate next prayer whenever prayer times changes
   useEffect(() => {
-    if (prayerTimes) {
+    if (prayerTimes && isMounted) {
       calculateNextPrayer(prayerTimes);
     }
-  }, [prayerTimes, currentDate]);
+  }, [prayerTimes, isMounted]);
   
   // Clean up notification timers and event listeners when component unmounts
   useEffect(() => {
@@ -483,116 +470,117 @@ const PrayerTimesWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-amber-50 to-amber-100 rounded-lg p-4 shadow-md w-full transition-all duration-300 hover:shadow-lg">
-      <div className="flex flex-wrap justify-between items-start mb-2">
-        <h3 className="font-semibold text-xl text-amber-800 flex items-center">
-          <LazyLoadImage 
-            src="/icons/prayer-icon.svg"
-            alt="Prayer Times"
-            className="w-5 h-5 mr-2"
-            width={20}
-            height={20}
-          />
-          Jadwal Sholat
-        </h3>
-        <div className="flex items-center gap-2">
-          <Tooltip text={notificationsEnabled ? 'Nonaktifkan notifikasi sholat' : 'Aktifkan notifikasi sholat'}>
-            <button 
-              onClick={toggleNotifications} 
-              className={`p-1 rounded-full ${
-                notificationsEnabled 
-                  ? 'bg-amber-200 text-amber-800' 
-                  : 'bg-gray-200 text-gray-500'
-                } transition-all duration-300`}
-              aria-label={notificationsEnabled ? 'Nonaktifkan notifikasi sholat' : 'Aktifkan notifikasi sholat'}
-            >
-              <LazyLoadImage
-                src={notificationsEnabled ? "/icons/prayer-icon.svg" : "/icons/prayer-icon.svg"}
-                alt={notificationsEnabled ? "Disable Notifications" : "Enable Notifications"}
-                className="w-4 h-4"
+    <>
+      <AutoLocationPrompt />
+      <div className="bg-gradient-to-tr from-amber-50 to-amber-100 rounded-lg p-4 shadow-md w-full transition-all duration-300 hover:shadow-lg">
+        <div className="flex flex-wrap justify-between items-start mb-2">
+          <h3 className="font-semibold text-xl text-amber-800 flex items-center">
+            <LazyLoadImage 
+              src="/icons/prayer-icon.svg"
+              alt="Prayer Times"
+              className="w-5 h-5 mr-2"
+              width={20}
+              height={20}
+            />
+            Jadwal Sholat
+          </h3>
+          <div className="flex items-center gap-2">
+            <Tooltip text={notificationsEnabled ? 'Nonaktifkan notifikasi sholat' : 'Aktifkan notifikasi sholat'}>
+              <button 
+                onClick={toggleNotifications} 
+                className={`p-1 rounded-full ${
+                  notificationsEnabled 
+                    ? 'bg-amber-200 text-amber-800' 
+                    : 'bg-gray-200 text-gray-500'
+                  } transition-all duration-300`}
+                aria-label={notificationsEnabled ? 'Nonaktifkan notifikasi sholat' : 'Aktifkan notifikasi sholat'}
+              >
+                <LazyLoadImage
+                  src={notificationsEnabled ? "/icons/prayer-icon.svg" : "/icons/prayer-icon.svg"}
+                  alt={notificationsEnabled ? "Disable Notifications" : "Enable Notifications"}
+                  className="w-4 h-4"
+                  width={16}
+                  height={16}
+                />
+              </button>
+            </Tooltip>
+            {isMounted && <PrayerTimesClock />}
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap items-center justify-between mb-3">
+          {location && (
+            <div className="text-sm text-amber-700 flex items-center mr-3 mb-1">
+              <LazyLoadImage 
+                src="/icons/prayer-icon.svg"
+                alt="Location"
+                className="w-4 h-4 mr-1"
                 width={16}
                 height={16}
               />
-            </button>
-          </Tooltip>
-          <div className="text-amber-900 font-medium text-sm">
-            {format(currentDate, 'HH:mm:ss', { locale: id })}
-          </div>
-        </div>
-      </div>
-      
-      <div className="flex flex-wrap items-center justify-between mb-3">
-        {location && (
-          <div className="text-sm text-amber-700 flex items-center mr-3 mb-1">
+              {location.city}, {location.region}
+            </div>
+          )}
+          
+          <div className="text-sm text-amber-900 flex items-center mb-1">
             <LazyLoadImage 
-              src="/icons/prayer-icon.svg"
-              alt="Location"
+              src="/icons/tentang-icon.svg"
+              alt="Calendar"
               className="w-4 h-4 mr-1"
               width={16}
               height={16}
             />
-            {location.city}, {location.region}
+            {isMounted && format(new Date(), 'EEEE, d MMMM yyyy', { locale: id })}
+          </div>
+        </div>
+        
+        {nextPrayer && (
+          <div className="mb-4 bg-gradient-to-r from-amber-200/80 to-amber-100/80 rounded-md p-3 border-l-4 border-amber-500 shadow-sm">
+            <div className="text-xs text-amber-800 uppercase font-semibold mb-1">Waktu sholat berikutnya</div>
+            <div className="font-bold text-amber-900 flex justify-between items-center">
+              <div className="flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2 text-amber-600">
+                  <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
+                </svg>
+                <span>{nextPrayer.name}</span>
+              </div>
+              <span className="bg-amber-500/20 py-1 px-3 rounded-full text-amber-900">{nextPrayer.time}</span>
+            </div>
           </div>
         )}
         
-        <div className="text-sm text-amber-900 flex items-center mb-1">
-          <LazyLoadImage 
-            src="/icons/tentang-icon.svg"
-            alt="Calendar"
-            className="w-4 h-4 mr-1"
-            width={16}
-            height={16}
-          />
-          {format(currentDate, 'EEEE, d MMMM yyyy', { locale: id })}
-        </div>
+        {prayerTimes && (
+          <div className="border-t border-amber-200/50 pt-3">
+            <div className="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-sm">
+              <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+                <div className="text-amber-800 text-xs uppercase font-medium">Subuh</div>
+                <div className="font-bold text-amber-900">{prayerTimes.fajr}</div>
+              </div>
+              
+              <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+                <div className="text-amber-800 text-xs uppercase font-medium">Dzuhur</div>
+                <div className="font-bold text-amber-900">{prayerTimes.dhuhr}</div>
+              </div>
+              
+              <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+                <div className="text-amber-800 text-xs uppercase font-medium">Ashar</div>
+                <div className="font-bold text-amber-900">{prayerTimes.asr}</div>
+              </div>
+              
+              <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+                <div className="text-amber-800 text-xs uppercase font-medium">Maghrib</div>
+                <div className="font-bold text-amber-900">{prayerTimes.maghrib}</div>
+              </div>
+              
+              <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
+                <div className="text-amber-800 text-xs uppercase font-medium">Isya</div>
+                <div className="font-bold text-amber-900">{prayerTimes.isha}</div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {nextPrayer && (
-        <div className="mb-4 bg-gradient-to-r from-amber-200/80 to-amber-100/80 rounded-md p-3 border-l-4 border-amber-500 shadow-sm">
-          <div className="text-xs text-amber-800 uppercase font-semibold mb-1">Waktu sholat berikutnya</div>
-          <div className="font-bold text-amber-900 flex justify-between items-center">
-            <div className="flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 mr-2 text-amber-600">
-                <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clipRule="evenodd" />
-              </svg>
-              <span>{nextPrayer.name}</span>
-            </div>
-            <span className="bg-amber-500/20 py-1 px-3 rounded-full text-amber-900">{nextPrayer.time}</span>
-          </div>
-        </div>
-      )}
-      
-      {prayerTimes && (
-        <div className="border-t border-amber-200/50 pt-3">
-          <div className="grid grid-cols-3 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-sm">
-            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 text-xs uppercase font-medium">Subuh</div>
-              <div className="font-bold text-amber-900">{prayerTimes.fajr}</div>
-            </div>
-            
-            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 text-xs uppercase font-medium">Dzuhur</div>
-              <div className="font-bold text-amber-900">{prayerTimes.dhuhr}</div>
-            </div>
-            
-            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 text-xs uppercase font-medium">Ashar</div>
-              <div className="font-bold text-amber-900">{prayerTimes.asr}</div>
-            </div>
-            
-            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 text-xs uppercase font-medium">Maghrib</div>
-              <div className="font-bold text-amber-900">{prayerTimes.maghrib}</div>
-            </div>
-            
-            <div className="bg-amber-100/70 rounded p-2 flex flex-col items-center justify-center">
-              <div className="text-amber-800 text-xs uppercase font-medium">Isya</div>
-              <div className="font-bold text-amber-900">{prayerTimes.isha}</div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 

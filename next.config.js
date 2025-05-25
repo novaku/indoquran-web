@@ -42,28 +42,22 @@ const nextConfig = {
   // Output as standalone for Docker deployment
   output: 'standalone',
   
-  // Improve reliability for API routes
+  // Experimental features configuration
   experimental: {
+    // Optimize CSS output
+    optimizeCss: true,
+    // Configure server actions
     serverActions: {
-      // Improves server actions reliability
-      allowedOrigins: ['localhost:3000', 'indoquran.vercel.app'],
+      bodySizeLimit: '2mb',
     },
-    // Enable optimizations
-    optimizeCss: true, // Enable CSS optimization
-    optimizePackageImports: ['@/components'], // Optimize component imports
-    optimizeServerActions: true,
-    serverMinification: true,
-    turbotrace: {
-      logLevel: 'error'
-    },
-    webVitals: true
   },
 
   // Image optimization
   images: {
+    domains: ['indoquran.web.id'],
     formats: ['image/avif', 'image/webp'],
-    deviceSizes: [640, 750, 828, 1080, 1200],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
   },
 
@@ -80,7 +74,6 @@ const nextConfig = {
 
   // Improve page loading
   reactStrictMode: true,
-  swcMinify: true,
   compiler: {
     // Remove console logs in production
     removeConsole: process.env.NODE_ENV === 'production',

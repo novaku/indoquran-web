@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const forceRefresh = searchParams.get('refresh') === '1';
 
   // Check cache timestamp for staleness
-  let cachedTimestamp = await redis.get(SURAH_CACHE_TIMESTAMP_KEY);
+  const cachedTimestamp = await redis.get(SURAH_CACHE_TIMESTAMP_KEY);
   let isStale = false;
   if (cachedTimestamp) {
     const now = Date.now();

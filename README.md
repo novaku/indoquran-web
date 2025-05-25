@@ -262,3 +262,21 @@ For production deployments:
   - Performance tracking
 
 Various third-party services or self-hosted solutions can provide these capabilities.
+
+## Development Tools
+
+### Linting and Code Quality
+
+The project includes several scripts to help maintain code quality by fixing common ESLint issues:
+
+```bash
+# Run all linting fixes
+npm run fix-all
+
+# Fix specific issue types
+npm run fix-eslint     # Fix various ESLint issues
+npm run fix-entities   # Fix unescaped entities in JSX
+npm run fix-hooks      # Fix React hook dependency issues
+```
+
+For more details on linting and code quality tools, see [docs/LINTING.md](docs/LINTING.md).

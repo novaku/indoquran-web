@@ -64,7 +64,7 @@ export function highlightText(text: string, query: string): Array<{ text: string
   }
   
   // Process the text
-  let currentIndex = 0;
+  const currentIndex = 0;
   const segments: Array<{ text: string, isHighlighted: boolean }> = [{ text, isHighlighted: false }];
   
   // For each word, process all existing segments

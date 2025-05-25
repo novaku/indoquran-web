@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "fix-eslint": "node scripts/fix-eslint-issues.js",
+    "fix-entities": "node scripts/fix-unescaped-entities.js",
+    "fix-hooks": "node scripts/fix-react-hooks.js",
+    "fix-simple": "node scripts/simple-fix.js",
+    "fix-all": "npm run fix-simple && npm run lint:fix",
     "setup-db": "node scripts/setup-db.js",
     "removed-admin-scripts": "Admin scripts have been removed"
   },

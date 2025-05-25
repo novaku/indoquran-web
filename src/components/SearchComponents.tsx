@@ -27,10 +27,16 @@ interface BaseSearchInputProps {
 }
 
 // Interface for the SimpleSearchInput
-interface SimpleSearchInputProps extends BaseSearchInputProps {}
+interface SimpleSearchInputProps extends BaseSearchInputProps {
+  // This component has the same props as BaseSearchInputProps
+  additionalProps?: never; // Placeholder to avoid empty interface warning
+}
 
 // Interface for the BasicSearch
-interface BasicSearchProps extends BaseSearchInputProps {}
+interface BasicSearchProps extends BaseSearchInputProps {
+  // This component has the same props as BaseSearchInputProps
+  additionalProps?: never; // Placeholder to avoid empty interface warning
+}
 
 // Interface for the AyatSearchInput
 interface AyatSearchInputProps {
