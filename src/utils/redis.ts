@@ -17,6 +17,7 @@ function initRedisClient(): Redis {
   if (!redisInstance) {
     // Environment variables are loaded from the centralized utility in env.ts
     const redisUrl = getEnv('REDIS_URL', 'redis://localhost:6379');
+    const redisSocketPath = getEnv('REDIS_SOCKET_PATH', '');
     const redisPassword = getEnv('REDIS_PASSWORD', '');
     
     const options: RedisOptions = {
@@ -40,7 +41,14 @@ function initRedisClient(): Redis {
     
     isRedisConnecting = true;
     isRedisReady = false;
-    redisInstance = new Redis(redisUrl, options);
+    
+    // Use Unix socket path if provided, otherwise use Redis URL
+    if (redisSocketPath) {
+      options.path = redisSocketPath;
+      redisInstance = new Redis(options);
+    } else {
+      redisInstance = new Redis(redisUrl, options);
+    }
     
     redisInstance.on('error', (error) => {
       console.error('Redis client error:', error);

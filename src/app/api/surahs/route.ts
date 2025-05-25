@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import Redis from 'ioredis';
 import quranClient from '@/services/quranClient';
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+const redis = process.env.REDIS_SOCKET_PATH
+  ? new Redis({ path: process.env.REDIS_SOCKET_PATH })
+  : new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 const SURAH_CACHE_KEY = 'surahs:data';
 const SURAH_CACHE_TIMESTAMP_KEY = 'surahs:timestamp';
 const CACHE_TTL_SECONDS = 60 * 60 * 6; // 6 hours

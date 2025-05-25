@@ -5,7 +5,9 @@ declare namespace NodeJS {
     NEXT_PUBLIC_API_BASE_URL: string;
     
     // Redis Configuration
-    REDIS_URL: string;
+    REDIS_URL?: string;
+    REDIS_SOCKET_PATH?: string;
+    REDIS_PASSWORD?: string;
     
     // Database Configuration
     DATABASE_URL: string;

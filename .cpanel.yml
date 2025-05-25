@@ -1,0 +1,19 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/indoqura/indoquran
+    - /bin/cp -R public/* $DEPLOYPATH
+    - /bin/cp -R .next/static $DEPLOYPATH/.next/
+    - /bin/cp next.config.js $DEPLOYPATH
+    - /bin/cp package.json $DEPLOYPATH
+    - /bin/cp server.js $DEPLOYPATH
+    - /bin/cp .env.production $DEPLOYPATH
+    - /bin/cp start-production.sh $DEPLOYPATH
+    - /bin/cp stop-production.sh $DEPLOYPATH
+    - /bin/cp monitor.sh $DEPLOYPATH
+    - /bin/cp manage.sh $DEPLOYPATH
+    - /bin/mkdir -p $DEPLOYPATH/deploy
+    - /bin/mkdir -p $DEPLOYPATH/logs
+    - /bin/cp .env.production $DEPLOYPATH/deploy/
+    - /bin/cp -R deploy-package/* $DEPLOYPATH
+    - /bin/chmod +x $DEPLOYPATH/start-production.sh $DEPLOYPATH/stop-production.sh $DEPLOYPATH/monitor.sh $DEPLOYPATH/manage.sh

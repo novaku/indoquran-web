@@ -11,7 +11,10 @@ This application requires several environment variables to work correctly. Creat
 NEXT_PUBLIC_API_BASE_URL=https://equran.id/api/v2
 
 # Redis Configuration
+# Option 1: Use Redis URL (TCP connection)
 REDIS_URL=redis://localhost:6379
+# Option 2: Use Redis Socket Path (Unix socket, faster on same host)
+# REDIS_SOCKET_PATH=/tmp/redis.sock
 # Optional: Redis password if needed
 REDIS_PASSWORD=your-redis-password
 
