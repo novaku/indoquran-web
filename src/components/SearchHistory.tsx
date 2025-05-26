@@ -1,10 +1,22 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { SearchHistoryItem } from '@/services/searchHistoryService';
+
+// Assuming GroupedSearchHistoryItem from the hook is what we will use or a compatible type
+// Let's define the expected shape directly for clarity in the component props
+interface DisplayableSearchHistoryItem {
+  search_id: number; // Representative ID from the group (e.g., latest)
+  user_id: string;
+  query_text: string;
+  search_type: 'surah' | 'ayat';
+  result_count: number; // Representative result_count (e.g., from latest)
+  count: number; // Number of times this query was searched
+  latest_created_at: string; // The timestamp of the most recent search in the group
+  // original_search_ids?: number[]; // Optional, if needed for delete logic passed to component
+}
 
 interface SearchHistoryProps {
-  searchHistory: SearchHistoryItem[];
+  searchHistory: DisplayableSearchHistoryItem[];
   loading: boolean;
   error: string | null;
   pagination: {
@@ -13,7 +25,7 @@ interface SearchHistoryProps {
     totalItems: number;
   };
   onPageChange: (page: number) => void;
-  onDeleteItem: (searchId: number) => void;
+  onDeleteItem: (searchId: number) => void; // searchId is the representative ID of the group/item
   onClearAll: () => void;
 }
 
@@ -76,10 +88,9 @@ export default function SearchHistory({
           const url = `/search/${item.search_type === 'surah' ? '' : 'ayat'}?q=${encodeURIComponent(item.query_text)}&fromHistory=1`;
           return (
             <div
-              key={item.search_id}
+              key={item.search_id} // Use representative search_id for the key
               className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer"
               onClick={e => {
-                // Prevent navigation if clicking the delete button
                 if ((e.target as HTMLElement).closest('button')) return;
                 router.push(url);
               }}
@@ -94,21 +105,26 @@ export default function SearchHistory({
               <div className="flex-1">
                 <span className="font-medium text-amber-700 hover:text-amber-900">
                   "{item.query_text}"
+                  {item.count > 1 && (
+                    <span className="ml-2 text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">
+                      {item.count} kali
+                    </span>
+                  )}
                 </span>
-                <div className="flex text-sm text-gray-500 mt-1">
+                <div className="flex text-sm text-gray-500 mt-1 items-center">
                   <span className="mr-4">
                     <span className="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full text-xs">
                       {item.search_type === 'surah' ? 'Surah' : 'Ayat'}
                     </span>
                   </span>
                   <span className="mr-4">Hasil: {item.result_count}</span>
-                  <span>{formatDate(item.created_at)}</span>
+                  <span>Terakhir: {formatDate(item.latest_created_at)}</span>
                 </div>
               </div>
               <button
                 onClick={e => {
                   e.stopPropagation();
-                  onDeleteItem(item.search_id);
+                  onDeleteItem(item.search_id); // Pass the representative search_id
                 }}
                 className="text-gray-400 hover:text-red-600 focus:outline-none"
                 aria-label="Delete search history item"
@@ -144,17 +160,21 @@ export default function SearchHistory({
               {Array.from({ length: Math.min(5, pagination.totalPages) }).map((_, idx) => {
                 let pageNumber;
                 
-                // Calculate the page number based on current page and position
                 if (pagination.totalPages <= 5) {
-                  pageNumber = idx + 1; // Show 1, 2, 3, 4, 5 for small number of pages
+                  pageNumber = idx + 1;
                 } else if (pagination.currentPage <= 3) {
-                  pageNumber = idx + 1; // Show 1, 2, 3, 4, 5 when near the start
+                  pageNumber = idx + 1;
                 } else if (pagination.currentPage >= pagination.totalPages - 2) {
-                  pageNumber = pagination.totalPages - 4 + idx; // Show last 5 pages when near the end
+                  pageNumber = pagination.totalPages - 4 + idx;
                 } else {
-                  pageNumber = pagination.currentPage - 2 + idx; // Show current page and 2 pages on each side
+                  pageNumber = pagination.currentPage - 2 + idx;
                 }
                 
+                // Ensure pageNumber is within valid range (1 to totalPages)
+                if (pageNumber < 1 || pageNumber > pagination.totalPages) {
+                  return null; 
+                }
+
                 return (
                   <button
                     key={pageNumber}
