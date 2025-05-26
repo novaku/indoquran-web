@@ -19,6 +19,7 @@
 
 # production
 /build
+/deploy-temp/
 
 # misc
 .DS_Store
@@ -42,3 +43,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

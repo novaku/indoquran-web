@@ -2,6 +2,17 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/indoqura/indoquran
+    - /bin/cp -R public/* $DEPLOYPATH/public/
+    - /bin/cp -R .next/ $DEPLOYPATH/.next/
+    - /bin/cp next.config.js $DEPLOYPATH/
+    - /bin/cp package.json $DEPLOYPATH/
+    - /bin/cp server.js $DEPLOYPATH/
+    - /bin/cp .env.production $DEPLOYPATH/
+    - /bin/mkdir -p $DEPLOYPATH/logs
+    - /bin/cp deploy-temp/start.sh $DEPLOYPATH/
+    - /bin/cp deploy-temp/stop.sh $DEPLOYPATH/
+    - /bin/chmod +x $DEPLOYPATH/start.sh $DEPLOYPATH/stop.shasks:
+    - export DEPLOYPATH=/home/indoqura/public_html
     - /bin/cp -R public/* $DEPLOYPATH
     - /bin/cp -R .next/static $DEPLOYPATH/.next/
     - /bin/cp next.config.js $DEPLOYPATH

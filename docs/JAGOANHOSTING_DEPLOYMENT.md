@@ -1,25 +1,8 @@
 # Jagoanhosting Deployment Guide
 
-This guide outlines the process for deploying this Next.js application to Jagoanhosting using cPanel and Git deployment.
+**NOTE: This document is deprecated. Please refer to [SIMPLIFIED_DEPLOYMENT.md](./SIMPLIFIED_DEPLOYMENT.md) for the current deployment approach.**
 
-## Prerequisites
-
-1. A Jagoanhosting account with cPanel access
-2. Git repository access
-3. Node.js installed on the Jagoanhosting server (contact support if needed)
-
-## Deployment Files
-
-The following files are used in the deployment process:
-
-- `.cpanel.yml` - Defines how files are deployed to the server
-- `.env.production` - Contains production environment variables
-- `server.js` - Custom Node.js server for running the application
-- `start-production.sh` - Script to start the application on the server
-- `stop-production.sh` - Script to stop the application on the server
-- `monitor.sh` - Script to monitor and automatically restart the application if it crashes
-- `manage.sh` - Management script with various commands for server management
-- `prepare-deploy.sh` - Script to prepare files for deployment
+The deployment process has been simplified to focus only on server.js and essential files, removing the dependency on shell scripts.
 
 ## Deployment Steps
 

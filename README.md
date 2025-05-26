@@ -74,17 +74,7 @@ To set up OAuth authentication:
 Before running the application, you need to set up the MySQL database:
 
 1. Make sure MySQL is installed and running on your machine
-2. Run the database setup script:
-
-```bash
-# Make the script executable if needed
-chmod +x setup-database.sh
-
-# Run the setup script
-./setup-database.sh
-```
-
-Alternatively, you can run the setup through the application:
+2. Run the database setup through the application:
 
 ```bash
 npm run dev
@@ -180,11 +170,11 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ### Server Deployment
 
-The application can be deployed on various server environments. An automated deployment script is provided for streamlined production deployment.
+The application can be deployed on various server environments using our simplified deployment approach focused on the server.js file.
 
-#### Automated Production Deployment
+#### Simplified Deployment Process
 
-For quick and consistent deployment to production:
+For a streamlined, script-free deployment to production:
 
 1. Create a `.env.production` file in the root directory:
 
@@ -195,34 +185,41 @@ cp .env.production.example .env.production
 
 2. Update OAuth redirect URIs in your OAuth provider dashboards to include your production domain.
 
-3. Run the automated deployment script:
+3. Run the simplified deployment script:
 
 ```bash
-# Deploy the application
-./deploy-production.sh
-
-# Or deploy with database setup/updates
-./deploy-production.sh --with-db
+# Build and prepare deployment files
+./deploy-simplified.sh
 ```
 
 This script will:
-- Set up the environment
-- Install dependencies
 - Build the application
-- Optionally run database initialization scripts
-- Start the application using PM2
+- Create a deployment package with only essential files
+- Include the enhanced server.js with built-in logging and error handling
+
+4. Deploy the files to your server (using cPanel, SFTP, or Git deployment)
+
+5. On the server, start the application:
+
+```bash
+# Start the application
+node server.js
+# or use the included start script
+./start.sh
+```
+
+For more details on the simplified deployment process, see [docs/SIMPLIFIED_DEPLOYMENT.md](docs/SIMPLIFIED_DEPLOYMENT.md).
 
 #### Prerequisites
 
-The automated deployment script requires:
+The simplified deployment requires:
 - Node.js (v20 or later recommended)
 - npm
 - MySQL server
-- PM2 (`npm install -g pm2`)
 
 #### Manual Database Setup
 
-If you prefer to set up the database manually:
+If you need to set up the database manually:
 
 1. Use the schema initialization scripts located in the `mysql-init/` directory:
 
@@ -233,30 +230,14 @@ mysql -u username -p database_name < mysql-init/01-schema.sql
 
 2. These scripts should be run in sequence to properly set up the database schema.
 
-#### Database Backup
-
-Regular database backups are recommended for data safety:
-
-1. Set up a cron job or scheduled task to create database backups:
-
-```bash
-# Example cron job for daily backups at 2 AM
-0 2 * * * mysqldump -u username -ppassword database_name | gzip > /path/to/backups/db-backup-$(date +\%Y\%m\%d).sql.gz
-```
-
-2. Store backups in a secure off-server location.
-
 #### Application Monitoring
 
 For production deployments:
 
-- Use PM2 for application process management:
+- Use the built-in logging to monitor the application:
   ```bash
-  # View application status
-  pm2 status
-  
-  # View logs
-  pm2 logs indoquran-web
+  # View application logs
+  tail -f logs/server.log
   ```
 
 - Consider implementing:
